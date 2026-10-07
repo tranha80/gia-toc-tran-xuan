@@ -394,8 +394,7 @@
     <button class="nav-btn active" onclick="switchTab('tree')">🌳 Cây Phả Hệ Tương Tác</button>
     <button class="nav-btn" onclick="switchTab('directory')">📋 Danh Sách & Tra Cứu</button>
     <button class="nav-btn" onclick="switchTab('anniversaries')">🕯️ Lịch Ngày Giỗ</button>
-    <button class="nav-btn" onclick="switchTab('tombs-plan')">🏛️ Quy Hoạch & Xây Lăng Mộ</button>
-    <button class="nav-btn" onclick="switchTab('telegram')">🤖 Bot Telegram Tự Động</button>
+    <button class="nav-btn" id="navTelegramBtn" onclick="handleTelegramTabClick()">🤖 Cài Đặt Telegram (🔒 Chỉ Admin)</button>
     <button class="nav-btn" onclick="switchTab('stele')">📜 Văn Bia Hán Nôm 1881</button>
   </nav>
 
@@ -504,156 +503,93 @@
       </div>
     </section>
 
-    <!-- TAB 4: QUY HOẠCH & KẾ HOẠCH XÂY LĂNG MỘ -->
-    <section id="tab-tombs-plan" class="tab-content">
-      <div class="info-grid">
-        <div class="info-card" style="border-left-color: #c53030;">
-          <h4>💰 Kế Hoạch Tài Chính & Kinh Phí</h4>
-          <p>• <strong>Tổng dự toán:</strong> <span style="color: #c53030; font-size: 1.3rem; font-weight: 800;">235.000.000 VNĐ</span> (235 triệu đồng).</p>
-          <p>• <strong>Trách nhiệm chính:</strong> <strong>7 Nam Đinh trên 18 tuổi</strong> trong gia tộc nòng cốt gánh vác.</p>
-          <p>• <strong>Vận động dòng tộc:</strong> Kêu gọi toàn thể con cháu nội ngoại, dâu rể chung tay đóng góp tự nguyện tùy tâm để đón nhận phúc phần tổ tiên.</p>
-          <p style="margin-top: 0.8rem; background: #ebf8ff; padding: 0.8rem; border-radius: 6px;">
-            🏦 <strong>Tài khoản tiếp nhận:</strong><br>
-            • STK: <strong>19131 97826 9999</strong> (Techcombank Thanh Hóa)<br>
-            • Chủ TK: <strong>Trần Xuân Huấn</strong><br>
-            • Nội dung: [Họ tên] - Đóng góp tiền xây lăng gia tộc Trần Xuân
-          </p>
-        </div>
-
-        <div class="info-card" style="border-left-color: #3182ce;">
-          <h4>📅 Tiến Độ Thi Công & Nghi Lễ</h4>
-          <p>• <strong>Giai đoạn 1 (04/10 Âm lịch):</strong> Lễ quy tập và đưa mộ phần các cụ về khuôn viên lăng gia tộc tập trung.</p>
-          <p>• <strong>Giai đoạn 2 (20/10 Âm lịch):</strong> Lễ cải táng, sang mộ cho Ông Cố (Cụ Trần Xuân Phúc Phang).</p>
-          <p>• <strong>Công tác chuẩn bị:</strong> Các đinh trong họ trực tiếp khảo sát mặt bằng, hợp đồng thợ đá mỹ nghệ, xây tường bao, cuốn thư, long đình.</p>
-        </div>
-
-        <div class="info-card" style="border-left-color: #b7791f;">
-          <h4>📏 Kích Thước Phong Thủy Thước Lỗ Ban (38.8 cm - Âm Phần)</h4>
-          <p>• <strong>Mộ đơn nhỏ:</strong> 81 x 127 cm <i>(Tài Vượng - Tiến Bảo)</i></p>
-          <p>• <strong>Mộ đơn vừa:</strong> 89 x 133 cm <i>(Lục Hợp - Quý Tử)</i> hoặc 89 x 147 cm <i>(Thêm Đinh - Nhật Lộc)</i></p>
-          <p>• <strong>Mộ lớn:</strong> 107 x 167 cm <i>(Quý Tử - Hưng Vượng)</i> hoặc 107 x 176 cm <i>(Phú Quý)</i></p>
-          <p>• <strong>Mộ đôi cụ ông - cụ bà:</strong> 147 x 167 cm hoặc 167 x 197 cm <i>(Hưng Vượng - Đăng Khoa)</i></p>
-        </div>
-
-        <div class="info-card" style="border-left-color: #2c7a7b;">
-          <h4>👥 Danh Sách 7 Nam Đinh Nòng Cốt Trọng Trách</h4>
-          <p>1. <strong>Trần Xuân Hạnh</strong> (Sinh 1957) - Bậc trưởng bối</p>
-          <p>2. <strong>Trần Xuân Tám</strong> (Sinh 1972) - Chú Út</p>
-          <p>3. <strong>Trần Xuân Hải</strong> (Sinh 1979) - Trưởng nam nhánh 2</p>
-          <p>4. <strong>Trần Xuân Tùng</strong> (Chung; Sinh 1979) - Trưởng nam nhánh 1</p>
-          <p>5. <strong>Trần Xuân Hà</strong> (Sinh 1981) - Trưởng ban số hóa & tư liệu</p>
-          <p>6. <strong>Trần Xuân Huấn</strong> (Sinh 1983) - Phụ trách tài chính / thủ quỹ</p>
-          <p>7. <strong>Trần Xuân Đức</strong> (Sinh 1991) - Trưởng nam nhánh 3</p>
-        </div>
-      </div>
-
-      <!-- SƠ ĐỒ MẶT BẰNG LĂNG -->
-      <div class="tomb-card">
-        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.4rem;">
-          🏛️ SƠ ĐỒ QUY HOẠCH CHI TIẾT MẶT BẰNG LĂNG GIA TỘC TRẦN XUÂN
-        </h3>
-
-        <!-- LONG ĐÌNH -->
-        <div class="tomb-row">
-          <div class="tomb-box long-dinh">🏛️ LONG ĐÌNH CHÍNH<br><small style="font-weight: normal;">(Hương án - Nơi thờ chung Tiên Tổ)</small></div>
-        </div>
-
-        <div class="tomb-pathway">↑ HÀNG THƯỢNG TỔ & TIỀN BỐI ↑</div>
-
-        <!-- HÀNG 1 -->
-        <div class="tomb-row">
-          <div class="tomb-box to-ba">Cụ Cố Bà<br><strong>ĐẶNG THỊ TRẢNH</strong><br><small>(1891 - 1947 • Quê Bãi Khê)</small></div>
-          <div class="tomb-box to-ong">Cụ Cố Ông<br><strong>TRẦN XUÂN PHÚC PHANG</strong><br><small>(1873 - 1935 • Sang mộ 20/10 AL)</small></div>
-          <div class="tomb-box to-ong">Cụ Ông<br><strong>HỌ TRẦN XUÂN</strong><br><small>(Cồn Gai quy tập về lăng)</small></div>
-          <div class="tomb-box to-ba">Cụ Bà 2<br><strong>(VỢ CỤ Ý)</strong><br><small>(Mất thông tin)</small></div>
-          <div class="tomb-box to-ba">Cụ Bà 1<br><strong>(VỢ CỤ Ý)</strong><br><small>(Mất thông tin)</small></div>
-          <div class="tomb-box to-ong">Cụ Ông<br><strong>TRẦN XUÂN PHÚC KHANG</strong><br><small>(Mộ tổ quy tập)</small></div>
-        </div>
-
-        <div class="tomb-pathway">║ TRỤC ĐƯỜNG ĐI CHÍNH ║</div>
-
-        <!-- HÀNG 2 -->
-        <div class="tomb-row">
-          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh tả)</small></div>
-          <div class="tomb-box to-ba">Bà Cô<br><strong>TRẦN THỊ HỒNG</strong><br><small>(1963 - 1965 • Hưởng dương 3t)</small></div>
-          <div class="tomb-box to-ba">Bà Nội<br><strong>VŨ THỊ NGỮ</strong><br><small>(1932 - 1997 • Quê Thịnh Vạn)</small></div>
-          <div class="tomb-box to-ong">Ông Nội<br><strong>TRẦN XUÂN TƯƠNG</strong><br><small>(1933 - 2017 • Thọ 85t)</small></div>
-        </div>
-
-        <!-- HÀNG 3 -->
-        <div class="tomb-row">
-          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh tả)</small></div>
-          <div class="tomb-box to-ong">Ông<br><strong>TRẦN XUÂN PHÚC</strong><br><small>(1960 - 2020 • Thọ 61t)</small></div>
-          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh hữu)</small></div>
-        </div>
-
-        <!-- VƯỜN HOA & CUỐN THƯ -->
-        <div class="tomb-row" style="margin-top: 1.5rem;">
-          <div class="tomb-box" style="background: #e6fffa; border-color: #38b2ac; color: #234e52; font-weight: 700;">🌸 VƯỜN HOA TẢ</div>
-          <div class="tomb-box cuon-thu">📜 CUỐN THƯ BÌNH PHONG<br><small style="font-weight: normal;">(Chắn khí xấu, bảo hộ linh khí)</small></div>
-          <div class="tomb-box" style="background: #e6fffa; border-color: #38b2ac; color: #234e52; font-weight: 700;">🌸 VƯỜN HOA HỮU</div>
-        </div>
-
-        <!-- CỔNG -->
-        <div class="tomb-row">
-          <div class="tomb-box" style="background: #2d3748; color: white; font-weight: 700; max-width: 260px;">🚪 CỔNG LĂNG GIA TỘC</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 5: BOT TELEGRAM TỰ ĐỘNG -->
+    <!-- TAB TELEGRAM: CẤU HÌNH THỜI GIAN HÀNG NĂM (CHỈ ADMIN) -->
     <section id="tab-telegram" class="tab-content">
       <div style="background: white; border-radius: 12px; padding: 2rem; border: 1px solid var(--border); margin-bottom: 1.5rem;">
-        <h3 style="color: #0088cc; font-size: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-          🤖 QUẢN LÝ THÔNG BÁO TỰ ĐỘNG TELEGRAM
-        </h3>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-          Hệ thống chạy daemon ngầm tự động quét và gửi tin nhắn trước 1 ngày: <strong>Ngày Giỗ tiên tổ (Âm lịch)</strong> & <strong>Sinh nhật con cháu (Dương lịch)</strong>.
-        </p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <h3 style="color: #0088cc; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+              🤖 HỆ THỐNG THÔNG BÁO TELEGRAM TỰ ĐỘNG HÀNG NĂM
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.3rem;">
+              🔒 <strong>Khu vực bảo mật:</strong> Dành riêng cho Quản trị viên (Admin) thiết lập thời gian gửi và kết nối bot gia tộc.
+            </p>
+          </div>
+          <span style="background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+            ⚙️ SETUP THỜI GIAN: HÀNG NĂM 365 NGÀY
+          </span>
+        </div>
 
-        <!-- Form Cấu Hình Bot -->
+        <!-- PHẦN 1: BẢNG LỊCH TRÌNH SETUP HÀNG NĂM -->
+        <div style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem;">
+          <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            📅 Lịch Trình Thiết Lập Sẵn Hàng Năm (Tự Động 100%)
+          </h4>
+          <p style="font-size: 0.92rem; color: #4a5568; line-height: 1.6; margin-bottom: 0.8rem;">
+            • <strong>Tần suất quét:</strong> Tự động quét ngầm hàng ngày vào lúc <strong>07:00 sáng</strong>.<br>
+            • <strong>Thời điểm báo trước:</strong> <strong>Trước 1 ngày</strong> để gia đình kịp chuẩn bị hương hoa, đồ lễ hoặc gửi lời chúc mừng.<br>
+            • <strong>Lịch Âm & Lịch Dương:</strong> Tự động chuyển đổi thiên văn chuẩn xác theo từng năm mà không cần chỉnh sửa thủ công.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            <div style="background: white; border-left: 4px solid #c53030; padding: 0.8rem 1rem; border-radius: 6px;">
+              <strong style="color: #c53030;">🕯️ Lịch Giỗ Tiên Tổ Hàng Năm:</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+                Tự động gửi thông báo trước 1 ngày cho 7 ngày giỗ chính: Cụ Lai (06/01 ÂL), Cụ Phúc (11/02 ÂL), Cụ Tương (04/04 ÂL), Cụ Trảnh (21/06 ÂL), Cụ Phang (01/08 ÂL), Bà Cô Hồng (28/10 ÂL), Cụ Ngữ (28/11 ÂL).
+              </p>
+            </div>
+            <div style="background: white; border-left: 4px solid #3182ce; padding: 0.8rem 1rem; border-radius: 6px;">
+              <strong style="color: #3182ce;">🎉 Lịch Sinh Nhật Con Cháu Hàng Năm:</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+                Tự động gửi lời chúc mừng và tính tuổi tròn của tất cả các thành viên còn sống trong gia tộc vào đúng ngày sinh nhật Dương lịch.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 2: FORM CẤU HÌNH DÀNH RIÊNG CHO ADMIN -->
         <div class="info-grid">
           <div class="info-card" style="border-left-color: #0088cc;">
-            <h4>⚙️ Cấu Hình Telegram Bot</h4>
+            <h4>⚙️ Thiết Lập Tham Số Bot Telegram (Admin)</h4>
             <div class="form-group">
-              <label>Bot Token (@BotFather):</label>
+              <label>Bot Token (Lấy từ @BotFather):</label>
               <input type="text" id="cfgBotToken" class="form-control" placeholder="123456789:ABCdefGHI...">
             </div>
             <div class="form-group">
-              <label>Chat ID (Nhóm hoặc cá nhân):</label>
-              <input type="text" id="cfgChatId" class="form-control" placeholder="-100xxxxxxxxxx hoặc số cá nhân">
+              <label>Chat ID (Nhóm gia tộc hoặc cá nhân):</label>
+              <input type="text" id="cfgChatId" class="form-control" placeholder="-100xxxxxxxxxx hoặc ID cá nhân">
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Giờ gửi tự động hàng ngày:</label>
+                <label>Giờ phát thông báo hàng ngày:</label>
                 <input type="time" id="cfgNotifyTime" class="form-control" value="07:00">
               </div>
               <div class="form-group">
-                <label>Báo trước (ngày):</label>
+                <label>Thời gian nhắc trước (ngày):</label>
                 <input type="number" id="cfgDaysBefore" class="form-control" value="1" min="1" max="7">
               </div>
             </div>
             <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
               <input type="checkbox" id="cfgEnabled" checked style="width: 18px; height: 18px;">
-              <label for="cfgEnabled" style="margin-bottom: 0; cursor: pointer;">Kích hoạt tự động gửi hàng ngày (Daemon Scheduler)</label>
+              <label for="cfgEnabled" style="margin-bottom: 0; cursor: pointer;">Kích hoạt trình quét tự động 365 ngày (Daemon Scheduler)</label>
             </div>
-            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-              <button class="btn btn-primary" onclick="saveTelegramConfig()">💾 Lưu Cấu Hình</button>
-              <button class="btn btn-secondary" onclick="sendTestTelegram()">🚀 Gửi Thử Ngay</button>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="saveTelegramConfig()">💾 Lưu Thiết Lập</button>
+              <button class="btn btn-secondary" onclick="sendTestTelegram()">🚀 Gửi Thử Nghiệm</button>
               <button class="btn btn-success" onclick="triggerTelegramToday()">🔔 Quét Sự Kiện Ngày Mai</button>
             </div>
           </div>
 
           <div class="info-card" style="border-left-color: #2f855a;">
-            <h4>📅 Sự Kiện Sắp Diễn Ra (Trong 30 Ngày Tới)</h4>
+            <h4>📋 Sự Kiện Trong 30 Ngày Tới</h4>
             <div id="upcomingEventsList" style="max-height: 280px; overflow-y: auto; font-size: 0.9rem;">
               <p style="color: var(--text-muted);">Đang tải dữ liệu sự kiện...</p>
             </div>
           </div>
         </div>
+
       </div>
     </section>
-
     <!-- TAB 6: VĂN BIA HÁN NÔM -->
     <section id="tab-stele" class="tab-content">
       <div class="chinese-card">
@@ -837,12 +773,23 @@
       }
     }
 
+    // Kiểm tra quyền khi bấm vào Tab Telegram
+    function handleTelegramTabClick() {
+      if (!isAdmin) {
+        alert("🔒 Khu vực này chỉ dành cho Quản trị viên (Admin) để cài đặt hệ thống và setup thời gian thông báo hàng năm.\n\nVui lòng nhập mã PIN Admin để tiếp tục!");
+        openLoginModal();
+        return;
+      }
+      switchTab('telegram');
+    }
+
     // Tabs
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+      if (event && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
     // Admin Auth
