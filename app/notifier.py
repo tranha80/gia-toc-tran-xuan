@@ -12,8 +12,9 @@ try:
 except ImportError:
     LunarDate = None
 
-CONFIG_FILE = r"d:\Gia pha\telegram_config.json"
-DATABASE_FILE = r"d:\Gia pha\gia_toc_tran_xuan.json"
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+CONFIG_FILE = os.path.join(BASE_DIR, "telegram_config.json")
+DATABASE_FILE = os.path.join(BASE_DIR, "gia_toc_tran_xuan.json")
 
 CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
 CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]

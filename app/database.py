@@ -5,9 +5,10 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-DB_PATH = r"d:\Gia pha\gia_toc_tran_xuan.db"
-JSON_PATH = r"d:\Gia pha\gia_toc_tran_xuan.json"
-EXCEL_PATH = r"d:\Gia pha\Gia_Pha_Tran_Xuan_So_Hoa_Chuan.xlsx"
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DB_PATH = os.path.join(BASE_DIR, "gia_toc_tran_xuan.db")
+JSON_PATH = os.path.join(BASE_DIR, "gia_toc_tran_xuan.json")
+EXCEL_PATH = os.path.join(BASE_DIR, "Gia_Pha_Tran_Xuan_So_Hoa_Chuan.xlsx")
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)

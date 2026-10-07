@@ -39,8 +39,9 @@ def get_lunar_date(dt):
 # ==============================================================================
 # 2. CẤU HÌNH VÀ GỬI TIN NHẮN TELEGRAM
 # ==============================================================================
-CONFIG_FILE = r"d:\Gia pha\telegram_config.json"
-DATABASE_FILE = r"d:\Gia pha\gia_toc_tran_xuan.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(BASE_DIR, "telegram_config.json")
+DATABASE_FILE = os.path.join(BASE_DIR, "gia_toc_tran_xuan.json")
 
 DEFAULT_CONFIG = {
     "bot_token": "YOUR_BOT_TOKEN_HERE",
