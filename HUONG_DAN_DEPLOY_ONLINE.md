@@ -70,5 +70,5 @@ docker run -d -p 8000:8000 --name giapha gia-toc-tran-xuan
 
 ## 🔐 BẢO MẬT & QUẢN TRỊ KHI ONLINE
 - Người ngoài và con cháu truy cập vào chỉ có thể **Xem Cây Phả Hệ, Lịch Ngày Giỗ, Lăng Mộ**.
-- Muốn Thêm / Sửa / Xóa thành viên hoặc cài đặt Telegram Bot, người dùng bắt buộc phải bấm **🔐 Đăng Nhập Admin** và nhập đúng **Mã PIN: `123456`**.
+- Muốn Thêm / Sửa / Xóa thành viên hoặc cài đặt Telegram Bot, người dùng bắt buộc phải bấm **🔐 Đăng Nhập Admin** và nhập đúng **Mã PIN bảo mật riêng của gia tộc: `5101980`**.
 - Mọi thao tác thêm sửa xóa sẽ được ghi nhận và lưu trữ tức thời vào CSDL.

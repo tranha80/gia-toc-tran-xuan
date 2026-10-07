@@ -24,8 +24,8 @@ from app.notifier import (
     get_upcoming_month_events
 )
 
-# Admin PIN / Password mặc định
-ADMIN_PIN = "123456"
+# Admin PIN bảo mật
+ADMIN_PIN = "5101980"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
