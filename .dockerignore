@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+*.rar
+*.zip
+*.mp4
+Gia_pha_setup/
+scratch/

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.rar
+*.zip
+*.mp4
+Gia_pha_setup/
+scratch/
+.system_generated/

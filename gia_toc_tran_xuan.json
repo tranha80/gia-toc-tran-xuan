@@ -1,0 +1,1163 @@
+{
+  "ten_dong_ho": "HỌ TRẦN XUÂN (CHI 3 CÀNH 1)",
+  "nguyen_quan": "Làng Đa Sĩ (Sài Thôn), xã Đông Vinh, TP. Thanh Hóa, tỉnh Thanh Hóa",
+  "nguoi_lap_pha": "Trần Xuân Hà (TP. Hồ Chí Minh)",
+  "nien_dai_khoi_to": "Hơn 300 năm (Thế kỷ 17 - 18)",
+  "thanh_vien": [
+    {
+      "id": "TX-001",
+      "ho_ten": "Trần Xuân Thủy Tổ",
+      "gioi_tinh": "Nam",
+      "the_he": 1,
+      "vai_ve": "Cụ Thủy Tổ",
+      "sinh": "Thế kỷ 17-18",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Làng Đa Sĩ (Sài Thôn), xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ tổ họ Trần Xuân. Văn bia: 'Trần Xuân tính thủy tổ chi mộ'",
+      "ghi_chu": "Cụ Thủy tổ tới định cư tại Sài Thôn cách đây hơn 3 thế kỷ."
+    },
+    {
+      "id": "TX-002",
+      "ho_ten": "Bà Cô Tổ Họ Trần Xuân",
+      "gioi_tinh": "Nữ",
+      "the_he": 1,
+      "vai_ve": "Bà Cô Tổ",
+      "sinh": "Thế kỷ 17-18",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Làng Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Mộ bà cô tổ trên đồng cao. Văn bia: 'Trần Xuân tính tổ cô chi mộ'",
+      "ghi_chu": "Bà Cô tổ linh thiêng phù hộ độ trì cho dòng tộc."
+    },
+    {
+      "id": "TX-003",
+      "ho_ten": "Trần Xuân Ý",
+      "gioi_tinh": "Nam",
+      "the_he": 2,
+      "vai_ve": "Cụ Ông Thượng Phụ",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu mộ tổ gia tộc",
+      "ghi_chu": "Mất thông tin chi tiết."
+    },
+    {
+      "id": "TX-004",
+      "ho_ten": "Cụ Bà 1",
+      "gioi_tinh": "Nữ",
+      "the_he": 2,
+      "vai_ve": "Cụ Bà (Vợ cụ Ý)",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (bên phải đường đi)",
+      "ghi_chu": "Mất thông tin chi tiết."
+    },
+    {
+      "id": "TX-005",
+      "ho_ten": "Cụ Bà 2",
+      "gioi_tinh": "Nữ",
+      "the_he": 2,
+      "vai_ve": "Cụ Bà (Vợ cụ Ý)",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (bên phải đường đi)",
+      "ghi_chu": "Mất thông tin chi tiết."
+    },
+    {
+      "id": "TX-006",
+      "ho_ten": "Trần Xuân Khang",
+      "gioi_tinh": "Nam",
+      "the_he": 2,
+      "vai_ve": "Cụ Ông",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (tự Phúc Khang, bên phải đường đi)",
+      "ghi_chu": "Tự Phúc Khang."
+    },
+    {
+      "id": "TX-007",
+      "ho_ten": "Trần Xuân Phang",
+      "gioi_tinh": "Nam",
+      "the_he": 3,
+      "vai_ve": "Cụ Cố Ông (Phúc Phang)",
+      "sinh": "1872/1873",
+      "mat_duong": "29/08/1935",
+      "mat_am": "01/08 (Ất Hợi)",
+      "huong_tho": "63",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (tự Phúc Phang, bên trái đường đi)",
+      "ghi_chu": "Tự Phúc Phang. Ngày giỗ 01 tháng 8 Âm lịch."
+    },
+    {
+      "id": "TX-008",
+      "ho_ten": "Đặng Thị Trảnh",
+      "gioi_tinh": "Nữ",
+      "the_he": 3,
+      "vai_ve": "Cụ Cố Bà (Vợ cụ Phang)",
+      "sinh": "1891",
+      "mat_duong": "07/08/1947",
+      "mat_am": "21/06 (Đinh Hợi)",
+      "huong_tho": "57",
+      "que_quan": "Thôn Bãi Khê, xã Quảng Trạch, huyện Quảng Xương, Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (bên trái đường đi)",
+      "ghi_chu": "Vợ Cụ Trần Xuân Phang. Ngày giỗ 21 tháng 6 Âm lịch."
+    },
+    {
+      "id": "TX-009",
+      "ho_ten": "Trần Thị Búp",
+      "gioi_tinh": "Nữ",
+      "the_he": 4,
+      "vai_ve": "Bà",
+      "sinh": "1921",
+      "mat_duong": "2006",
+      "mat_am": "",
+      "huong_tho": "85",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là cụ Hồ Văn Ốc."
+    },
+    {
+      "id": "TX-010",
+      "ho_ten": "Trần Thị Lụa",
+      "gioi_tinh": "Nữ",
+      "the_he": 4,
+      "vai_ve": "Vợ đầu cụ Tương",
+      "sinh": "1925",
+      "mat_duong": "02/07/1972",
+      "mat_am": "",
+      "huong_tho": "47",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ đầu của cụ Trần Xuân Tương (đã ly hôn), sinh ra ông Trần Xuân Lai."
+    },
+    {
+      "id": "TX-011",
+      "ho_ten": "Trần Xuân Tương",
+      "gioi_tinh": "Nam",
+      "the_he": 4,
+      "vai_ve": "Ông Nội",
+      "sinh": "1933",
+      "mat_duong": "29/04/2017",
+      "mat_am": "04/04 (Đinh Dậu)",
+      "huong_tho": "85",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (hàng thứ 2)",
+      "ghi_chu": "Lấy 2 đời vợ: Vợ 1 là bà Trần Thị Lụa (sinh ông Lai, đã ly hôn); Vợ 2 là cụ bà Vũ Thị Ngữ (sinh 8 người con). Ngày giỗ 04/04 Âm lịch."
+    },
+    {
+      "id": "TX-012",
+      "ho_ten": "Vũ Thị Ngữ",
+      "gioi_tinh": "Nữ",
+      "the_he": 4,
+      "vai_ve": "Bà Nội (Vợ 2 cụ Tương)",
+      "sinh": "1931/1932",
+      "mat_duong": "06/01/1997",
+      "mat_am": "28/11 (Bính Tý)",
+      "huong_tho": "66",
+      "que_quan": "Thôn Thịnh Vạn, phường Quảng Thịnh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (cạnh mộ cụ Tương)",
+      "ghi_chu": "Vợ thứ hai của cụ Trần Xuân Tương. Ngày giỗ 28/11 Âm lịch."
+    },
+    {
+      "id": "TX-013",
+      "ho_ten": "Trần Xuân Nống",
+      "gioi_tinh": "Nam",
+      "the_he": 4,
+      "vai_ve": "Ông",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Mất từ nhỏ, không có thông tin."
+    },
+    {
+      "id": "TX-014",
+      "ho_ten": "Trần Xuân Nụ",
+      "gioi_tinh": "Nam",
+      "the_he": 4,
+      "vai_ve": "Ông",
+      "sinh": "",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Mất từ nhỏ, không có thông tin."
+    },
+    {
+      "id": "TX-015",
+      "ho_ten": "Trần Xuân Lai",
+      "gioi_tinh": "Nam",
+      "the_he": 5,
+      "vai_ve": "Bác Cả",
+      "sinh": "1950",
+      "mat_duong": "15/02/1994",
+      "mat_am": "06/01 (Giáp Tuất)",
+      "huong_tho": "45",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc",
+      "ghi_chu": "Con trưởng cụ Tương (mẹ là bà Trần Thị Lụa). Ngày giỗ 06/01 Âm lịch."
+    },
+    {
+      "id": "TX-016",
+      "ho_ten": "Nguyễn Thị Khích",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Bác Gái (Vợ ông Lai)",
+      "sinh": "20/03/1947",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ ông Trần Xuân Lai."
+    },
+    {
+      "id": "TX-017",
+      "ho_ten": "Trần Xuân Hạnh",
+      "gioi_tinh": "Nam",
+      "the_he": 5,
+      "vai_ve": "Bố / Chú",
+      "sinh": "02/11/1957",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Con thứ hai của cụ Tương (mẹ là cụ Vũ Thị Ngữ)."
+    },
+    {
+      "id": "TX-018",
+      "ho_ten": "Nguyễn Thị Tiếp",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Mẹ / Thím (Vợ ông Hạnh)",
+      "sinh": "18/11/1957",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ ông Trần Xuân Hạnh."
+    },
+    {
+      "id": "TX-019",
+      "ho_ten": "Trần Thị Niên",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Cô",
+      "sinh": "1959",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Phan Thanh Chững."
+    },
+    {
+      "id": "TX-020",
+      "ho_ten": "Trần Xuân Phúc",
+      "gioi_tinh": "Nam",
+      "the_he": 5,
+      "vai_ve": "Chú",
+      "sinh": "19/12/1960",
+      "mat_duong": "04/03/2020",
+      "mat_am": "11/02 (Canh Tý)",
+      "huong_tho": "61",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (hàng thứ 3)",
+      "ghi_chu": "Ngày giỗ 11/02 Âm lịch."
+    },
+    {
+      "id": "TX-021",
+      "ho_ten": "Lê Thị Hiệp",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Thím (Vợ ông Phúc)",
+      "sinh": "17/06/1961",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ ông Trần Xuân Phúc."
+    },
+    {
+      "id": "TX-022",
+      "ho_ten": "Trần Thị Hồng",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Bà Cô",
+      "sinh": "1963",
+      "mat_duong": "20/11/1965",
+      "mat_am": "28/10 (Ất Tỵ)",
+      "huong_tho": "3",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "Khu lăng mộ gia tộc (hàng thứ 2)",
+      "ghi_chu": "Mất khi 3 tuổi. Ngày giỗ 28/10 Âm lịch."
+    },
+    {
+      "id": "TX-023",
+      "ho_ten": "Trần Thị Mai",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Cô",
+      "sinh": "06/01/1965",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Nguyễn Văn Sỹ."
+    },
+    {
+      "id": "TX-024",
+      "ho_ten": "Trần Thị Xuân",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Cô",
+      "sinh": "20/10/1967",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Hoàng Đắc Hà."
+    },
+    {
+      "id": "TX-025",
+      "ho_ten": "Trần Thị Hoa",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Cô",
+      "sinh": "1969",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Đặng Văn Hiếu."
+    },
+    {
+      "id": "TX-026",
+      "ho_ten": "Trần Xuân Tám",
+      "gioi_tinh": "Nam",
+      "the_he": 5,
+      "vai_ve": "Chú Út",
+      "sinh": "01/03/1972",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Con trai út cụ Tương."
+    },
+    {
+      "id": "TX-027",
+      "ho_ten": "Nguyễn Thị Hải Hương",
+      "gioi_tinh": "Nữ",
+      "the_he": 5,
+      "vai_ve": "Thím (Vợ ông Tám)",
+      "sinh": "15/07/1972",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ ông Trần Xuân Tám."
+    },
+    {
+      "id": "TX-028",
+      "ho_ten": "Trần Thị Thủy",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị",
+      "sinh": "19/05/1977",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Nguyễn Viết Hường."
+    },
+    {
+      "id": "TX-029",
+      "ho_ten": "Trần Xuân Tùng",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Anh (Chung)",
+      "sinh": "02/07/1979",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Tên thường gọi: Chung."
+    },
+    {
+      "id": "TX-030",
+      "ho_ten": "Nguyễn Thị Thu Thủy",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị Dâu (Vợ anh Tùng)",
+      "sinh": "06/01/1980",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ anh Trần Xuân Tùng."
+    },
+    {
+      "id": "TX-031",
+      "ho_ten": "Trần Xuân Huấn",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Anh",
+      "sinh": "28/10/1983",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Trưởng ban vận động/thủ quỹ xây lăng mộ gia tộc (STK Techcombank: 19131978269999)."
+    },
+    {
+      "id": "TX-032",
+      "ho_ten": "Phạm Thị Thúy Nga",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị Dâu (Vợ anh Huấn)",
+      "sinh": "14/09/1988",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Vợ anh Trần Xuân Huấn, sinh 3 con: Hà Anh, Quang, Đức Anh."
+    },
+    {
+      "id": "TX-033",
+      "ho_ten": "Trần Xuân Hải",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Anh Cả",
+      "sinh": "28/10/1979",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Vợ 1 là Ngô Thị Mỹ Ngọc (sinh Thành, Nam; đã ly hôn); Vợ 2 là Nguyễn Thị Hải/Hoàng Oanh (đã ly hôn)."
+    },
+    {
+      "id": "TX-034",
+      "ho_ten": "Ngô Thị Mỹ Ngọc",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị Dâu cũ (Vợ 1 anh Hải)",
+      "sinh": "1983",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "",
+      "phan_mo": "",
+      "ghi_chu": "Vợ đầu của Trần Xuân Hải (đã ly hôn). Mẹ của Trần Xuân Thành và Trần Xuân Nam."
+    },
+    {
+      "id": "TX-035",
+      "ho_ten": "Nguyễn Thị Hải",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị Dâu cũ (Vợ 2 anh Hải)",
+      "sinh": "05/05/1979",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "",
+      "phan_mo": "",
+      "ghi_chu": "Vợ hai của Trần Xuân Hải (tên khác: Hoàng Oanh, đã ly hôn)."
+    },
+    {
+      "id": "TX-036",
+      "ho_ten": "Trần Xuân Hà",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Bản thân / Trưởng ban số hóa",
+      "sinh": "01/09/1981",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa",
+      "phan_mo": "",
+      "ghi_chu": "Người sưu tầm, lập gia phả, kết nối Viện Hán Nôm và số hóa dữ liệu. Vợ 1: Nguyễn Thị Hạnh (ly hôn, sinh Quỳnh Chi); Vợ 2: Tạ Thị Lan Phương (sinh Gia Hưng)."
+    },
+    {
+      "id": "TX-037",
+      "ho_ten": "Nguyễn Thị Hạnh",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Vợ 1 anh Hà (đã ly hôn)",
+      "sinh": "1984",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "",
+      "phan_mo": "",
+      "ghi_chu": "Vợ đầu của Trần Xuân Hà (đã ly hôn). Mẹ của Trần Nguyễn Quỳnh Chi."
+    },
+    {
+      "id": "TX-038",
+      "ho_ten": "Tạ Thị Lan Phương",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Vợ hiện tại anh Hà",
+      "sinh": "25/10/1981",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "",
+      "phan_mo": "",
+      "ghi_chu": "Vợ hiện nay của Trần Xuân Hà. Mẹ của Trần Gia Hưng."
+    },
+    {
+      "id": "TX-039",
+      "ho_ten": "Trần Thị Lan Anh",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Em gái",
+      "sinh": "04/03/1988",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Nguyễn Văn Công."
+    },
+    {
+      "id": "TX-040",
+      "ho_ten": "Trần Thị Huyền",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Chị",
+      "sinh": "14/04/1989",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Chồng là Lê Hữu Phước."
+    },
+    {
+      "id": "TX-041",
+      "ho_ten": "Trần Xuân Đức",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Em",
+      "sinh": "24/02/1991",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai ông Phúc."
+    },
+    {
+      "id": "TX-042",
+      "ho_ten": "Bùi Thị Hồng",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Em Dâu (Vợ anh Đức)",
+      "sinh": "31/01/1999",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "",
+      "phan_mo": "",
+      "ghi_chu": "Vợ của Trần Xuân Đức."
+    },
+    {
+      "id": "TX-043",
+      "ho_ten": "Trần Thị Đài Trang",
+      "gioi_tinh": "Nữ",
+      "the_he": 6,
+      "vai_ve": "Em",
+      "sinh": "13/10/1998",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Tên khác: Trần Thị Trang. Chồng là Cao Xuân Tiến."
+    },
+    {
+      "id": "TX-044",
+      "ho_ten": "Trần Xuân Hoàng",
+      "gioi_tinh": "Nam",
+      "the_he": 6,
+      "vai_ve": "Em",
+      "sinh": "11/08/2007",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai ông Tám."
+    },
+    {
+      "id": "TX-045",
+      "ho_ten": "Trần Thái Sơn",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "18/11/2010",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai đầu của Trần Xuân Tùng & Nguyễn Thị Thu Thủy."
+    },
+    {
+      "id": "TX-046",
+      "ho_ten": "Trần Tùng Lâm",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "04/09/2018",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai thứ hai của Trần Xuân Tùng & Nguyễn Thị Thu Thủy."
+    },
+    {
+      "id": "TX-047",
+      "ho_ten": "Trần Phạm Hà Anh",
+      "gioi_tinh": "Nữ",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "29/10/2011",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con gái đầu của Trần Xuân Huấn & Phạm Thị Thúy Nga."
+    },
+    {
+      "id": "TX-048",
+      "ho_ten": "Trần Minh Quang",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "08/07/2018",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai thứ hai của Trần Xuân Huấn & Phạm Thị Thúy Nga."
+    },
+    {
+      "id": "TX-049",
+      "ho_ten": "Trần Đức Anh",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "01/12/2022",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai thứ ba của Trần Xuân Huấn & Phạm Thị Thúy Nga."
+    },
+    {
+      "id": "TX-050",
+      "ho_ten": "Trần Xuân Thành",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "30/12/2007",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai đầu của Trần Xuân Hải & Ngô Thị Mỹ Ngọc."
+    },
+    {
+      "id": "TX-051",
+      "ho_ten": "Trần Xuân Nam",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "13/07/2012",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai thứ hai của Trần Xuân Hải & Ngô Thị Mỹ Ngọc."
+    },
+    {
+      "id": "TX-052",
+      "ho_ten": "Trần Nguyễn Quỳnh Chi",
+      "gioi_tinh": "Nữ",
+      "the_he": 7,
+      "vai_ve": "Con gái",
+      "sinh": "18/06/2008",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con gái của Trần Xuân Hà & Nguyễn Thị Hạnh."
+    },
+    {
+      "id": "TX-053",
+      "ho_ten": "Trần Gia Hưng",
+      "gioi_tinh": "Nam",
+      "the_he": 7,
+      "vai_ve": "Con trai",
+      "sinh": "29/02/2020",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con trai của Trần Xuân Hà & Tạ Thị Lan Phương."
+    },
+    {
+      "id": "TX-054",
+      "ho_ten": "Trần Bảo Ngân",
+      "gioi_tinh": "Nữ",
+      "the_he": 7,
+      "vai_ve": "Cháu",
+      "sinh": "01/01/2020",
+      "mat_duong": "",
+      "mat_am": "",
+      "huong_tho": "",
+      "que_quan": "Thôn Đa Sĩ, xã Đông Vinh",
+      "phan_mo": "",
+      "ghi_chu": "Con gái của Trần Xuân Đức & Bùi Thị Hồng."
+    }
+  ],
+  "hon_nhan": [
+    {
+      "chong_id": "TX-003",
+      "vo_id": "TX-004",
+      "thu_tu": 1,
+      "tinh_trang": "Đã mất",
+      "ghi_chu": "Cụ Bà 1"
+    },
+    {
+      "chong_id": "TX-003",
+      "vo_id": "TX-005",
+      "thu_tu": 2,
+      "tinh_trang": "Đã mất",
+      "ghi_chu": "Cụ Bà 2"
+    },
+    {
+      "chong_id": "TX-007",
+      "vo_id": "TX-008",
+      "thu_tu": 1,
+      "tinh_trang": "Đã mất",
+      "ghi_chu": "Cụ Phúc Phang & Cụ Đặng Thị Trảnh"
+    },
+    {
+      "chong_id": "TX-011",
+      "vo_id": "TX-010",
+      "thu_tu": 1,
+      "tinh_trang": "Đã ly hôn",
+      "ghi_chu": "Cụ Tương & Bà Lụa (sinh ông Lai)"
+    },
+    {
+      "chong_id": "TX-011",
+      "vo_id": "TX-012",
+      "thu_tu": 2,
+      "tinh_trang": "Đã mất",
+      "ghi_chu": "Cụ Tương & Cụ Vũ Thị Ngữ (sinh 8 con)"
+    },
+    {
+      "chong_id": "TX-015",
+      "vo_id": "TX-016",
+      "thu_tu": 1,
+      "tinh_trang": "Chồng đã mất",
+      "ghi_chu": "Ông Lai & Bà Khích"
+    },
+    {
+      "chong_id": "TX-017",
+      "vo_id": "TX-018",
+      "thu_tu": 1,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Ông Hạnh & Bà Tiếp"
+    },
+    {
+      "chong_id": "TX-020",
+      "vo_id": "TX-021",
+      "thu_tu": 1,
+      "tinh_trang": "Chồng đã mất",
+      "ghi_chu": "Ông Phúc & Bà Hiệp"
+    },
+    {
+      "chong_id": "TX-026",
+      "vo_id": "TX-027",
+      "thu_tu": 1,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Ông Tám & Bà Hải Hương"
+    },
+    {
+      "chong_id": "TX-029",
+      "vo_id": "TX-030",
+      "thu_tu": 1,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Anh Tùng & Chị Thu Thủy"
+    },
+    {
+      "chong_id": "TX-031",
+      "vo_id": "TX-032",
+      "thu_tu": 1,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Anh Huấn & Chị Thúy Nga"
+    },
+    {
+      "chong_id": "TX-033",
+      "vo_id": "TX-034",
+      "thu_tu": 1,
+      "tinh_trang": "Đã ly hôn",
+      "ghi_chu": "Anh Hải & Chị Mỹ Ngọc (sinh Thành, Nam)"
+    },
+    {
+      "chong_id": "TX-033",
+      "vo_id": "TX-035",
+      "thu_tu": 2,
+      "tinh_trang": "Đã ly hôn",
+      "ghi_chu": "Anh Hải & Chị Hoàng Oanh"
+    },
+    {
+      "chong_id": "TX-036",
+      "vo_id": "TX-037",
+      "thu_tu": 1,
+      "tinh_trang": "Đã ly hôn",
+      "ghi_chu": "Anh Hà & Chị Hạnh (sinh Quỳnh Chi)"
+    },
+    {
+      "chong_id": "TX-036",
+      "vo_id": "TX-038",
+      "thu_tu": 2,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Anh Hà & Chị Lan Phương (sinh Gia Hưng)"
+    },
+    {
+      "chong_id": "TX-041",
+      "vo_id": "TX-042",
+      "thu_tu": 1,
+      "tinh_trang": "Đang kết hôn",
+      "ghi_chu": "Anh Đức & Chị Hồng"
+    }
+  ],
+  "quan_he_cha_con": [
+    {
+      "cha_id": "TX-003",
+      "me_id": "TX-004",
+      "con_id": "TX-007",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-007",
+      "me_id": "TX-008",
+      "con_id": "TX-009",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-007",
+      "me_id": "TX-008",
+      "con_id": "TX-013",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-007",
+      "me_id": "TX-008",
+      "con_id": "TX-014",
+      "thu_tu": 3
+    },
+    {
+      "cha_id": "TX-007",
+      "me_id": "TX-008",
+      "con_id": "TX-011",
+      "thu_tu": 4
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-010",
+      "con_id": "TX-015",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-017",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-019",
+      "thu_tu": 3
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-020",
+      "thu_tu": 4
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-022",
+      "thu_tu": 5
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-023",
+      "thu_tu": 6
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-024",
+      "thu_tu": 7
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-025",
+      "thu_tu": 8
+    },
+    {
+      "cha_id": "TX-011",
+      "me_id": "TX-012",
+      "con_id": "TX-026",
+      "thu_tu": 9
+    },
+    {
+      "cha_id": "TX-015",
+      "me_id": "TX-016",
+      "con_id": "TX-028",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-015",
+      "me_id": "TX-016",
+      "con_id": "TX-029",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-015",
+      "me_id": "TX-016",
+      "con_id": "TX-031",
+      "thu_tu": 3
+    },
+    {
+      "cha_id": "TX-017",
+      "me_id": "TX-018",
+      "con_id": "TX-033",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-017",
+      "me_id": "TX-018",
+      "con_id": "TX-036",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-017",
+      "me_id": "TX-018",
+      "con_id": "TX-039",
+      "thu_tu": 3
+    },
+    {
+      "cha_id": "TX-020",
+      "me_id": "TX-021",
+      "con_id": "TX-040",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-020",
+      "me_id": "TX-021",
+      "con_id": "TX-041",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-026",
+      "me_id": "TX-027",
+      "con_id": "TX-043",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-026",
+      "me_id": "TX-027",
+      "con_id": "TX-044",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-029",
+      "me_id": "TX-030",
+      "con_id": "TX-045",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-029",
+      "me_id": "TX-030",
+      "con_id": "TX-046",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-031",
+      "me_id": "TX-032",
+      "con_id": "TX-047",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-031",
+      "me_id": "TX-032",
+      "con_id": "TX-048",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-031",
+      "me_id": "TX-032",
+      "con_id": "TX-049",
+      "thu_tu": 3
+    },
+    {
+      "cha_id": "TX-033",
+      "me_id": "TX-034",
+      "con_id": "TX-050",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-033",
+      "me_id": "TX-034",
+      "con_id": "TX-051",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-036",
+      "me_id": "TX-037",
+      "con_id": "TX-052",
+      "thu_tu": 1
+    },
+    {
+      "cha_id": "TX-036",
+      "me_id": "TX-038",
+      "con_id": "TX-053",
+      "thu_tu": 2
+    },
+    {
+      "cha_id": "TX-041",
+      "me_id": "TX-042",
+      "con_id": "TX-054",
+      "thu_tu": 1
+    }
+  ],
+  "ngay_gio": [
+    {
+      "id": 1,
+      "ho_ten": "Trần Xuân Phúc Phang",
+      "vai_ve": "Cụ Ông (Tự Phúc Phang)",
+      "ngay_am": "01 tháng 08",
+      "ngay_duong": "29/08/1935",
+      "nam_am": "Ất Hợi",
+      "huong_tho": 63,
+      "ghi_chu": "Cụ Cố Ông"
+    },
+    {
+      "id": 2,
+      "ho_ten": "Đặng Thị Trảnh",
+      "vai_ve": "Cụ Bà (Vợ cụ Phang)",
+      "ngay_am": "21 tháng 06",
+      "ngay_duong": "07/08/1947",
+      "nam_am": "Đinh Hợi",
+      "huong_tho": 57,
+      "ghi_chu": "Cụ Cố Bà"
+    },
+    {
+      "id": 3,
+      "ho_ten": "Trần Xuân Tương",
+      "vai_ve": "Cụ Ông (Nội)",
+      "ngay_am": "04 tháng 04",
+      "ngay_duong": "29/04/2017",
+      "nam_am": "Đinh Dậu",
+      "huong_tho": 85,
+      "ghi_chu": "Ông Nội"
+    },
+    {
+      "id": 4,
+      "ho_ten": "Vũ Thị Ngữ",
+      "vai_ve": "Cụ Bà (Nội)",
+      "ngay_am": "28 tháng 11",
+      "ngay_duong": "06/01/1997",
+      "nam_am": "Bính Tý",
+      "huong_tho": 66,
+      "ghi_chu": "Bà Nội"
+    },
+    {
+      "id": 5,
+      "ho_ten": "Trần Xuân Lai",
+      "vai_ve": "Bác Cả",
+      "ngay_am": "06 tháng 01",
+      "ngay_duong": "15/02/1994",
+      "nam_am": "Giáp Tuất",
+      "huong_tho": 45,
+      "ghi_chu": "Con trưởng cụ Tương"
+    },
+    {
+      "id": 6,
+      "ho_ten": "Trần Xuân Phúc",
+      "vai_ve": "Chú",
+      "ngay_am": "11 tháng 02",
+      "ngay_duong": "04/03/2020",
+      "nam_am": "Canh Tý",
+      "huong_tho": 61,
+      "ghi_chu": "Con thứ cụ Tương"
+    },
+    {
+      "id": 7,
+      "ho_ten": "Trần Thị Hồng",
+      "vai_ve": "Bà Cô",
+      "ngay_am": "28 tháng 10",
+      "ngay_duong": "20/11/1965",
+      "nam_am": "Ất Tỵ",
+      "huong_tho": 3,
+      "ghi_chu": "Hưởng dương 3 tuổi"
+    }
+  ],
+  "van_bia_han_nom": {
+    "tieu_de": "Trần Xuân tộc tổ mộ phần lăng bi ký (陳春族祖墓墳陵碑記)",
+    "co_quan_khao_cuu": "Viện Nghiên cứu Hán Nôm - Viện Hàn lâm Khoa học Xã hội Việt Nam (2024)",
+    "nien_dai": "Ngày 20 tháng Giêng năm Tự Đức thứ 33 (1881)",
+    "noi_dung_mat_1": "陈春族祖墓坟陵碑记...",
+    "noi_dung_mat_2": "Phần mộ cư nam thổ phụ - Khâu lăng cư bắc Thu điền..."
+  }
+}

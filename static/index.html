@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gia Tộc Trần Xuân - Web App Quản Lý Phả Hệ</title>
+  <style>
+    :root {
+      --primary: #1a365d;
+      --primary-light: #2a4365;
+      --accent: #b7791f;
+      --accent-gold: #d69e2e;
+      --bg: #f7fafc;
+      --card-bg: #ffffff;
+      --text: #2d3748;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --success: #2f855a;
+      --danger: #e53e3e;
+      --gen1: #9b2c2c;
+      --gen2: #c05621;
+      --gen3: #b7791f;
+      --gen4: #2b6cb0;
+      --gen5: #2c7a7b;
+      --gen6: #4a5568;
+      --gen7: #2f855a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
+    
+    header {
+      background: linear-gradient(135deg, #1a202c 0%, #1a365d 60%, #2a4365 100%);
+      color: white;
+      padding: 2rem 1rem 1.5rem;
+      border-bottom: 4px solid var(--accent-gold);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header-text h1 { font-size: 2rem; font-weight: 800; letter-spacing: 1px; color: #fefcbf; }
+    .header-text h2 { font-size: 1.1rem; font-weight: 400; opacity: 0.9; }
+    .header-text p { font-size: 0.88rem; opacity: 0.8; margin-top: 0.2rem; }
+
+    .admin-controls {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      background: rgba(255,255,255,0.12);
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: var(--accent-gold); color: #744210; }
+    .btn-primary:hover { background: #ecc94b; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #38a169; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #c53030; }
+    .btn-secondary { background: #edf2f7; color: var(--text); }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      padding: 0.9rem 1.2rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-btn:hover { color: var(--primary); background: #edf2f7; }
+    .nav-btn.active { color: var(--primary); border-bottom-color: var(--accent-gold); background: #f7fafc; }
+
+    main { max-width: 1400px; margin: 1.5rem auto; padding: 0 1rem; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Summary Grid */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 1.8rem;
+    }
+    .stat-card {
+      background: white;
+      padding: 1.2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      text-align: center;
+      border-top: 4px solid var(--primary);
+    }
+    .stat-number { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-top: 0.2rem; }
+
+    /* Controls Bar */
+    .controls-bar {
+      background: white;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+    }
+    .search-box input { border: none; background: transparent; width: 100%; outline: none; font-size: 0.95rem; }
+    .filter-select {
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+      color: var(--text);
+    }
+
+    /* Family Tree View */
+    .tree-container {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .tree-branch {
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--accent-gold);
+      padding-left: 1.5rem;
+    }
+    .tree-branch-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gen-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+    }
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .member-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .member-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      border-color: var(--primary);
+    }
+    .member-card::before { content: ""; position: absolute; top: 0; left: 0; bottom: 0; width: 5px; }
+    .member-card.nam::before { background-color: #3182ce; }
+    .member-card.nu::before { background-color: #d53f8c; }
+    
+    .member-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; }
+    .member-name { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .member-vai { font-size: 0.8rem; padding: 0.2rem 0.5rem; background: #edf2f7; border-radius: 4px; font-weight: 600; }
+    .member-info { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .member-note { font-size: 0.82rem; color: #4a5568; background: #f7fafc; padding: 0.4rem; border-radius: 6px; margin-top: 0.5rem; line-height: 1.4; }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* Tables */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      margin-bottom: 1.5rem;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th {
+      background: #f7fafc;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.92rem; vertical-align: middle; }
+    tr:hover td { background: #f8fafc; }
+    .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+    .badge-nam { background: #ebf8ff; color: #2b6cb0; }
+    .badge-nu { background: #fff5f7; color: #b83280; }
+
+    /* Tomb Layout View */
+    .tomb-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+    .tomb-row { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+    .tomb-box {
+      background: #edf2f7;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      text-align: center;
+      min-width: 170px;
+      flex: 1;
+      font-size: 0.9rem;
+    }
+    .tomb-box.long-dinh { background: #feebc8; border-color: #dd6b20; color: #9c4221; font-weight: 800; font-size: 1.15rem; max-width: 320px; }
+    .tomb-box.to-ong { background: #ebf8ff; border-color: #3182ce; color: #2b6cb0; font-weight: 700; }
+    .tomb-box.to-ba { background: #fff5f7; border-color: #d53f8c; color: #97266d; font-weight: 700; }
+    .tomb-box.cuon-thu { background: #e2e8f0; border-color: #718096; font-weight: 700; max-width: 260px; }
+    .tomb-pathway {
+      background: #f7fafc;
+      border: 2px dashed #cbd5e0;
+      padding: 0.5rem;
+      text-align: center;
+      color: #718096;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 1rem 0;
+      border-radius: 6px;
+    }
+
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--primary);
+    }
+    .info-card h4 { font-size: 1.15rem; color: var(--primary); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+
+    /* Modals */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-dialog {
+      background: white;
+      border-radius: 14px;
+      max-width: 650px;
+      width: 100%;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1.2rem;
+      background: none; border: none;
+      font-size: 1.8rem; line-height: 1;
+      cursor: pointer; color: var(--text-muted);
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; color: var(--text); }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,54,93,0.1); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* Chinese Text Card */
+    .chinese-card {
+      background: #fffaf0;
+      border: 1px solid #feebc8;
+      border-left: 5px solid var(--accent-gold);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .chinese-text { font-family: "KaiTi", "SimSun", "STKaiti", serif; font-size: 1.25rem; line-height: 1.8; color: #744210; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="header-text">
+        <h1>TRẦN XUÂN TỘC (陳春族)</h1>
+        <h2>CỔNG PHẢ HỆ ĐIỆN TỬ & HỆ THỐNG QUẢN LÝ GIA TỘC</h2>
+        <p>Chi 3 Cành 1 • Làng Đa Sĩ (Sài Thôn), xã Đông Vinh, TP. Thanh Hóa</p>
+      </div>
+      <div class="admin-controls" id="adminBar">
+        <button class="btn btn-primary" id="btnAdminLogin" onclick="openLoginModal()">🔐 Đăng Nhập Admin</button>
+        <div id="adminLoggedGroup" style="display: none; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 0.85rem; color: #fefcbf; font-weight: 700;">🛡️ CHẾ ĐỘ QUẢN TRỊ VIÊN</span>
+          <button class="btn btn-success" onclick="openMemberModal('create')">➕ Thêm Thành Viên</button>
+          <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 Đăng Xuất</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('tree')">🌳 Cây Phả Hệ Tương Tác</button>
+    <button class="nav-btn" onclick="switchTab('directory')">📋 Danh Sách & Tra Cứu</button>
+    <button class="nav-btn" onclick="switchTab('anniversaries')">🕯️ Lịch Ngày Giỗ</button>
+    <button class="nav-btn" onclick="switchTab('tombs-plan')">🏛️ Quy Hoạch & Xây Lăng Mộ</button>
+    <button class="nav-btn" onclick="switchTab('telegram')">🤖 Bot Telegram Tự Động</button>
+    <button class="nav-btn" onclick="switchTab('stele')">📜 Văn Bia Hán Nôm 1881</button>
+  </nav>
+
+  <main>
+    <!-- THỐNG KÊ TỔNG QUAN -->
+    <div class="summary-grid">
+      <div class="stat-card" style="border-top-color: #b7791f;">
+        <div class="stat-number">300+</div>
+        <div class="stat-label">Năm Lịch Sử (Từ TK 17-18)</div>
+      </div>
+      <div class="stat-card" style="border-top-color: #2b6cb0;">
+        <div class="stat-number" id="statMembersCount">54</div>
+        <div class="stat-label">Thành Viên Trong CSDL</div>
+      </div>
+      <div class="stat-card" style="border-top-color: #2f855a;">
+        <div class="stat-number">7</div>
+        <div class="stat-label">Thế Hệ Kế Tiếp Nhau</div>
+      </div>
+      <div class="stat-card" style="border-top-color: #0088cc;">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Tự Động Báo Giỗ & Sinh Nhật</div>
+      </div>
+    </div>
+
+    <!-- TAB 1: CÂY PHẢ HỆ TƯƠNG TÁC -->
+    <section id="tab-tree" class="tab-content active">
+      <div class="controls-bar">
+        <div class="search-box">
+          <input type="text" id="treeSearch" placeholder="🔍 Tìm kiếm thành viên theo tên..." oninput="filterTree()">
+        </div>
+        <select class="filter-select" id="treeBranchSelect" onchange="filterTree()">
+          <option value="all">Tất cả các nhánh dòng họ</option>
+          <option value="lai">Nhánh 1: Cụ Trần Xuân Lai</option>
+          <option value="hanh">Nhánh 2: Ông Trần Xuân Hạnh</option>
+          <option value="phuc">Nhánh 3: Ông Trần Xuân Phúc</option>
+          <option value="tam">Nhánh 4: Ông Trần Xuân Tám</option>
+        </select>
+      </div>
+
+      <div class="tree-container" id="treeView"></div>
+    </section>
+
+    <!-- TAB 2: DANH SÁCH & TRA CỨU -->
+    <section id="tab-directory" class="tab-content">
+      <div class="controls-bar">
+        <div class="search-box">
+          <input type="text" id="dirSearch" placeholder="🔍 Tìm kiếm theo tên, năm sinh, ghi chú..." oninput="filterDirectory()">
+        </div>
+        <select class="filter-select" id="dirGenSelect" onchange="filterDirectory()">
+          <option value="all">Tất cả thế hệ</option>
+          <option value="1">Thế hệ 1 (Thượng Thủy Tổ)</option>
+          <option value="2">Thế hệ 2 (Cụ Ý, Cụ Khang)</option>
+          <option value="3">Thế hệ 3 (Cụ Phúc Phang)</option>
+          <option value="4">Thế hệ 4 (Cụ Tương)</option>
+          <option value="5">Thế hệ 5 (Lai, Hạnh, Phúc, Tám...)</option>
+          <option value="6">Thế hệ 6 (Cháu)</option>
+          <option value="7">Thế hệ 7 (Chắt)</option>
+        </select>
+        <select class="filter-select" id="dirGenderSelect" onchange="filterDirectory()">
+          <option value="all">Tất cả giới tính</option>
+          <option value="Nam">Nam</option>
+          <option value="Nữ">Nữ</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã ID</th>
+              <th>Họ và Tên</th>
+              <th>Giới tính</th>
+              <th>Thế hệ</th>
+              <th>Vai vế</th>
+              <th>Năm sinh</th>
+              <th>Mất (Dương / Âm)</th>
+              <th>Thọ</th>
+              <th>An táng / Mộ phần</th>
+              <th>Ghi chú & Quan hệ</th>
+              <th id="thActions" style="display: none;">Hành động (Admin)</th>
+            </tr>
+          </thead>
+          <tbody id="directoryTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: LỊCH NGÀY GIỖ -->
+    <section id="tab-anniversaries" class="tab-content">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Họ và Tên</th>
+              <th>Danh vị / Vai vế</th>
+              <th>Ngày Giỗ (Âm Lịch)</th>
+              <th>Ngày mất (Dương Lịch)</th>
+              <th>Năm Âm lịch</th>
+              <th>Hưởng thọ</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="anniversaryTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: QUY HOẠCH & KẾ HOẠCH XÂY LĂNG MỘ -->
+    <section id="tab-tombs-plan" class="tab-content">
+      <div class="info-grid">
+        <div class="info-card" style="border-left-color: #c53030;">
+          <h4>💰 Kế Hoạch Tài Chính & Kinh Phí</h4>
+          <p>• <strong>Tổng dự toán:</strong> <span style="color: #c53030; font-size: 1.3rem; font-weight: 800;">235.000.000 VNĐ</span> (235 triệu đồng).</p>
+          <p>• <strong>Trách nhiệm chính:</strong> <strong>7 Nam Đinh trên 18 tuổi</strong> trong gia tộc nòng cốt gánh vác.</p>
+          <p>• <strong>Vận động dòng tộc:</strong> Kêu gọi toàn thể con cháu nội ngoại, dâu rể chung tay đóng góp tự nguyện tùy tâm để đón nhận phúc phần tổ tiên.</p>
+          <p style="margin-top: 0.8rem; background: #ebf8ff; padding: 0.8rem; border-radius: 6px;">
+            🏦 <strong>Tài khoản tiếp nhận:</strong><br>
+            • STK: <strong>19131 97826 9999</strong> (Techcombank Thanh Hóa)<br>
+            • Chủ TK: <strong>Trần Xuân Huấn</strong><br>
+            • Nội dung: [Họ tên] - Đóng góp tiền xây lăng gia tộc Trần Xuân
+          </p>
+        </div>
+
+        <div class="info-card" style="border-left-color: #3182ce;">
+          <h4>📅 Tiến Độ Thi Công & Nghi Lễ</h4>
+          <p>• <strong>Giai đoạn 1 (04/10 Âm lịch):</strong> Lễ quy tập và đưa mộ phần các cụ về khuôn viên lăng gia tộc tập trung.</p>
+          <p>• <strong>Giai đoạn 2 (20/10 Âm lịch):</strong> Lễ cải táng, sang mộ cho Ông Cố (Cụ Trần Xuân Phúc Phang).</p>
+          <p>• <strong>Công tác chuẩn bị:</strong> Các đinh trong họ trực tiếp khảo sát mặt bằng, hợp đồng thợ đá mỹ nghệ, xây tường bao, cuốn thư, long đình.</p>
+        </div>
+
+        <div class="info-card" style="border-left-color: #b7791f;">
+          <h4>📏 Kích Thước Phong Thủy Thước Lỗ Ban (38.8 cm - Âm Phần)</h4>
+          <p>• <strong>Mộ đơn nhỏ:</strong> 81 x 127 cm <i>(Tài Vượng - Tiến Bảo)</i></p>
+          <p>• <strong>Mộ đơn vừa:</strong> 89 x 133 cm <i>(Lục Hợp - Quý Tử)</i> hoặc 89 x 147 cm <i>(Thêm Đinh - Nhật Lộc)</i></p>
+          <p>• <strong>Mộ lớn:</strong> 107 x 167 cm <i>(Quý Tử - Hưng Vượng)</i> hoặc 107 x 176 cm <i>(Phú Quý)</i></p>
+          <p>• <strong>Mộ đôi cụ ông - cụ bà:</strong> 147 x 167 cm hoặc 167 x 197 cm <i>(Hưng Vượng - Đăng Khoa)</i></p>
+        </div>
+
+        <div class="info-card" style="border-left-color: #2c7a7b;">
+          <h4>👥 Danh Sách 7 Nam Đinh Nòng Cốt Trọng Trách</h4>
+          <p>1. <strong>Trần Xuân Hạnh</strong> (Sinh 1957) - Bậc trưởng bối</p>
+          <p>2. <strong>Trần Xuân Tám</strong> (Sinh 1972) - Chú Út</p>
+          <p>3. <strong>Trần Xuân Hải</strong> (Sinh 1979) - Trưởng nam nhánh 2</p>
+          <p>4. <strong>Trần Xuân Tùng</strong> (Chung; Sinh 1979) - Trưởng nam nhánh 1</p>
+          <p>5. <strong>Trần Xuân Hà</strong> (Sinh 1981) - Trưởng ban số hóa & tư liệu</p>
+          <p>6. <strong>Trần Xuân Huấn</strong> (Sinh 1983) - Phụ trách tài chính / thủ quỹ</p>
+          <p>7. <strong>Trần Xuân Đức</strong> (Sinh 1991) - Trưởng nam nhánh 3</p>
+        </div>
+      </div>
+
+      <!-- SƠ ĐỒ MẶT BẰNG LĂNG -->
+      <div class="tomb-card">
+        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem; font-size: 1.4rem;">
+          🏛️ SƠ ĐỒ QUY HOẠCH CHI TIẾT MẶT BẰNG LĂNG GIA TỘC TRẦN XUÂN
+        </h3>
+
+        <!-- LONG ĐÌNH -->
+        <div class="tomb-row">
+          <div class="tomb-box long-dinh">🏛️ LONG ĐÌNH CHÍNH<br><small style="font-weight: normal;">(Hương án - Nơi thờ chung Tiên Tổ)</small></div>
+        </div>
+
+        <div class="tomb-pathway">↑ HÀNG THƯỢNG TỔ & TIỀN BỐI ↑</div>
+
+        <!-- HÀNG 1 -->
+        <div class="tomb-row">
+          <div class="tomb-box to-ba">Cụ Cố Bà<br><strong>ĐẶNG THỊ TRẢNH</strong><br><small>(1891 - 1947 • Quê Bãi Khê)</small></div>
+          <div class="tomb-box to-ong">Cụ Cố Ông<br><strong>TRẦN XUÂN PHÚC PHANG</strong><br><small>(1873 - 1935 • Sang mộ 20/10 AL)</small></div>
+          <div class="tomb-box to-ong">Cụ Ông<br><strong>HỌ TRẦN XUÂN</strong><br><small>(Cồn Gai quy tập về lăng)</small></div>
+          <div class="tomb-box to-ba">Cụ Bà 2<br><strong>(VỢ CỤ Ý)</strong><br><small>(Mất thông tin)</small></div>
+          <div class="tomb-box to-ba">Cụ Bà 1<br><strong>(VỢ CỤ Ý)</strong><br><small>(Mất thông tin)</small></div>
+          <div class="tomb-box to-ong">Cụ Ông<br><strong>TRẦN XUÂN PHÚC KHANG</strong><br><small>(Mộ tổ quy tập)</small></div>
+        </div>
+
+        <div class="tomb-pathway">║ TRỤC ĐƯỜNG ĐI CHÍNH ║</div>
+
+        <!-- HÀNG 2 -->
+        <div class="tomb-row">
+          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh tả)</small></div>
+          <div class="tomb-box to-ba">Bà Cô<br><strong>TRẦN THỊ HỒNG</strong><br><small>(1963 - 1965 • Hưởng dương 3t)</small></div>
+          <div class="tomb-box to-ba">Bà Nội<br><strong>VŨ THỊ NGỮ</strong><br><small>(1932 - 1997 • Quê Thịnh Vạn)</small></div>
+          <div class="tomb-box to-ong">Ông Nội<br><strong>TRẦN XUÂN TƯƠNG</strong><br><small>(1933 - 2017 • Thọ 85t)</small></div>
+        </div>
+
+        <!-- HÀNG 3 -->
+        <div class="tomb-row">
+          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh tả)</small></div>
+          <div class="tomb-box to-ong">Ông<br><strong>TRẦN XUÂN PHÚC</strong><br><small>(1960 - 2020 • Thọ 61t)</small></div>
+          <div class="tomb-box" style="border: 2px dashed #cbd5e0; color: #718096;">Khu phần mộ tương lai<br><small>(Dự trữ nhánh hữu)</small></div>
+        </div>
+
+        <!-- VƯỜN HOA & CUỐN THƯ -->
+        <div class="tomb-row" style="margin-top: 1.5rem;">
+          <div class="tomb-box" style="background: #e6fffa; border-color: #38b2ac; color: #234e52; font-weight: 700;">🌸 VƯỜN HOA TẢ</div>
+          <div class="tomb-box cuon-thu">📜 CUỐN THƯ BÌNH PHONG<br><small style="font-weight: normal;">(Chắn khí xấu, bảo hộ linh khí)</small></div>
+          <div class="tomb-box" style="background: #e6fffa; border-color: #38b2ac; color: #234e52; font-weight: 700;">🌸 VƯỜN HOA HỮU</div>
+        </div>
+
+        <!-- CỔNG -->
+        <div class="tomb-row">
+          <div class="tomb-box" style="background: #2d3748; color: white; font-weight: 700; max-width: 260px;">🚪 CỔNG LĂNG GIA TỘC</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: BOT TELEGRAM TỰ ĐỘNG -->
+    <section id="tab-telegram" class="tab-content">
+      <div style="background: white; border-radius: 12px; padding: 2rem; border: 1px solid var(--border); margin-bottom: 1.5rem;">
+        <h3 style="color: #0088cc; font-size: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          🤖 QUẢN LÝ THÔNG BÁO TỰ ĐỘNG TELEGRAM
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Hệ thống chạy daemon ngầm tự động quét và gửi tin nhắn trước 1 ngày: <strong>Ngày Giỗ tiên tổ (Âm lịch)</strong> & <strong>Sinh nhật con cháu (Dương lịch)</strong>.
+        </p>
+
+        <!-- Form Cấu Hình Bot -->
+        <div class="info-grid">
+          <div class="info-card" style="border-left-color: #0088cc;">
+            <h4>⚙️ Cấu Hình Telegram Bot</h4>
+            <div class="form-group">
+              <label>Bot Token (@BotFather):</label>
+              <input type="text" id="cfgBotToken" class="form-control" placeholder="123456789:ABCdefGHI...">
+            </div>
+            <div class="form-group">
+              <label>Chat ID (Nhóm hoặc cá nhân):</label>
+              <input type="text" id="cfgChatId" class="form-control" placeholder="-100xxxxxxxxxx hoặc số cá nhân">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Giờ gửi tự động hàng ngày:</label>
+                <input type="time" id="cfgNotifyTime" class="form-control" value="07:00">
+              </div>
+              <div class="form-group">
+                <label>Báo trước (ngày):</label>
+                <input type="number" id="cfgDaysBefore" class="form-control" value="1" min="1" max="7">
+              </div>
+            </div>
+            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+              <input type="checkbox" id="cfgEnabled" checked style="width: 18px; height: 18px;">
+              <label for="cfgEnabled" style="margin-bottom: 0; cursor: pointer;">Kích hoạt tự động gửi hàng ngày (Daemon Scheduler)</label>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+              <button class="btn btn-primary" onclick="saveTelegramConfig()">💾 Lưu Cấu Hình</button>
+              <button class="btn btn-secondary" onclick="sendTestTelegram()">🚀 Gửi Thử Ngay</button>
+              <button class="btn btn-success" onclick="triggerTelegramToday()">🔔 Quét Sự Kiện Ngày Mai</button>
+            </div>
+          </div>
+
+          <div class="info-card" style="border-left-color: #2f855a;">
+            <h4>📅 Sự Kiện Sắp Diễn Ra (Trong 30 Ngày Tới)</h4>
+            <div id="upcomingEventsList" style="max-height: 280px; overflow-y: auto; font-size: 0.9rem;">
+              <p style="color: var(--text-muted);">Đang tải dữ liệu sự kiện...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: VĂN BIA HÁN NÔM -->
+    <section id="tab-stele" class="tab-content">
+      <div class="chinese-card">
+        <h3 style="color: #744210; margin-bottom: 0.5rem; font-size: 1.3rem;">
+          📜 TRẦN XUÂN TỘC TỔ MỘ PHẦN LĂNG BI KÝ (陳春族祖墓墳陵碑記)
+        </h3>
+        <p style="color: #975a16; font-size: 0.95rem; margin-bottom: 1.2rem;">
+          <strong>Niên đại:</strong> Ngày 20 tháng Giêng năm Tự Đức thứ 33 (1881) • 
+          <strong>Khảo cứu & Dịch nghĩa:</strong> Viện Nghiên cứu Hán Nôm - Viện Hàn lâm KHXH Việt Nam (Hà Nội, 2024).
+        </p>
+
+        <h4 style="color: #744210; margin-bottom: 0.5rem;">1. Mặt trước văn bia (Mộ chí quy tập tổ tiên):</h4>
+        <div class="chinese-text">
+          嗚呼！先人墳墓体魄在焉，靈魂在焉。為子孫者不可不封築而謹守之也。稱而玉而原跡，古墓纍纍又與丘陵而相雜. 世代稍遠， 識認何如。自古及今， 墓之有誌者，固是而吾猶有念焉。夫，墳墓之封藏, 固援一處 措之于丘陵者有矣， 扦之于田間者有矣. 百年之後扦于丘陵者， 安知其不為狐兔之潛藏，厝于田間者， 安知其不為人農之所喪, 体魄一致香記何依, 此有吾之不能忘失也。吾是將近派遠支旁統逝子等,体魄合歸一處。 各以其世次分列於祖墓之下.庶幾人農不為其所斷喪, 狐兔不為其所潛藏，而先人之形体得以長存而不失， 後嗣之歲辰，幸掃得以識認而不差， 則吾族奉 先之心，茲以慰矣，是為碑記。
+        </div>
+        <p><strong>Phiên âm:</strong> Ô hô! Tiên nhân phần mộ thể phách tại yên, linh hồn tại yên. Vi tử tôn giả bất khả bất phong trúc nhi cẩn thủ chi dã. Xưng nhi ngọc nguyên tích nhi. Cổ mộ luỹ luỹ hựu dữ khâu lăng nhi tương tạp, thế đại sảo viễn, thức nhận hà như. Tự cổ cập kim, mộ chi hữu chí giả, cố thị vi ngô do hữu niệm yên. Phù, phần mộ chi phong tàng. Cố viện nhất xứ, thác chi vu khâu lăng giả hữu hĩ, thiên chi vu điền gian giả hữu hĩ. Bách niên chi hậu thiên vu khâu lăng giả, an tri kỳ bất vi hồ thố chi tiềm tàng, thác vu điền gian giả, an tri kỳ bất vi nhân nông chi sở táng, thể phách nhất trí, hương ký hà y, thử hựu ngô chi bất năng vong thất dã. Ngô thị tương cận phái, viễn chi, bàng thống, thệ tử đẳng, thể phách hợp quy nhất xứ. Các dĩ kỳ thế thứ phân liệt ư tổ mộ chi hạ, thứ cơ nhân thị bất vi kỳ sở đoạn táng, hồ thố bất vi kỳ sở tiềm tàng, nhi tiên nhân chi hình thể đắc dĩ trường tồn nhi bất thất, hậu tự chi tuế thời hạnh tảo, đắc dĩ thức nhận nhi bất sai, tắc ngô tộc phụng tiên chi tâm, tư dĩ uỷ hĩ, thị vi bi ký.</p>
+        <p style="margin-top: 0.8rem; background: #fff; padding: 1rem; border-radius: 6px; border: 1px solid #feebc8;">
+          <strong>Dịch nghĩa:</strong> Chao ôi! Thân thể, hồn phách, phần mộ của tổ tiên họ ta đặt nơi đây, linh hồn cũng nằm nơi đây. Làm cháu con không thể không đắp đất, dựng mộ phần mà cẩn thận gìn giữ cho được. Như gìn giữ viên ngọc quý được vẹn toàn mà không vết xước. Nơi đây mộ phần chất chồng cùng gò đất lẫn lộn, các đời dần xa nhau thì lấy gì mà nhận biết. Từ xưa đến nay làm mộ ắt phải có mộ chí. Nay đem những người đã mất gồm phái gần, chi xa quy về một xứ dưới chân mộ tổ; mỗi chi phái, thế thứ đều liệt kê ra để tránh cày cấy xâm hại, muôn đời con cháu ngày lành tảo mộ biết rành rọt không lầm lẫn...
+        </p>
+
+        <h4 style="color: #744210; margin: 1.5rem 0 0.5rem;">2. Mặt sau văn bia (Địa thế phong thủy & Lời dặn bảo mật):</h4>
+        <div class="chinese-text">
+          墳墓居南土阜<br>
+          丘陵居北秋田<br>
+          特言其大略存如某支某行某名某號也，家族譜之中庶免暴露，認者詳之
+        </div>
+        <p><strong>Phiên âm:</strong> Phần mộ cư nam thổ phụ / Khâu lăng cư bắc Thu điền / Đặc ngôn kỳ đại lược tồn như mỗ chi mỗ hàng mỗ danh mỗ hiệu dã, gia tộc phả chi trung, thứ miễn bạo lộ, nhận giả tường chi.</p>
+        <p style="margin-top: 0.8rem; background: #fff; padding: 1rem; border-radius: 6px; border: 1px solid #feebc8;">
+          <strong>Dịch nghĩa:</strong> Phần mộ ở gò đất phía Nam; Lăng ở ruộng vụ Thu phía Bắc. Những điều căn dặn đại lược như chi phái nào, hàng thứ mấy, tên cúng cơm gì, húy hiệu gì đều ghi chép kỹ trong gia phả dòng họ để tránh tiết lộ ra ngoài mà người trong họ biết tường tận.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL ĐĂNG NHẬP ADMIN -->
+  <div class="modal-backdrop" id="loginModal" onclick="closeLoginModal(event)">
+    <div class="modal-dialog" style="max-width: 400px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+      <h3 style="color: var(--primary); margin-bottom: 0.5rem;">🔐 Đăng Nhập Quản Trị</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.2rem;">Nhập mã PIN để chỉnh sửa, thêm, xóa thành viên gia tộc.</p>
+      <div class="form-group">
+        <label>Mã PIN Quản Trị (Mặc định: 123456):</label>
+        <input type="password" id="adminPinInput" class="form-control" placeholder="Nhập mã PIN...">
+      </div>
+      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="submitAdminLogin()">Đăng Nhập</button>
+    </div>
+  </div>
+
+  <!-- MODAL THÊM / CHỈNH SỬA THÀNH VIÊN -->
+  <div class="modal-backdrop" id="editModal" onclick="closeEditModal(event)">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      <h3 id="editModalTitle" style="color: var(--primary); margin-bottom: 1rem;"></h3>
+      <form id="memberForm" onsubmit="saveMember(event)">
+        <input type="hidden" id="formMemberId">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ và Tên (*):</label>
+            <input type="text" id="formHoTen" class="form-control" required placeholder="Ví dụ: Trần Xuân...">
+          </div>
+          <div class="form-group">
+            <label>Giới tính:</label>
+            <select id="formGioiTinh" class="form-control">
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Thế hệ (Đời thứ):</label>
+            <input type="number" id="formTheHe" class="form-control" min="1" max="15" value="6">
+          </div>
+          <div class="form-group">
+            <label>Vai vế / Danh vị:</label>
+            <input type="text" id="formVaiVe" class="form-control" placeholder="Ví dụ: Bác, Chú, Cô, Cháu, Vợ...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày / Năm sinh:</label>
+            <input type="text" id="formSinh" class="form-control" placeholder="Ví dụ: 01/12/2022 hoặc 1983">
+          </div>
+          <div class="form-group">
+            <label>Quê quán:</label>
+            <input type="text" id="formQueQuan" class="form-control" placeholder="Thôn Đa Sĩ, xã Đông Vinh...">
+          </div>
+        </div>
+
+        <div class="form-group" style="background: #f7fafc; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="formIsDeceased" onchange="toggleDeceasedFields()" style="width: 18px; height: 18px;">
+            <label for="formIsDeceased" style="margin-bottom: 0; cursor: pointer; font-weight: 700; color: #c53030;">Đã mất (Khai báo ngày giỗ & mộ phần)</label>
+          </div>
+          <div id="deceasedFields" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ngày mất Dương lịch:</label>
+                <input type="text" id="formMatDuong" class="form-control" placeholder="DD/MM/YYYY">
+              </div>
+              <div class="form-group">
+                <label>Ngày giỗ Âm lịch (*):</label>
+                <input type="text" id="formMatAm" class="form-control" placeholder="Ví dụ: 01/08 (Ất Hợi)">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Hưởng thọ / dương (tuổi):</label>
+                <input type="text" id="formHuongTho" class="form-control" placeholder="Ví dụ: 63">
+              </div>
+              <div class="form-group">
+                <label>Phần mộ / Nơi an táng:</label>
+                <input type="text" id="formPhanMo" class="form-control" placeholder="Khu lăng mộ gia tộc...">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ghi chú & Mối quan hệ (Hôn nhân, con cái, dâu rể):</label>
+          <textarea id="formGhiChu" class="form-control" rows="3" placeholder="Ví dụ: Con thứ ba của... Vợ 1 là... đã ly hôn..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL XEM CHI TIẾT -->
+  <div class="modal-backdrop" id="memberModal" onclick="closeViewModal(event)">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeViewModal()">&times;</button>
+      <h3 id="modalName" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 0.2rem;"></h3>
+      <p id="modalVai" style="color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 1.2rem;"></p>
+      <div id="modalDetails"></div>
+    </div>
+  </div>
+
+  <script>
+    let membersData = [];
+    let anniversariesData = [];
+    let isAdmin = false;
+
+    // Fetch initial data from Backend API
+    async function loadAllData() {
+      try {
+        const resMem = await fetch('/api/members');
+        membersData = await resMem.json();
+
+        const resAnn = await fetch('/api/anniversaries');
+        anniversariesData = await resAnn.json();
+
+        document.getElementById('statMembersCount').textContent = membersData.length;
+
+        renderTree();
+        renderDirectory(membersData);
+        renderAnniversaries();
+        loadUpcomingEvents();
+        loadTelegramConfig();
+      } catch (e) {
+        console.error("Không thể kết nối API Backend, sử dụng chế độ tĩnh:", e);
+      }
+    }
+
+    // Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    // Admin Auth
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('active');
+      document.getElementById('adminPinInput').focus();
+    }
+    function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+
+    async function submitAdminLogin() {
+      const pin = document.getElementById('adminPinInput').value;
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ pin })
+        });
+        const result = await res.json();
+        if (result.success) {
+          isAdmin = true;
+          document.getElementById('btnAdminLogin').style.display = 'none';
+          document.getElementById('adminLoggedGroup').style.display = 'flex';
+          document.getElementById('thActions').style.display = 'table-cell';
+          closeLoginModal();
+          alert("🎉 Đăng nhập Quản trị viên thành công! Bạn có thể chỉnh sửa, thêm, xóa dữ liệu.");
+          renderTree();
+          renderDirectory(membersData);
+        } else {
+          alert(result.message || "Mã PIN không đúng!");
+        }
+      } catch (e) {
+        alert("Lỗi kết nối tới máy chủ.");
+      }
+    }
+
+    function logoutAdmin() {
+      isAdmin = false;
+      document.getElementById('btnAdminLogin').style.display = 'inline-flex';
+      document.getElementById('adminLoggedGroup').style.display = 'none';
+      document.getElementById('thActions').style.display = 'none';
+      renderTree();
+      renderDirectory(membersData);
+      alert("Đã đăng xuất chế độ Quản trị viên.");
+    }
+
+    // Modal Views
+    function openViewModal(id) {
+      const m = membersData.find(x => x.id === id);
+      if (!m) return;
+      document.getElementById('modalName').textContent = m.ho_ten;
+      document.getElementById('modalVai').textContent = m.vai_ve + (m.the_he ? ' (Thế hệ ' + m.the_he + ')' : '');
+
+      let html = '';
+      const addRow = (lbl, val) => {
+        if (val) html += `<div style="display:flex; padding:0.6rem 0; border-bottom:1px solid #edf2f7;"><div style="width:140px; font-weight:600; color:var(--text-muted);">${lbl}</div><div style="flex:1;">${val}</div></div>`;
+      };
+      addRow('Mã định danh', m.id);
+      addRow('Giới tính', m.gioi_tinh);
+      addRow('Sinh', m.sinh);
+      addRow('Mất (Dương lịch)', m.mat_duong);
+      addRow('Mất (Âm lịch)', m.mat_am);
+      addRow('Hưởng thọ / dương', m.huong_tho ? m.huong_tho + ' tuổi' : '');
+      addRow('Quê quán', m.que_quan);
+      addRow('An táng / Mộ phần', m.phan_mo);
+      addRow('Ghi chú / Quan hệ', m.ghi_chu);
+
+      document.getElementById('modalDetails').innerHTML = html;
+      document.getElementById('memberModal').classList.add('active');
+    }
+    function closeViewModal() { document.getElementById('memberModal').classList.remove('active'); }
+
+    // CRUD Modals
+    function toggleDeceasedFields() {
+      const chk = document.getElementById('formIsDeceased').checked;
+      document.getElementById('deceasedFields').style.display = chk ? 'block' : 'none';
+    }
+
+    function openMemberModal(mode, id = null) {
+      document.getElementById('memberForm').reset();
+      toggleDeceasedFields();
+
+      if (mode === 'create') {
+        document.getElementById('editModalTitle').textContent = "➕ Thêm Thành Viên Mới";
+        document.getElementById('formMemberId').value = "";
+      } else {
+        const m = membersData.find(x => x.id === id);
+        if (!m) return;
+        document.getElementById('editModalTitle').textContent = `✏️ Chỉnh Sửa: ${m.ho_ten} (${m.id})`;
+        document.getElementById('formMemberId').value = m.id;
+        document.getElementById('formHoTen').value = m.ho_ten || "";
+        document.getElementById('formGioiTinh').value = m.gioi_tinh || "Nam";
+        document.getElementById('formTheHe').value = m.the_he || 6;
+        document.getElementById('formVaiVe').value = m.vai_ve || "";
+        document.getElementById('formSinh').value = m.sinh || "";
+        document.getElementById('formQueQuan').value = m.que_quan || "";
+        document.getElementById('formGhiChu').value = m.ghi_chu || "";
+
+        const isDec = boolCheck(m.mat_duong) || boolCheck(m.mat_am) || (m.ghi_chu && m.ghi_chu.includes('Đã Mất'));
+        document.getElementById('formIsDeceased').checked = isDec;
+        document.getElementById('deceasedFields').style.display = isDec ? 'block' : 'none';
+        document.getElementById('formMatDuong').value = m.mat_duong || "";
+        document.getElementById('formMatAm').value = m.mat_am || "";
+        document.getElementById('formHuongTho').value = m.huong_tho || "";
+        document.getElementById('formPhanMo').value = m.phan_mo || "";
+      }
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function boolCheck(v) { return v && v.trim() !== ""; }
+    function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
+
+    async function saveMember(e) {
+      e.preventDefault();
+      const id = document.getElementById('formMemberId').value;
+      const payload = {
+        ho_ten: document.getElementById('formHoTen').value,
+        gioi_tinh: document.getElementById('formGioiTinh').value,
+        the_he: parseInt(document.getElementById('formTheHe').value) || 1,
+        vai_ve: document.getElementById('formVaiVe').value,
+        sinh: document.getElementById('formSinh').value,
+        que_quan: document.getElementById('formQueQuan').value,
+        ghi_chu: document.getElementById('formGhiChu').value,
+        mat_duong: document.getElementById('formIsDeceased').checked ? document.getElementById('formMatDuong').value : "",
+        mat_am: document.getElementById('formIsDeceased').checked ? document.getElementById('formMatAm').value : "",
+        huong_tho: document.getElementById('formIsDeceased').checked ? document.getElementById('formHuongTho').value : "",
+        phan_mo: document.getElementById('formIsDeceased').checked ? document.getElementById('formPhanMo').value : ""
+      };
+
+      try {
+        const url = id ? `/api/members/${id}` : '/api/members';
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method: method,
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert("✅ Đã lưu thông tin thành viên thành công! CSDL, JSON và Excel đã được tự động đồng bộ.");
+          closeEditModal();
+          await loadAllData();
+        } else {
+          alert("Lỗi khi lưu dữ liệu.");
+        }
+      } catch (err) {
+        alert("Lỗi kết nối tới máy chủ.");
+      }
+    }
+
+    async function deleteMember(id, name) {
+      if (!confirm(`Bạn có chắc chắn muốn xóa thành viên "${name}" (${id}) khỏi phả hệ không?`)) return;
+      try {
+        const res = await fetch(`/api/members/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+          alert(`Đã xóa thành công thành viên ${id}!`);
+          await loadAllData();
+        }
+      } catch (e) {
+        alert("Lỗi khi xóa thành viên.");
+      }
+    }
+
+    // Render Directory
+    function renderDirectory(list) {
+      const tbody = document.getElementById('directoryTableBody');
+      tbody.innerHTML = list.map(m => `
+        <tr>
+          <td><strong>${m.id}</strong></td>
+          <td style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="openViewModal('${m.id}')">${m.ho_ten}</td>
+          <td><span class="badge ${m.gioi_tinh === 'Nam' ? 'badge-nam' : 'badge-nu'}">${m.gioi_tinh}</span></td>
+          <td>Đời ${m.the_he}</td>
+          <td>${m.vai_ve}</td>
+          <td>${m.sinh || '-'}</td>
+          <td>${m.mat_duong || (m.mat_am ? m.mat_am : '-')}</td>
+          <td>${m.huong_tho ? m.huong_tho + ' t' : '-'}</td>
+          <td>${m.phan_mo || '-'}</td>
+          <td><small>${m.ghi_chu || ''}</small></td>
+          ${isAdmin ? `
+            <td>
+              <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="openMemberModal('edit', '${m.id}')">✏️ Sửa</button>
+              <button class="btn btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️</button>
+            </td>
+          ` : ''}
+        </tr>
+      `).join('');
+    }
+
+    function filterDirectory() {
+      const q = document.getElementById('dirSearch').value.toLowerCase();
+      const gen = document.getElementById('dirGenSelect').value;
+      const gender = document.getElementById('dirGenderSelect').value;
+
+      const filtered = membersData.filter(m => {
+        const matchQ = m.ho_ten.toLowerCase().includes(q) || (m.ghi_chu && m.ghi_chu.toLowerCase().includes(q)) || (m.sinh && m.sinh.includes(q));
+        const matchGen = (gen === 'all') || (m.the_he == gen);
+        const matchGender = (gender === 'all') || (m.gioi_tinh === gender);
+        return matchQ && matchGen && matchGender;
+      });
+      renderDirectory(filtered);
+    }
+
+    // Render Tree
+    function renderTree(filteredList = membersData) {
+      const container = document.getElementById('treeView');
+      const getMembers = ids => filteredList.filter(m => ids.includes(m.id));
+
+      const sections = [
+        {
+          title: "Thế Hệ 1: Thượng Thủy Tổ Khởi Dựng Dòng Tộc (Hơn 300 năm)",
+          badge: "Thế Hệ 1", color: "var(--gen1)",
+          members: getMembers(["TX-001", "TX-002"])
+        },
+        {
+          title: "Thế Hệ 2: Đời Thượng Phụ",
+          badge: "Thế Hệ 2", color: "var(--gen2)",
+          members: getMembers(["TX-003", "TX-004", "TX-005", "TX-006"])
+        },
+        {
+          title: "Thế Hệ 3: Cụ Cố Ông Trần Xuân Phang (Phúc Phang) & Cụ Bà Đặng Thị Trảnh",
+          badge: "Thế Hệ 3", color: "var(--gen3)",
+          members: getMembers(["TX-007", "TX-008"])
+        },
+        {
+          title: "Thế Hệ 4: Cụ Trần Xuân Tương (Vợ 1: Trần Thị Lụa [ly hôn] • Vợ 2: Vũ Thị Ngữ)",
+          badge: "Thế Hệ 4", color: "var(--gen4)",
+          members: getMembers(["TX-009", "TX-011", "TX-010", "TX-012", "TX-013", "TX-014"])
+        },
+        {
+          title: "Thế Hệ 5: Các Bác, Chú, Cô (Lai, Hạnh, Niên, Phúc, Hồng, Mai, Xuân, Hoa, Tám)",
+          badge: "Thế Hệ 5", color: "var(--gen5)",
+          members: getMembers(["TX-015", "TX-016", "TX-017", "TX-018", "TX-019", "TX-020", "TX-021", "TX-022", "TX-023", "TX-024", "TX-025", "TX-026", "TX-027"])
+        },
+        {
+          title: "Thế Hệ 6 & 7: Nhánh 1 - Ông TRẦN XUÂN LAI & Bà NGUYỄN THỊ KHÍCH",
+          branchKey: "lai",
+          badge: "Nhánh 1", color: "#2b6cb0",
+          members: getMembers(["TX-028", "TX-029", "TX-030", "TX-031", "TX-032", "TX-045", "TX-046", "TX-047", "TX-048", "TX-049"])
+        },
+        {
+          title: "Thế Hệ 6 & 7: Nhánh 2 - Ông TRẦN XUÂN HẠNH & Bà NGUYỄN THỊ TIẾP",
+          branchKey: "hanh",
+          badge: "Nhánh 2", color: "#2c7a7b",
+          members: getMembers(["TX-033", "TX-034", "TX-035", "TX-036", "TX-037", "TX-038", "TX-039", "TX-050", "TX-051", "TX-052", "TX-053"])
+        },
+        {
+          title: "Thế Hệ 6 & 7: Nhánh 3 - Ông TRẦN XUÂN PHÚC & Bà LÊ THỊ HIỆP",
+          branchKey: "phuc",
+          badge: "Nhánh 3", color: "#9b2c2c",
+          members: getMembers(["TX-040", "TX-041", "TX-042", "TX-054"])
+        },
+        {
+          title: "Thế Hệ 6: Nhánh 4 - Ông TRẦN XUÂN TÁM & Bà NGUYỄN THỊ HẢI HƯƠNG",
+          branchKey: "tam",
+          badge: "Nhánh 4", color: "#c05621",
+          members: getMembers(["TX-043", "TX-044"])
+        }
+      ];
+
+      container.innerHTML = sections.map(sec => {
+        if (!sec.members.length) return '';
+        return `
+          <div class="tree-branch" data-branch="${sec.branchKey || 'all'}">
+            <div class="tree-branch-title">
+              <span class="gen-badge" style="background: ${sec.color};">${sec.badge}</span>
+              <span>${sec.title}</span>
+            </div>
+            <div class="member-grid">
+              ${sec.members.map(m => `
+                <div class="member-card ${m.gioi_tinh === 'Nam' ? 'nam' : 'nu'}">
+                  <div onclick="openViewModal('${m.id}')">
+                    <div class="member-header">
+                      <div class="member-name">${m.ho_ten}</div>
+                      <div class="member-vai">${m.vai_ve}</div>
+                    </div>
+                    <div class="member-info">📅 Sinh: ${m.sinh || 'Chưa rõ'}</div>
+                    ${m.mat_duong || m.mat_am ? `<div class="member-info" style="color: #c53030;">⚰️ Mất: ${m.mat_duong || m.mat_am} ${m.huong_tho ? '('+m.huong_tho+'t)' : ''}</div>` : ''}
+                    ${m.phan_mo ? `<div class="member-info">🏛️ Mộ: ${m.phan_mo}</div>` : ''}
+                    ${m.ghi_chu ? `<div class="member-note">${m.ghi_chu}</div>` : ''}
+                  </div>
+                  ${isAdmin ? `
+                    <div class="card-actions">
+                      <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openMemberModal('edit', '${m.id}')">✏️ Sửa</button>
+                      <button class="btn btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️ Xóa</button>
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterTree() {
+      const q = document.getElementById('treeSearch').value.toLowerCase();
+      const br = document.getElementById('treeBranchSelect').value;
+
+      let filtered = membersData;
+      if (q) {
+        filtered = filtered.filter(m => m.ho_ten.toLowerCase().includes(q) || (m.ghi_chu && m.ghi_chu.toLowerCase().includes(q)));
+      }
+      renderTree(filtered);
+
+      if (br !== 'all') {
+        document.querySelectorAll('.tree-branch').forEach(el => {
+          const b = el.getAttribute('data-branch');
+          if (b !== br) el.style.display = 'none';
+          else el.style.display = 'block';
+        });
+      }
+    }
+
+    // Render Anniversaries
+    function renderAnniversaries() {
+      const tbody = document.getElementById('anniversaryTableBody');
+      tbody.innerHTML = anniversariesData.map(a => `
+        <tr>
+          <td>${a.id || a.stt}</td>
+          <td style="color: var(--primary); font-weight: 700;">${a.ho_ten}</td>
+          <td>${a.vai_ve}</td>
+          <td style="color: #c53030; font-weight: 700;">${a.ngay_am}</td>
+          <td>${a.ngay_duong}</td>
+          <td>${a.nam_am}</td>
+          <td><strong>${a.huong_tho} tuổi</strong></td>
+          <td>${a.ghi_chu}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Telegram Bot APIs
+    async function loadTelegramConfig() {
+      try {
+        const res = await fetch('/api/telegram/config');
+        const cfg = await res.json();
+        document.getElementById('cfgBotToken').value = cfg.bot_token || "";
+        document.getElementById('cfgChatId').value = cfg.chat_id || "";
+        document.getElementById('cfgNotifyTime').value = cfg.notify_time || "07:00";
+        document.getElementById('cfgDaysBefore').value = cfg.remind_days_before || 1;
+        document.getElementById('cfgEnabled').checked = cfg.enabled !== false;
+      } catch (e) {}
+    }
+
+    async function saveTelegramConfig() {
+      const payload = {
+        bot_token: document.getElementById('cfgBotToken').value,
+        chat_id: document.getElementById('cfgChatId').value,
+        notify_time: document.getElementById('cfgNotifyTime').value,
+        remind_days_before: parseInt(document.getElementById('cfgDaysBefore').value) || 1,
+        enabled: document.getElementById('cfgEnabled').checked
+      };
+      try {
+        const res = await fetch('/api/telegram/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const resJson = await res.json();
+        if (resJson.success) alert("✅ Đã lưu cấu hình Telegram thành công!");
+      } catch (e) {
+        alert("Lỗi khi lưu cấu hình Telegram.");
+      }
+    }
+
+    async function sendTestTelegram() {
+      try {
+        const res = await fetch('/api/telegram/test', { method: 'POST' });
+        const resJson = await res.json();
+        alert(resJson.message);
+      } catch (e) {
+        alert("Lỗi khi gửi tin nhắn thử.");
+      }
+    }
+
+    async function triggerTelegramToday() {
+      try {
+        const res = await fetch('/api/telegram/trigger-today', { method: 'POST' });
+        const resJson = await res.json();
+        alert(resJson.message);
+      } catch (e) {
+        alert("Lỗi khi quét sự kiện.");
+      }
+    }
+
+    async function loadUpcomingEvents() {
+      try {
+        const res = await fetch('/api/upcoming-events');
+        const events = await res.json();
+        const container = document.getElementById('upcomingEventsList');
+        if (!events.length) {
+          container.innerHTML = "<p style='color: var(--text-muted); padding: 0.5rem;'>Không có ngày giỗ hay sinh nhật nào trong 30 ngày tới.</p>";
+          return;
+        }
+        container.innerHTML = events.map(e => `
+          <div style="padding: 0.6rem 0; border-bottom: 1px dashed var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color: ${e.type === 'death' ? '#c53030' : '#2b6cb0'};">
+                ${e.type === 'death' ? '🕯️ Ngày Giỗ' : '🎉 Sinh Nhật'}: ${e.ho_ten} (${e.vai_ve})
+              </strong>
+              <span class="badge" style="background: #edf2f7; color: var(--text);">Còn ${e.days_left} ngày</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+              📅 Dương: ${e.solar_date} | Âm: ${e.lunar_date}<br>
+              ${e.chi_tiet}
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    // Khởi chạy khi load trang
+    window.addEventListener('DOMContentLoaded', loadAllData);
+  </script>
+</body>
+</html>

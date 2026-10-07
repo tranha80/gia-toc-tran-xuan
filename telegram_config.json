@@ -1,0 +1,8 @@
+{
+  "bot_token": "YOUR_BOT_TOKEN_HERE",
+  "chat_id": "YOUR_CHAT_ID_HERE",
+  "remind_days_before": 1,
+  "notify_time": "07:00",
+  "enabled": true,
+  "huong_dan": "Để lấy bot_token, chat với @BotFather tạo bot. Để lấy chat_id, thêm bot vào nhóm và chat với @userinfobot hoặc @getidsbot."
+}
