@@ -1,9 +1,13 @@
 import sqlite3
 import json
 import os
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.utils import get_column_letter
+try:
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+    HAS_OPENPYXL = True
+except ImportError:
+    HAS_OPENPYXL = False
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DB_PATH = os.path.join(BASE_DIR, "gia_toc_tran_xuan.db")
@@ -251,7 +255,7 @@ def sync_to_json_and_excel():
             json.dump(jdata, f, ensure_ascii=False, indent=2)
 
         # 2. Update Excel Sheet 1
-        if os.path.exists(EXCEL_PATH):
+        if HAS_OPENPYXL and os.path.exists(EXCEL_PATH):
             wb = openpyxl.load_workbook(EXCEL_PATH)
             if "Danh sách Thành viên" in wb.sheetnames:
                 ws = wb["Danh sách Thành viên"]
