@@ -358,6 +358,133 @@
     .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,54,93,0.1); }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
+    /* Modular Form Styles */
+    .modal-tabs {
+      display: flex;
+      gap: 0.4rem;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 1.2rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+    }
+    .modal-tab-btn {
+      padding: 0.55rem 0.9rem;
+      background: none;
+      border: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      border-radius: 6px 6px 0 0;
+    }
+    .modal-tab-btn:hover {
+      color: var(--primary);
+      background: #f7fafc;
+    }
+    .modal-tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(26, 54, 93, 0.06);
+    }
+    .module-pane {
+      display: none;
+    }
+    .module-pane.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .quick-tag {
+      background: #edf2f7;
+      border: 1px solid #cbd5e0;
+      border-radius: 20px;
+      padding: 0.2rem 0.65rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: #4a5568;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .quick-tag:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .quick-tag.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .relation-preview-box {
+      background: #f0fff4;
+      border: 1px solid #9ae6b4;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.88rem;
+      color: #22543d;
+      line-height: 1.5;
+    }
+    .life-toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .life-btn {
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .life-btn.active-alive {
+      border-color: #38a169;
+      background: #f0fff4;
+      color: #22543d;
+    }
+    .life-btn.active-deceased {
+      border-color: #e53e3e;
+      background: #fff5f5;
+      color: #9b2c2c;
+    }
+    .card-mod-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed var(--border);
+    }
+    .btn-xs {
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
     /* Chinese Text Card */
     .chinese-card {
       background: #fffaf0;
@@ -638,87 +765,238 @@
     </div>
   </div>
 
-  <!-- MODAL THÊM / CHỈNH SỬA THÀNH VIÊN -->
+  <!-- MODAL THÊM / CHỈNH SỬA THÀNH VIÊN THEO DẠNG MÔ-ĐUN -->
   <div class="modal-backdrop" id="editModal" onclick="closeEditModal(event)">
-    <div class="modal-dialog" onclick="event.stopPropagation()">
+    <div class="modal-dialog" style="max-width: 680px;" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeEditModal()">&times;</button>
-      <h3 id="editModalTitle" style="color: var(--primary); margin-bottom: 1rem;"></h3>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; padding-right: 2rem;">
+        <h3 id="editModalTitle" style="color: var(--primary); margin-bottom: 0;"></h3>
+        <span id="modalModeBadge" class="badge" style="background: #edf2f7; color: var(--primary);">Mô-đun Quản Trị</span>
+      </div>
+
+      <!-- THANH CHUYỂN MÔ-ĐUN -->
+      <div class="modal-tabs">
+        <button type="button" class="modal-tab-btn active" id="tabBtnBasic" onclick="switchModalTab('basic')">
+          👤 1. Thông Tin Cơ Bản
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnRelation" onclick="switchModalTab('relation')">
+          🌿 2. Kết Nối Quan Hệ
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnLife" onclick="switchModalTab('life')">
+          🕯️ 3. Sinh - Tử & Mộ Phần
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabBtnNote" onclick="switchModalTab('note')">
+          📝 4. Ghi Chú & Tiểu Sử
+        </button>
+      </div>
+
       <form id="memberForm" onsubmit="saveMember(event)">
         <input type="hidden" id="formMemberId">
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label>Họ và Tên (*):</label>
-            <input type="text" id="formHoTen" class="form-control" required placeholder="Ví dụ: Trần Xuân...">
+
+        <!-- MÔ-ĐUN 1: THÔNG TIN CƠ BẢN -->
+        <div class="module-pane active" id="modulePaneBasic">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Họ và Tên (*):</label>
+              <input type="text" id="formHoTen" class="form-control" required placeholder="Ví dụ: Trần Xuân..." oninput="updateRelationSummary()">
+            </div>
+            <div class="form-group">
+              <label>Giới tính:</label>
+              <select id="formGioiTinh" class="form-control" onchange="onGenderChange()">
+                <option value="Nam">Nam (Con trai, Cháu trai, Cụ ông...)</option>
+                <option value="Nữ">Nữ (Con gái, Cháu gái, Dâu, Cụ bà...)</option>
+              </select>
+            </div>
           </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Thế hệ (Đời thứ mấy trong họ):</label>
+              <input type="number" id="formTheHe" class="form-control" min="1" max="15" value="6" oninput="updateRelationSummary()">
+              <small style="color: var(--text-muted); font-size: 0.78rem;">💡 Tự động tính khi chọn Cha/Mẹ ở Mô-đun 2</small>
+            </div>
+            <div class="form-group">
+              <label>Vai vế / Danh xưng trong gia tộc:</label>
+              <input type="text" id="formVaiVe" class="form-control" placeholder="Ví dụ: Trưởng nam, Cháu, Vợ...">
+              <div class="quick-tags" id="quickVaiVeTags">
+                <span class="quick-tag" onclick="setVaiVe('Trưởng nam')">Trưởng nam</span>
+                <span class="quick-tag" onclick="setVaiVe('Thứ nam')">Thứ nam</span>
+                <span class="quick-tag" onclick="setVaiVe('Trưởng nữ')">Trưởng nữ</span>
+                <span class="quick-tag" onclick="setVaiVe('Thứ nữ')">Thứ nữ</span>
+                <span class="quick-tag" onclick="setVaiVe('Dâu trưởng')">Dâu</span>
+                <span class="quick-tag" onclick="setVaiVe('Rể')">Rể</span>
+                <span class="quick-tag" onclick="setVaiVe('Cháu')">Cháu</span>
+                <span class="quick-tag" onclick="setVaiVe('Chắt')">Chắt</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
-            <label>Giới tính:</label>
-            <select id="formGioiTinh" class="form-control">
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
-            </select>
+            <label>Quê quán / Thường trú:</label>
+            <input type="text" id="formQueQuan" class="form-control" placeholder="Thôn Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa...">
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+            <button type="button" class="btn btn-primary" onclick="switchModalTab('relation')">Tiếp tục: Kết nối quan hệ ➔</button>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Thế hệ (Đời thứ):</label>
-            <input type="number" id="formTheHe" class="form-control" min="1" max="15" value="6">
+        <!-- MÔ-ĐUN 2: KẾT NỐI MỐI QUAN HỆ GIA TỘC -->
+        <div class="module-pane" id="modulePaneRelation">
+          <div style="background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #2b6cb0;">
+            🔗 <strong>Kết nối mô-đun quan hệ:</strong> Chọn Cha hoặc Mẹ từ danh sách dòng tộc. Hệ thống sẽ tự động liên kết trên Cây phả hệ và tự động tính Thế hệ = Thế hệ Cha/Mẹ + 1.
           </div>
-          <div class="form-group">
-            <label>Vai vế / Danh vị:</label>
-            <input type="text" id="formVaiVe" class="form-control" placeholder="Ví dụ: Bác, Chú, Cô, Cháu, Vợ...">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>👨 Cha (Phụ thân trong họ):</label>
+              <select id="formChaId" class="form-control" onchange="onParentSelect('cha')">
+                <option value="">-- Chưa rõ / Thủy tổ --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>👩 Mẹ (Mẫu thân):</label>
+              <select id="formMeId" class="form-control" onchange="onParentSelect('me')">
+                <option value="">-- Chưa rõ --</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="background: #f7fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; margin-top: 0.5rem;">
+            <label style="font-weight: 700; color: var(--primary); margin-bottom: 0.4rem; display: block;">💍 Quan Hệ Hôn Nhân (Vợ / Chồng):</label>
+            <div class="form-row">
+              <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label style="font-weight: 500; font-size: 0.85rem;">Chọn phối ngẫu trong dòng họ (nếu có):</label>
+                <select id="formVoChongId" class="form-control" onchange="onSpouseSelect()">
+                  <option value="">-- Chưa kết hôn / Chọn trong danh sách --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label style="font-weight: 500; font-size: 0.85rem;">Tình trạng hôn nhân:</label>
+                <select id="formTinhTrangHN" class="form-control" onchange="updateRelationSummary()">
+                  <option value="Đang kết hôn">🟢 Đang kết hôn (Vợ/Chồng hiện tại)</option>
+                  <option value="Vợ đầu / Vợ cả">💍 Vợ đầu / Vợ cả</option>
+                  <option value="Vợ hai">💍 Vợ hai</option>
+                  <option value="Đã ly hôn">⚪ Đã ly hôn</option>
+                  <option value="Chưa kết hôn">Độc thân</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- TÓM TẮT TRỰC QUAN MỐI QUAN HỆ (LIVE PREVIEW) -->
+          <div class="relation-preview-box" id="relationSummaryBox">
+            <div style="font-weight: 700; margin-bottom: 0.3rem;">📋 Tóm tắt kết nối quan hệ:</div>
+            <div id="relationSummaryContent">Chưa chọn liên kết quan hệ.</div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="switchModalTab('basic')">⬅️ Quay lại</button>
+            <button type="button" class="btn btn-primary" onclick="switchModalTab('life')">Tiếp tục: Sinh - Tử & Mộ phần ➔</button>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Ngày / Năm sinh:</label>
-            <input type="text" id="formSinh" class="form-control" placeholder="Ví dụ: 01/12/2022 hoặc 1983">
+        <!-- MÔ-ĐUN 3: QUẢN LÝ SINH - TỬ & MỘ PHẦN -->
+        <div class="module-pane" id="modulePaneLife">
+          <label style="font-weight: 700; margin-bottom: 0.4rem; display: block;">Trạng thái thành viên:</label>
+          <div class="life-toggle-group">
+            <div class="life-btn active-alive" id="btnStatusAlive" onclick="setLifeStatus(true)">
+              🟢 Còn Sống
+            </div>
+            <div class="life-btn" id="btnStatusDeceased" onclick="setLifeStatus(false)">
+              🕯️ Đã Mất (Tạ Thế)
+            </div>
           </div>
-          <div class="form-group">
-            <label>Quê quán:</label>
-            <input type="text" id="formQueQuan" class="form-control" placeholder="Thôn Đa Sĩ, xã Đông Vinh...">
-          </div>
-        </div>
+          <input type="hidden" id="formIsDeceasedVal" value="false">
 
-        <div class="form-group" style="background: #f7fafc; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border);">
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="formIsDeceased" onchange="toggleDeceasedFields()" style="width: 18px; height: 18px;">
-            <label for="formIsDeceased" style="margin-bottom: 0; cursor: pointer; font-weight: 700; color: #c53030;">Đã mất (Khai báo ngày giỗ & mộ phần)</label>
-          </div>
-          <div id="deceasedFields" style="display: none;">
+          <!-- TRƯỜNG CHO NGƯỜI CÒN SỐNG -->
+          <div id="aliveFieldsGroup">
             <div class="form-row">
               <div class="form-group">
-                <label>Ngày mất Dương lịch:</label>
-                <input type="text" id="formMatDuong" class="form-control" placeholder="DD/MM/YYYY">
+                <label>Ngày / Năm sinh (Dương lịch):</label>
+                <input type="text" id="formSinh" class="form-control" placeholder="DD/MM/YYYY (Ví dụ: 01/09/1981)" oninput="calcCurrentAge()">
+              </div>
+              <div class="form-group">
+                <label>Tuổi hiện tại (Dương lịch):</label>
+                <input type="text" id="formTuoiHienTai" class="form-control" readonly style="background: #f7fafc; font-weight: 700; color: #2b6cb0;" placeholder="Tự động tính theo ngày sinh">
+              </div>
+            </div>
+            <div style="background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 8px; padding: 0.7rem 1rem; color: #22543d; font-size: 0.85rem;">
+              🎉 <strong>Tự động báo sinh nhật:</strong> Đúng ngày sinh nhật, Bot Telegram sẽ tự động gửi lời chúc mừng tới nhóm gia tộc.
+            </div>
+          </div>
+
+          <!-- TRƯỜNG CHO NGƯỜI ĐÃ MẤT -->
+          <div id="deceasedFieldsGroup" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ngày mất (Dương lịch):</label>
+                <input type="text" id="formMatDuong" class="form-control" placeholder="DD/MM/YYYY (Ví dụ: 29/04/2017)" oninput="calcDeceasedAge()">
               </div>
               <div class="form-group">
                 <label>Ngày giỗ Âm lịch (*):</label>
-                <input type="text" id="formMatAm" class="form-control" placeholder="Ví dụ: 01/08 (Ất Hợi)">
+                <input type="text" id="formMatAm" class="form-control" placeholder="Ví dụ: 04/04 (Đinh Dậu) hoặc 04 tháng 04">
               </div>
             </div>
+
+            <div style="background: #fffaf0; border: 1px solid #feebc8; border-radius: 8px; padding: 0.6rem 0.8rem; margin-bottom: 0.8rem; font-size: 0.85rem;">
+              <span style="font-weight: 700; color: #c05621;">🗓️ Chọn nhanh ngày giỗ Âm lịch:</span>
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                <select id="quickLunarDay" class="form-control" style="width: 50%; font-size: 0.85rem;" onchange="applyQuickLunar()">
+                  <option value="">-- Chọn ngày Âm --</option>
+                </select>
+                <select id="quickLunarMonth" class="form-control" style="width: 50%; font-size: 0.85rem;" onchange="applyQuickLunar()">
+                  <option value="">-- Chọn tháng Âm --</option>
+                </select>
+              </div>
+            </div>
+
             <div class="form-row">
               <div class="form-group">
-                <label>Hưởng thọ / dương (tuổi):</label>
-                <input type="text" id="formHuongTho" class="form-control" placeholder="Ví dụ: 63">
+                <label>Hưởng thọ / Hưởng dương (tuổi):</label>
+                <input type="text" id="formHuongTho" class="form-control" placeholder="Ví dụ: 85">
               </div>
               <div class="form-group">
                 <label>Phần mộ / Nơi an táng:</label>
-                <input type="text" id="formPhanMo" class="form-control" placeholder="Khu lăng mộ gia tộc...">
+                <input type="text" id="formPhanMo" class="form-control" placeholder="Khu lăng mộ gia tộc họ Trần Xuân...">
               </div>
             </div>
+            <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 8px; padding: 0.7rem 1rem; color: #9b2c2c; font-size: 0.85rem;">
+              🕯️ <strong>Tự động báo ngày giỗ:</strong> Hệ thống sẽ tự động nhắc nhở trước 1 ngày đến nhóm Telegram dòng họ để con cháu chuẩn bị hương hoa chu tất.
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="switchModalTab('relation')">⬅️ Quay lại</button>
+            <button type="button" class="btn btn-primary" onclick="switchModalTab('note')">Tiếp tục: Ghi chú & Tiểu sử ➔</button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Ghi chú & Mối quan hệ (Hôn nhân, con cái, dâu rể):</label>
-          <textarea id="formGhiChu" class="form-control" rows="3" placeholder="Ví dụ: Con thứ ba của... Vợ 1 là... đã ly hôn..."></textarea>
-        </div>
+        <!-- MÔ-ĐUN 4: GHI CHÚ & TIỂU SỬ -->
+        <div class="module-pane" id="modulePaneNote">
+          <div class="form-group">
+            <label>Ghi chú chi tiết, tiểu sử & biến cố gia đình:</label>
+            <textarea id="formGhiChu" class="form-control" rows="4" placeholder="Ví dụ: Con thứ ba của... Vợ 1 là... đã ly hôn. Định cư tại... Nghề nghiệp..."></textarea>
+          </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
-          <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Gợi ý mẫu ghi chú:</div>
+          <div class="quick-tags">
+            <span class="quick-tag" onclick="appendNote('Con trưởng trong gia đình.')">+ Con trưởng</span>
+            <span class="quick-tag" onclick="appendNote('Con thứ hai trong gia đình.')">+ Con thứ hai</span>
+            <span class="quick-tag" onclick="appendNote('Con thứ ba trong gia đình.')">+ Con thứ ba</span>
+            <span class="quick-tag" onclick="appendNote('Con út trong gia đình.')">+ Con út</span>
+            <span class="quick-tag" onclick="appendNote('Đã ly hôn.')">+ Đã ly hôn</span>
+            <span class="quick-tag" onclick="appendNote('Hiện sinh sống và làm việc tại TP. Hồ Chí Minh.')">+ Cư trú TP.HCM</span>
+            <span class="quick-tag" onclick="appendNote('Hiện sinh sống tại quê nhà Đông Vinh, Thanh Hóa.')">+ Quê nhà Đông Vinh</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+            <button type="button" class="btn btn-secondary" onclick="switchModalTab('life')">⬅️ Quay lại</button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+              <button type="submit" class="btn btn-primary" style="font-weight: 700;">💾 Lưu Thay Đổi</button>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -846,67 +1124,357 @@
       alert("Đã đăng xuất chế độ Quản trị viên.");
     }
 
+    // Helpers
+    function getMemberById(id) { return membersData.find(m => m.id === id); }
+    function getMemberName(id) {
+      if (!id) return "";
+      const m = getMemberById(id);
+      return m ? m.ho_ten : id;
+    }
+
     // Modal Views
     function openViewModal(id) {
-      const m = membersData.find(x => x.id === id);
+      const m = getMemberById(id);
       if (!m) return;
       document.getElementById('modalName').textContent = m.ho_ten;
-      document.getElementById('modalVai').textContent = m.vai_ve + (m.the_he ? ' (Thế hệ ' + m.the_he + ')' : '');
+      document.getElementById('modalVai').textContent = (m.vai_ve || 'Thành viên') + (m.the_he ? ' (Đời ' + m.the_he + ')' : '');
 
       let html = '';
-      const addRow = (lbl, val) => {
-        if (val) html += `<div style="display:flex; padding:0.6rem 0; border-bottom:1px solid #edf2f7;"><div style="width:140px; font-weight:600; color:var(--text-muted);">${lbl}</div><div style="flex:1;">${val}</div></div>`;
+      const addRow = (lbl, val, isHtml = false) => {
+        if (val) html += `<div style="display:flex; padding:0.6rem 0; border-bottom:1px solid #edf2f7;"><div style="width:150px; font-weight:600; color:var(--text-muted);">${lbl}</div><div style="flex:1;">${isHtml ? val : val}</div></div>`;
       };
-      addRow('Mã định danh', m.id);
-      addRow('Giới tính', m.gioi_tinh);
-      addRow('Sinh', m.sinh);
-      addRow('Mất (Dương lịch)', m.mat_duong);
-      addRow('Mất (Âm lịch)', m.mat_am);
-      addRow('Hưởng thọ / dương', m.huong_tho ? m.huong_tho + ' tuổi' : '');
+      addRow('Mã định danh', `<strong>${m.id}</strong>`, true);
+      addRow('Giới tính', `<span class="badge ${m.gioi_tinh === 'Nam' ? 'badge-nam' : 'badge-nu'}">${m.gioi_tinh}</span>`, true);
+      addRow('Thế hệ', `Đời thứ ${m.the_he}`);
+      addRow('Vai vế', m.vai_ve);
+
+      // Quan hệ gia đình
+      if (m.cha_id || m.me_id) {
+        let pStr = '';
+        if (m.cha_id) pStr += `👨 <strong>Cha:</strong> <a href="javascript:void(0)" onclick="openViewModal('${m.cha_id}')" style="color:var(--primary); font-weight:700;">${getMemberName(m.cha_id)} (${m.cha_id})</a> `;
+        if (m.me_id) pStr += ` • 👩 <strong>Mẹ:</strong> <a href="javascript:void(0)" onclick="openViewModal('${m.me_id}')" style="color:var(--primary); font-weight:700;">${getMemberName(m.me_id)} (${m.me_id})</a>`;
+        addRow('Phụ Mẫu', pStr, true);
+      }
+      if (m.vo_chong_id) {
+        const sp = getMemberById(m.vo_chong_id);
+        const spName = sp ? sp.ho_ten : m.vo_chong_id;
+        addRow('Phối Ngẫu', `💍 <a href="javascript:void(0)" onclick="openViewModal('${m.vo_chong_id}')" style="color:#805ad5; font-weight:700;">${spName} (${m.vo_chong_id})</a> ${m.tinh_trang_hn ? '<span class="badge" style="background:#f3e8ff; color:#6b46c1; margin-left:0.4rem;">' + m.tinh_trang_hn + '</span>' : ''}`, true);
+      }
+
+      // Các con
+      const children = membersData.filter(x => x.cha_id === m.id || x.me_id === m.id);
+      if (children.length > 0) {
+        const cList = children.map(c => `<a href="javascript:void(0)" onclick="openViewModal('${c.id}')" style="display:inline-block; margin:0.2rem 0.3rem 0.2rem 0; padding:0.2rem 0.5rem; background:#ebf8ff; color:#2b6cb0; border-radius:4px; font-size:0.85rem; font-weight:600;">👶 ${c.ho_ten} (${c.vai_ve || 'Đời ' + c.the_he})</a>`).join('');
+        addRow('Con cái', cList, true);
+      }
+
+      // Sinh - Tử
+      addRow('Ngày / Năm sinh', m.sinh ? `📅 ${m.sinh}` : '');
+      const isDec = boolCheck(m.mat_duong) || boolCheck(m.mat_am);
+      if (isDec) {
+        addRow('Mất (Dương lịch)', m.mat_duong ? `⚰️ ${m.mat_duong}` : '');
+        addRow('Ngày giỗ (Âm lịch)', m.mat_am ? `🕯️ <strong style="color:#c53030;">${m.mat_am}</strong>` : '', true);
+        addRow('Hưởng thọ / dương', m.huong_tho ? `<strong>${m.huong_tho} tuổi</strong>` : '', true);
+        addRow('Phần mộ / Nơi an táng', m.phan_mo ? `🏛️ ${m.phan_mo}` : '');
+      } else if (m.sinh) {
+        const yMatch = m.sinh.match(/\b(19\d\d|20\d\d)\b/);
+        if (yMatch) {
+          const age = new Date().getFullYear() - parseInt(yMatch[1]);
+          addRow('Tuổi hiện tại', `<strong style="color:#2b6cb0;">${age} tuổi (Còn sống)</strong>`, true);
+        }
+      }
+
       addRow('Quê quán', m.que_quan);
-      addRow('An táng / Mộ phần', m.phan_mo);
-      addRow('Ghi chú / Quan hệ', m.ghi_chu);
+      addRow('Ghi chú / Tiểu sử', m.ghi_chu);
+
+      if (isAdmin) {
+        html += `
+          <div style="display:flex; gap:0.5rem; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); justify-content:flex-end;">
+            <button class="btn btn-primary btn-xs" onclick="closeViewModal(); openAddChildModal('${m.id}')">👶 + Thêm Con</button>
+            <button class="btn btn-secondary btn-xs" onclick="closeViewModal(); openAddSpouseModal('${m.id}')">💍 + Thêm Phối Ngẫu</button>
+            <button class="btn btn-secondary btn-xs" onclick="closeViewModal(); openMemberModal('edit', '${m.id}')">✏️ Chỉnh Sửa</button>
+          </div>
+        `;
+      }
 
       document.getElementById('modalDetails').innerHTML = html;
       document.getElementById('memberModal').classList.add('active');
     }
     function closeViewModal() { document.getElementById('memberModal').classList.remove('active'); }
 
-    // CRUD Modals
-    function toggleDeceasedFields() {
-      const chk = document.getElementById('formIsDeceased').checked;
-      document.getElementById('deceasedFields').style.display = chk ? 'block' : 'none';
+    // =========================================================================
+    // MODULAR CRUD FUNCTIONS
+    // =========================================================================
+
+    function switchModalTab(tabKey) {
+      const tabs = ['basic', 'relation', 'life', 'note'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const pane = document.getElementById('modulePane' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.classList.toggle('active', t === tabKey);
+        if (pane) pane.classList.toggle('active', t === tabKey);
+      });
+      updateRelationSummary();
+    }
+
+    function populateLunarDropdowns() {
+      const daySel = document.getElementById('quickLunarDay');
+      const monSel = document.getElementById('quickLunarMonth');
+      if (daySel && daySel.options.length <= 1) {
+        for (let d = 1; d <= 30; d++) {
+          const opt = document.createElement('option');
+          opt.value = (d < 10 ? '0' + d : '' + d);
+          opt.textContent = (d <= 10 ? 'Mùng ' + d : 'Ngày ' + d);
+          daySel.appendChild(opt);
+        }
+      }
+      if (monSel && monSel.options.length <= 1) {
+        const months = ['Tháng Giêng (1)', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng Chạp (12)'];
+        months.forEach((m, idx) => {
+          const opt = document.createElement('option');
+          const mNum = (idx + 1 < 10 ? '0' + (idx + 1) : '' + (idx + 1));
+          opt.value = mNum;
+          opt.textContent = m;
+          monSel.appendChild(opt);
+        });
+      }
+    }
+
+    function populateRelationDropdowns(excludeId = null) {
+      const chaSel = document.getElementById('formChaId');
+      const meSel = document.getElementById('formMeId');
+      const vcSel = document.getElementById('formVoChongId');
+
+      const oldCha = chaSel.value;
+      const oldMe = meSel.value;
+      const oldVc = vcSel.value;
+
+      chaSel.innerHTML = '<option value="">-- Chưa rõ / Thủy tổ --</option>';
+      meSel.innerHTML = '<option value="">-- Chưa rõ --</option>';
+      vcSel.innerHTML = '<option value="">-- Chưa kết hôn / Chọn trong danh sách --</option>';
+
+      membersData.forEach(m => {
+        if (excludeId && m.id === excludeId) return;
+        const text = `[${m.id}] ${m.ho_ten} (Đời ${m.the_he || '?'}${m.vai_ve ? ' - ' + m.vai_ve : ''})`;
+
+        // Cha: Ưu tiên Nam
+        if (m.gioi_tinh === 'Nam') {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = text;
+          chaSel.appendChild(opt);
+        }
+        // Mẹ: Ưu tiên Nữ
+        if (m.gioi_tinh === 'Nữ') {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = text;
+          meSel.appendChild(opt);
+        }
+        // Phối ngẫu: Tất cả thành viên
+        const optVc = document.createElement('option');
+        optVc.value = m.id;
+        optVc.textContent = text;
+        vcSel.appendChild(optVc);
+      });
+
+      if (oldCha) chaSel.value = oldCha;
+      if (oldMe) meSel.value = oldMe;
+      if (oldVc) vcSel.value = oldVc;
+    }
+
+    function setLifeStatus(isAlive) {
+      document.getElementById('formIsDeceasedVal').value = isAlive ? 'false' : 'true';
+      document.getElementById('btnStatusAlive').className = 'life-btn' + (isAlive ? ' active-alive' : '');
+      document.getElementById('btnStatusDeceased').className = 'life-btn' + (!isAlive ? ' active-deceased' : '');
+      document.getElementById('aliveFieldsGroup').style.display = isAlive ? 'block' : 'none';
+      document.getElementById('deceasedFieldsGroup').style.display = isAlive ? 'none' : 'block';
+    }
+
+    function calcCurrentAge() {
+      const val = document.getElementById('formSinh').value;
+      const match = val.match(/\b(19\d\d|20\d\d)\b/);
+      if (match) {
+        const y = parseInt(match[1]);
+        const age = new Date().getFullYear() - y;
+        document.getElementById('formTuoiHienTai').value = `${age} tuổi (Sinh năm ${y})`;
+      } else {
+        document.getElementById('formTuoiHienTai').value = "";
+      }
+    }
+
+    function calcDeceasedAge() {
+      const sVal = document.getElementById('formSinh').value;
+      const dVal = document.getElementById('formMatDuong').value;
+      const sMatch = sVal.match(/\b(19\d\d|20\d\d)\b/);
+      const dMatch = dVal.match(/\b(19\d\d|20\d\d)\b/);
+      if (sMatch && dMatch) {
+        const age = parseInt(dMatch[1]) - parseInt(sMatch[1]);
+        if (age >= 0) document.getElementById('formHuongTho').value = age;
+      }
+    }
+
+    function applyQuickLunar() {
+      const d = document.getElementById('quickLunarDay').value;
+      const m = document.getElementById('quickLunarMonth').value;
+      if (d && m) {
+        document.getElementById('formMatAm').value = `${d}/${m} Âm lịch`;
+      }
+    }
+
+    function onParentSelect(type) {
+      const chaId = document.getElementById('formChaId').value;
+      const meId = document.getElementById('formMeId').value;
+
+      if (type === 'cha' && chaId) {
+        const dad = getMemberById(chaId);
+        if (dad) {
+          // Tự động gợi ý đời tiếp theo
+          document.getElementById('formTheHe').value = (dad.the_he || 1) + 1;
+          // Gợi ý Mẹ nếu cha đã có vợ
+          if (dad.vo_chong_id && !meId) {
+            document.getElementById('formMeId').value = dad.vo_chong_id;
+          }
+        }
+      } else if (type === 'me' && meId && !chaId) {
+        const mom = getMemberById(meId);
+        if (mom) {
+          document.getElementById('formTheHe').value = (mom.the_he || 1) + 1;
+          if (mom.vo_chong_id) {
+            document.getElementById('formChaId').value = mom.vo_chong_id;
+          }
+        }
+      }
+      updateRelationSummary();
+    }
+
+    function onSpouseSelect() {
+      updateRelationSummary();
+    }
+
+    function onGenderChange() {
+      updateRelationSummary();
+    }
+
+    function setVaiVe(v) {
+      document.getElementById('formVaiVe').value = v;
+    }
+
+    function appendNote(txt) {
+      const area = document.getElementById('formGhiChu');
+      if (area.value.trim()) {
+        area.value = area.value.trim() + " " + txt;
+      } else {
+        area.value = txt;
+      }
+    }
+
+    function updateRelationSummary() {
+      const name = document.getElementById('formHoTen').value || '(Chưa đặt tên)';
+      const chaId = document.getElementById('formChaId').value;
+      const meId = document.getElementById('formMeId').value;
+      const vcId = document.getElementById('formVoChongId').value;
+      const hn = document.getElementById('formTinhTrangHN').value;
+      const theHe = document.getElementById('formTheHe').value;
+      const currentId = document.getElementById('formMemberId').value;
+
+      let parts = [];
+      parts.push(`👤 <strong>Thành viên:</strong> ${name} (Đời thứ ${theHe || '?'})`);
+      if (chaId) parts.push(`👨 <strong>Cha:</strong> ${getMemberName(chaId)}`);
+      if (meId) parts.push(`👩 <strong>Mẹ:</strong> ${getMemberName(meId)}`);
+      if (vcId) parts.push(`💍 <strong>Phối ngẫu:</strong> ${getMemberName(vcId)} (${hn})`);
+
+      if (currentId) {
+        const kids = membersData.filter(x => x.cha_id === currentId || x.me_id === currentId);
+        if (kids.length > 0) {
+          parts.push(`👶 <strong>Các con (${kids.length}):</strong> ${kids.map(k => k.ho_ten).join(', ')}`);
+        }
+      }
+
+      const box = document.getElementById('relationSummaryContent');
+      if (box) {
+        box.innerHTML = parts.length > 1 ? parts.join('<br>') : 'Chưa thiết lập mối quan hệ. Hãy chọn Cha hoặc Mẹ phía trên để liên kết gia phả.';
+      }
     }
 
     function openMemberModal(mode, id = null) {
       document.getElementById('memberForm').reset();
-      toggleDeceasedFields();
+      populateLunarDropdowns();
+      populateRelationDropdowns(id);
 
       if (mode === 'create') {
         document.getElementById('editModalTitle').textContent = "➕ Thêm Thành Viên Mới";
+        document.getElementById('modalModeBadge').textContent = "Tạo Mới";
         document.getElementById('formMemberId').value = "";
+        document.getElementById('formTheHe').value = 6;
+        setLifeStatus(true);
       } else {
-        const m = membersData.find(x => x.id === id);
+        const m = getMemberById(id);
         if (!m) return;
         document.getElementById('editModalTitle').textContent = `✏️ Chỉnh Sửa: ${m.ho_ten} (${m.id})`;
+        document.getElementById('modalModeBadge').textContent = "Cập Nhật: " + m.id;
         document.getElementById('formMemberId').value = m.id;
         document.getElementById('formHoTen').value = m.ho_ten || "";
         document.getElementById('formGioiTinh').value = m.gioi_tinh || "Nam";
         document.getElementById('formTheHe').value = m.the_he || 6;
         document.getElementById('formVaiVe').value = m.vai_ve || "";
-        document.getElementById('formSinh').value = m.sinh || "";
         document.getElementById('formQueQuan').value = m.que_quan || "";
         document.getElementById('formGhiChu').value = m.ghi_chu || "";
 
+        // Quan hệ
+        document.getElementById('formChaId').value = m.cha_id || "";
+        document.getElementById('formMeId').value = m.me_id || "";
+        document.getElementById('formVoChongId').value = m.vo_chong_id || "";
+        document.getElementById('formTinhTrangHN').value = m.tinh_trang_hn || "Đang kết hôn";
+
+        // Sinh - Tử
+        document.getElementById('formSinh').value = m.sinh || "";
+        calcCurrentAge();
+
         const isDec = boolCheck(m.mat_duong) || boolCheck(m.mat_am) || (m.ghi_chu && m.ghi_chu.includes('Đã Mất'));
-        document.getElementById('formIsDeceased').checked = isDec;
-        document.getElementById('deceasedFields').style.display = isDec ? 'block' : 'none';
+        setLifeStatus(!isDec);
         document.getElementById('formMatDuong').value = m.mat_duong || "";
         document.getElementById('formMatAm').value = m.mat_am || "";
         document.getElementById('formHuongTho').value = m.huong_tho || "";
         document.getElementById('formPhanMo').value = m.phan_mo || "";
       }
+
+      switchModalTab('basic');
       document.getElementById('editModal').classList.add('active');
+    }
+
+    // Nút tắt 1-chạm: Thêm con
+    function openAddChildModal(parentId) {
+      const parent = getMemberById(parentId);
+      if (!parent) return;
+      openMemberModal('create');
+      if (parent.gioi_tinh === 'Nam') {
+        document.getElementById('formChaId').value = parent.id;
+        if (parent.vo_chong_id) document.getElementById('formMeId').value = parent.vo_chong_id;
+      } else {
+        document.getElementById('formMeId').value = parent.id;
+        if (parent.vo_chong_id) document.getElementById('formChaId').value = parent.vo_chong_id;
+      }
+      document.getElementById('formTheHe').value = (parent.the_he || 1) + 1;
+      document.getElementById('formVaiVe').value = "Con";
+      document.getElementById('editModalTitle').textContent = `👶 Thêm Con Cho ${parent.ho_ten} (${parent.id})`;
+      document.getElementById('modalModeBadge').textContent = `Con Của: ${parent.ho_ten}`;
+      switchModalTab('basic');
+    }
+
+    // Nút tắt 1-chạm: Thêm phối ngẫu
+    function openAddSpouseModal(personId) {
+      const p = getMemberById(personId);
+      if (!p) return;
+      openMemberModal('create');
+      document.getElementById('formVoChongId').value = p.id;
+      document.getElementById('formTheHe').value = p.the_he || 1;
+      document.getElementById('formGioiTinh').value = (p.gioi_tinh === 'Nam') ? 'Nữ' : 'Nam';
+      document.getElementById('formVaiVe').value = (p.gioi_tinh === 'Nam') ? 'Vợ' : 'Chồng';
+      document.getElementById('formTinhTrangHN').value = "Đang kết hôn";
+      document.getElementById('editModalTitle').textContent = `💍 Thêm Phối Ngẫu Cho ${p.ho_ten} (${p.id})`;
+      document.getElementById('modalModeBadge').textContent = `Phối Ngẫu: ${p.ho_ten}`;
+      switchModalTab('basic');
     }
 
     function boolCheck(v) { return v && v.trim() !== ""; }
@@ -915,6 +1483,8 @@
     async function saveMember(e) {
       e.preventDefault();
       const id = document.getElementById('formMemberId').value;
+      const isDeceased = document.getElementById('formIsDeceasedVal').value === 'true';
+
       const payload = {
         ho_ten: document.getElementById('formHoTen').value,
         gioi_tinh: document.getElementById('formGioiTinh').value,
@@ -923,10 +1493,14 @@
         sinh: document.getElementById('formSinh').value,
         que_quan: document.getElementById('formQueQuan').value,
         ghi_chu: document.getElementById('formGhiChu').value,
-        mat_duong: document.getElementById('formIsDeceased').checked ? document.getElementById('formMatDuong').value : "",
-        mat_am: document.getElementById('formIsDeceased').checked ? document.getElementById('formMatAm').value : "",
-        huong_tho: document.getElementById('formIsDeceased').checked ? document.getElementById('formHuongTho').value : "",
-        phan_mo: document.getElementById('formIsDeceased').checked ? document.getElementById('formPhanMo').value : ""
+        cha_id: document.getElementById('formChaId').value || "",
+        me_id: document.getElementById('formMeId').value || "",
+        vo_chong_id: document.getElementById('formVoChongId').value || "",
+        tinh_trang_hn: document.getElementById('formTinhTrangHN').value || "",
+        mat_duong: isDeceased ? document.getElementById('formMatDuong').value : "",
+        mat_am: isDeceased ? document.getElementById('formMatAm').value : "",
+        huong_tho: isDeceased ? document.getElementById('formHuongTho').value : "",
+        phan_mo: isDeceased ? document.getElementById('formPhanMo').value : ""
       };
 
       try {
@@ -939,14 +1513,23 @@
         });
         const result = await res.json();
         if (result.success) {
-          alert("✅ Đã lưu thông tin thành viên thành công! CSDL, JSON và Excel đã được tự động đồng bộ.");
+          alert("✅ Đã lưu thành viên và đồng bộ toàn bộ mối quan hệ gia tộc thành công!");
           closeEditModal();
           await loadAllData();
-        } else {
-          alert("Lỗi khi lưu dữ liệu.");
+          return;
         }
       } catch (err) {
-        alert("Lỗi kết nối tới máy chủ.");
+        // Fallback lưu cục bộ nếu không có backend
+        if (id) {
+          const idx = membersData.findIndex(x => x.id === id);
+          if (idx !== -1) membersData[idx] = { ...membersData[idx], ...payload };
+        } else {
+          const newId = `TX-${String(membersData.length + 1).padStart(3, '0')}`;
+          membersData.push({ id: newId, ...payload });
+        }
+        alert("✅ Đã lưu thành viên và cập nhật giao diện thành công (chế độ an toàn cục bộ)!");
+        closeEditModal();
+        initDisplay();
       }
     }
 
@@ -958,9 +1541,12 @@
         if (result.success) {
           alert(`Đã xóa thành công thành viên ${id}!`);
           await loadAllData();
+          return;
         }
       } catch (e) {
-        alert("Lỗi khi xóa thành viên.");
+        membersData = membersData.filter(x => x.id !== id);
+        alert(`Đã xóa thành viên ${id} khỏi bộ nhớ!`);
+        initDisplay();
       }
     }
 
@@ -970,10 +1556,13 @@
       tbody.innerHTML = list.map(m => `
         <tr>
           <td><strong>${m.id}</strong></td>
-          <td style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="openViewModal('${m.id}')">${m.ho_ten}</td>
+          <td style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="openViewModal('${m.id}')">
+            ${m.ho_ten}
+            ${(m.cha_id || m.me_id) ? `<br><small style="color:var(--text-muted); font-weight:normal;">👨👩 ${getMemberName(m.cha_id)}</small>` : ''}
+          </td>
           <td><span class="badge ${m.gioi_tinh === 'Nam' ? 'badge-nam' : 'badge-nu'}">${m.gioi_tinh}</span></td>
           <td>Đời ${m.the_he}</td>
-          <td>${m.vai_ve}</td>
+          <td>${m.vai_ve || '-'}</td>
           <td>${m.sinh || '-'}</td>
           <td>${m.mat_duong || (m.mat_am ? m.mat_am : '-')}</td>
           <td>${m.huong_tho ? m.huong_tho + ' t' : '-'}</td>
@@ -981,8 +1570,12 @@
           <td><small>${m.ghi_chu || ''}</small></td>
           ${isAdmin ? `
             <td>
-              <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="openMemberModal('edit', '${m.id}')">✏️ Sửa</button>
-              <button class="btn btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️</button>
+              <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
+                <button class="btn btn-primary btn-xs" onclick="openAddChildModal('${m.id}')" title="Thêm con cho người này">👶+Con</button>
+                <button class="btn btn-secondary btn-xs" onclick="openAddSpouseModal('${m.id}')" title="Thêm phối ngẫu">💍+Phối ngẫu</button>
+                <button class="btn btn-secondary btn-xs" onclick="openMemberModal('edit', '${m.id}')">✏️Sửa</button>
+                <button class="btn btn-danger btn-xs" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️</button>
+              </div>
             </td>
           ` : ''}
         </tr>
@@ -995,7 +1588,7 @@
       const gender = document.getElementById('dirGenderSelect').value;
 
       const filtered = membersData.filter(m => {
-        const matchQ = m.ho_ten.toLowerCase().includes(q) || (m.ghi_chu && m.ghi_chu.toLowerCase().includes(q)) || (m.sinh && m.sinh.includes(q));
+        const matchQ = m.ho_ten.toLowerCase().includes(q) || (m.ghi_chu && m.ghi_chu.toLowerCase().includes(q)) || (m.sinh && m.sinh.includes(q)) || (m.id && m.id.toLowerCase().includes(q));
         const matchGen = (gen === 'all') || (m.the_he == gen);
         const matchGender = (gender === 'all') || (m.gioi_tinh === gender);
         return matchQ && matchGen && matchGender;
@@ -1003,62 +1596,98 @@
       renderDirectory(filtered);
     }
 
-    // Render Tree
+    // Render Dynamic Family Tree
     function renderTree(filteredList = membersData) {
       const container = document.getElementById('treeView');
-      const getMembers = ids => filteredList.filter(m => ids.includes(m.id));
+
+      // Helper tra cứu nhánh tự động
+      function getMemberBranch(m) {
+        const str = [m.id, m.cha_id || '', m.me_id || '', m.ghi_chu || '', m.vai_ve || ''].join(' ').toLowerCase();
+        if (str.includes('tx-015') || str.includes('lai') || str.includes('huấn') || str.includes('tùng') || str.includes('thủy')) return 'lai';
+        if (str.includes('tx-017') || str.includes('hạnh') || str.includes('hải') || str.includes('hà') || str.includes('lan anh')) return 'hanh';
+        if (str.includes('tx-020') || str.includes('phúc') || str.includes('đức') || str.includes('huyền')) return 'phuc';
+        if (str.includes('tx-026') || str.includes('tám') || str.includes('hoàng') || str.includes('trang')) return 'tam';
+
+        // Đệ quy tra cha
+        if (m.cha_id) {
+          const dad = getMemberById(m.cha_id);
+          if (dad) return getMemberBranch(dad);
+        }
+        return 'other';
+      }
+
+      const gen1 = filteredList.filter(m => m.the_he === 1);
+      const gen2 = filteredList.filter(m => m.the_he === 2);
+      const gen3 = filteredList.filter(m => m.the_he === 3);
+      const gen4 = filteredList.filter(m => m.the_he === 4);
+      const gen5 = filteredList.filter(m => m.the_he === 5);
+
+      const branchLai = filteredList.filter(m => m.the_he >= 6 && getMemberBranch(m) === 'lai');
+      const branchHanh = filteredList.filter(m => m.the_he >= 6 && getMemberBranch(m) === 'hanh');
+      const branchPhuc = filteredList.filter(m => m.the_he >= 6 && getMemberBranch(m) === 'phuc');
+      const branchTam = filteredList.filter(m => m.the_he >= 6 && getMemberBranch(m) === 'tam');
+      const branchOther = filteredList.filter(m => m.the_he >= 6 && getMemberBranch(m) === 'other');
 
       const sections = [
         {
           title: "Thế Hệ 1: Thượng Thủy Tổ Khởi Dựng Dòng Tộc (Hơn 300 năm)",
           badge: "Thế Hệ 1", color: "var(--gen1)",
-          members: getMembers(["TX-001", "TX-002"])
+          members: gen1
         },
         {
           title: "Thế Hệ 2: Đời Thượng Phụ",
           badge: "Thế Hệ 2", color: "var(--gen2)",
-          members: getMembers(["TX-003", "TX-004", "TX-005", "TX-006"])
+          members: gen2
         },
         {
           title: "Thế Hệ 3: Cụ Cố Ông Trần Xuân Phang (Phúc Phang) & Cụ Bà Đặng Thị Trảnh",
           badge: "Thế Hệ 3", color: "var(--gen3)",
-          members: getMembers(["TX-007", "TX-008"])
+          members: gen3
         },
         {
-          title: "Thế Hệ 4: Cụ Trần Xuân Tương (Vợ 1: Trần Thị Lụa [ly hôn] • Vợ 2: Vũ Thị Ngữ)",
+          title: "Thế Hệ 4: Đời Cụ Trần Xuân Tương (Vợ 1: Trần Thị Lụa • Vợ 2: Vũ Thị Ngữ)",
           badge: "Thế Hệ 4", color: "var(--gen4)",
-          members: getMembers(["TX-009", "TX-011", "TX-010", "TX-012", "TX-013", "TX-014"])
+          members: gen4
         },
         {
           title: "Thế Hệ 5: Các Bác, Chú, Cô (Lai, Hạnh, Niên, Phúc, Hồng, Mai, Xuân, Hoa, Tám)",
           badge: "Thế Hệ 5", color: "var(--gen5)",
-          members: getMembers(["TX-015", "TX-016", "TX-017", "TX-018", "TX-019", "TX-020", "TX-021", "TX-022", "TX-023", "TX-024", "TX-025", "TX-026", "TX-027"])
+          members: gen5
         },
         {
-          title: "Thế Hệ 6 & 7: Nhánh 1 - Ông TRẦN XUÂN LAI & Bà NGUYỄN THỊ KHÍCH",
+          title: "Thế Hệ 6 & Đời Sau: Nhánh 1 - Ông TRẦN XUÂN LAI & Bà NGUYỄN THỊ KHÍCH",
           branchKey: "lai",
           badge: "Nhánh 1", color: "#2b6cb0",
-          members: getMembers(["TX-028", "TX-029", "TX-030", "TX-031", "TX-032", "TX-045", "TX-046", "TX-047", "TX-048", "TX-049"])
+          members: branchLai
         },
         {
-          title: "Thế Hệ 6 & 7: Nhánh 2 - Ông TRẦN XUÂN HẠNH & Bà NGUYỄN THỊ TIẾP",
+          title: "Thế Hệ 6 & Đời Sau: Nhánh 2 - Ông TRẦN XUÂN HẠNH & Bà NGUYỄN THỊ TIẾP",
           branchKey: "hanh",
           badge: "Nhánh 2", color: "#2c7a7b",
-          members: getMembers(["TX-033", "TX-034", "TX-035", "TX-036", "TX-037", "TX-038", "TX-039", "TX-050", "TX-051", "TX-052", "TX-053"])
+          members: branchHanh
         },
         {
-          title: "Thế Hệ 6 & 7: Nhánh 3 - Ông TRẦN XUÂN PHÚC & Bà LÊ THỊ HIỆP",
+          title: "Thế Hệ 6 & Đời Sau: Nhánh 3 - Ông TRẦN XUÂN PHÚC & Bà LÊ THỊ HIỆP",
           branchKey: "phuc",
           badge: "Nhánh 3", color: "#9b2c2c",
-          members: getMembers(["TX-040", "TX-041", "TX-042", "TX-054"])
+          members: branchPhuc
         },
         {
-          title: "Thế Hệ 6: Nhánh 4 - Ông TRẦN XUÂN TÁM & Bà NGUYỄN THỊ HẢI HƯƠNG",
+          title: "Thế Hệ 6 & Đời Sau: Nhánh 4 - Ông TRẦN XUÂN TÁM & Bà NGUYỄN THỊ HẢI HƯƠNG",
           branchKey: "tam",
           badge: "Nhánh 4", color: "#c05621",
-          members: getMembers(["TX-043", "TX-044"])
+          members: branchTam
         }
       ];
+
+      if (branchOther.length > 0) {
+        sections.push({
+          title: "Thế Hệ 6+ : Các Thành Viên & Chi Nhánh Mới Bổ Sung",
+          branchKey: "all",
+          badge: "Bổ Sung", color: "#4a5568",
+          members: branchOther
+        });
+      }
 
       container.innerHTML = sections.map(sec => {
         if (!sec.members.length) return '';
@@ -1067,24 +1696,56 @@
             <div class="tree-branch-title">
               <span class="gen-badge" style="background: ${sec.color};">${sec.badge}</span>
               <span>${sec.title}</span>
+              <span class="badge" style="background:#edf2f7; color:var(--text); font-size:0.75rem; margin-left:auto;">${sec.members.length} người</span>
             </div>
             <div class="member-grid">
               ${sec.members.map(m => `
                 <div class="member-card ${m.gioi_tinh === 'Nam' ? 'nam' : 'nu'}">
                   <div onclick="openViewModal('${m.id}')">
                     <div class="member-header">
-                      <div class="member-name">${m.ho_ten}</div>
-                      <div class="member-vai">${m.vai_ve}</div>
+                      <div>
+                        <span class="member-name">${m.ho_ten}</span>
+                        <small style="color:var(--text-muted); margin-left:0.3rem;">(${m.id})</small>
+                      </div>
+                      <div class="member-vai">${m.vai_ve || ('Đời ' + m.the_he)}</div>
                     </div>
+
+                    ${(m.cha_id || m.me_id) ? `
+                      <div class="member-info" style="color: #2b6cb0; font-size:0.8rem; font-weight:600;">
+                        👨👩 Cha Mẹ: ${getMemberName(m.cha_id)} ${m.me_id ? ' • ' + getMemberName(m.me_id) : ''}
+                      </div>
+                    ` : ''}
+
+                    ${m.vo_chong_id ? `
+                      <div class="member-info" style="color: #805ad5; font-size:0.8rem;">
+                        💍 Phối ngẫu: ${getMemberName(m.vo_chong_id)} ${m.tinh_trang_hn ? '(' + m.tinh_trang_hn + ')' : ''}
+                      </div>
+                    ` : ''}
+
                     <div class="member-info">📅 Sinh: ${m.sinh || 'Chưa rõ'}</div>
-                    ${m.mat_duong || m.mat_am ? `<div class="member-info" style="color: #c53030;">⚰️ Mất: ${m.mat_duong || m.mat_am} ${m.huong_tho ? '('+m.huong_tho+'t)' : ''}</div>` : ''}
+                    ${(m.mat_duong || m.mat_am) ? `
+                      <div class="member-info" style="color: #c53030; font-weight:600;">
+                        🕯️ Giỗ: ${m.mat_am || m.mat_duong} ${m.huong_tho ? '(' + m.huong_tho + ' tuổi)' : ''}
+                      </div>
+                    ` : ''}
                     ${m.phan_mo ? `<div class="member-info">🏛️ Mộ: ${m.phan_mo}</div>` : ''}
                     ${m.ghi_chu ? `<div class="member-note">${m.ghi_chu}</div>` : ''}
                   </div>
+
                   ${isAdmin ? `
-                    <div class="card-actions">
-                      <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openMemberModal('edit', '${m.id}')">✏️ Sửa</button>
-                      <button class="btn btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️ Xóa</button>
+                    <div class="card-mod-actions">
+                      <button class="btn btn-primary btn-xs" onclick="event.stopPropagation(); openAddChildModal('${m.id}')" title="Thêm con cho người này">
+                        👶 + Con
+                      </button>
+                      <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation(); openAddSpouseModal('${m.id}')" title="Thêm phối ngẫu">
+                        💍 + Vợ/Chồng
+                      </button>
+                      <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation(); openMemberModal('edit', '${m.id}')">
+                        ✏️ Sửa
+                      </button>
+                      <button class="btn btn-danger btn-xs" onclick="event.stopPropagation(); deleteMember('${m.id}', '${m.ho_ten}')">
+                        🗑️
+                      </button>
                     </div>
                   ` : ''}
                 </div>

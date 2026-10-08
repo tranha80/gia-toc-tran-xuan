@@ -10,9 +10,91 @@ DB_PATH = os.path.join(BASE_DIR, "gia_toc_tran_xuan.db")
 JSON_PATH = os.path.join(BASE_DIR, "gia_toc_tran_xuan.json")
 EXCEL_PATH = os.path.join(BASE_DIR, "Gia_Pha_Tran_Xuan_So_Hoa_Chuan.xlsx")
 
+DEFAULT_RELATIONS = {
+    "TX-003": ("TX-001", "", "TX-004", "Vợ cả"),
+    "TX-004": ("", "", "TX-003", "Vợ cả"),
+    "TX-005": ("", "", "TX-003", "Vợ hai"),
+    "TX-006": ("TX-001", "", "", ""),
+    "TX-007": ("TX-003", "", "TX-008", "Đang kết hôn"),
+    "TX-008": ("", "", "TX-007", "Đang kết hôn"),
+    "TX-009": ("TX-007", "TX-008", "", ""),
+    "TX-010": ("", "", "TX-011", "Đã ly hôn"),
+    "TX-011": ("TX-007", "TX-008", "TX-012", "Vợ hai"),
+    "TX-012": ("", "", "TX-011", "Vợ hai"),
+    "TX-013": ("TX-007", "TX-008", "", ""),
+    "TX-014": ("TX-007", "TX-008", "", ""),
+    "TX-015": ("TX-011", "TX-010", "TX-016", "Đang kết hôn"),
+    "TX-016": ("", "", "TX-015", "Đang kết hôn"),
+    "TX-017": ("TX-011", "TX-012", "TX-018", "Đang kết hôn"),
+    "TX-018": ("", "", "TX-017", "Đang kết hôn"),
+    "TX-019": ("TX-011", "TX-012", "", ""),
+    "TX-020": ("TX-011", "TX-012", "TX-021", "Đang kết hôn"),
+    "TX-021": ("", "", "TX-020", "Đang kết hôn"),
+    "TX-022": ("TX-011", "TX-012", "", ""),
+    "TX-023": ("TX-011", "TX-012", "", ""),
+    "TX-024": ("TX-011", "TX-012", "", ""),
+    "TX-025": ("TX-011", "TX-012", "", ""),
+    "TX-026": ("TX-011", "TX-012", "TX-027", "Đang kết hôn"),
+    "TX-027": ("", "", "TX-026", "Đang kết hôn"),
+    "TX-028": ("TX-015", "TX-016", "", ""),
+    "TX-029": ("TX-015", "TX-016", "TX-030", "Đang kết hôn"),
+    "TX-030": ("", "", "TX-029", "Đang kết hôn"),
+    "TX-031": ("TX-015", "TX-016", "TX-032", "Đang kết hôn"),
+    "TX-032": ("", "", "TX-031", "Đang kết hôn"),
+    "TX-033": ("TX-017", "TX-018", "TX-034", "Đã ly hôn"),
+    "TX-034": ("", "", "TX-033", "Đã ly hôn"),
+    "TX-035": ("", "", "TX-033", "Đã ly hôn"),
+    "TX-036": ("TX-017", "TX-018", "TX-038", "Đang kết hôn"),
+    "TX-037": ("", "", "TX-036", "Đã ly hôn"),
+    "TX-038": ("", "", "TX-036", "Đang kết hôn"),
+    "TX-039": ("TX-017", "TX-018", "", ""),
+    "TX-040": ("TX-020", "TX-021", "", ""),
+    "TX-041": ("TX-020", "TX-021", "TX-042", "Đang kết hôn"),
+    "TX-042": ("", "", "TX-041", "Đang kết hôn"),
+    "TX-043": ("TX-026", "TX-027", "", ""),
+    "TX-044": ("TX-026", "TX-027", "", ""),
+    "TX-045": ("TX-029", "TX-030", "", ""),
+    "TX-046": ("TX-029", "TX-030", "", ""),
+    "TX-047": ("TX-031", "TX-032", "", ""),
+    "TX-048": ("TX-031", "TX-032", "", ""),
+    "TX-049": ("TX-031", "TX-032", "", ""),
+    "TX-050": ("TX-033", "TX-034", "", ""),
+    "TX-051": ("TX-033", "TX-034", "", ""),
+    "TX-052": ("TX-036", "TX-037", "", ""),
+    "TX-053": ("TX-036", "TX-038", "", ""),
+    "TX-054": ("TX-041", "TX-042", "", "")
+}
+
+def ensure_db_schema(conn):
+    try:
+        c = conn.cursor()
+        c.execute("PRAGMA table_info(thanh_vien)")
+        existing_cols = [r[1] for r in c.fetchall()]
+        new_cols = [
+            ("cha_id", "TEXT"),
+            ("me_id", "TEXT"),
+            ("vo_chong_id", "TEXT"),
+            ("tinh_trang_hn", "TEXT")
+        ]
+        for col_name, col_type in new_cols:
+            if col_name not in existing_cols:
+                c.execute(f"ALTER TABLE thanh_vien ADD COLUMN {col_name} {col_type}")
+        conn.commit()
+
+        # Tự động gán mối quan hệ ban đầu nếu chưa có
+        c.execute("SELECT COUNT(*) FROM thanh_vien WHERE (cha_id IS NOT NULL AND cha_id != '') OR (vo_chong_id IS NOT NULL AND vo_chong_id != '')")
+        count_rel = c.fetchone()[0]
+        if count_rel == 0:
+            for mid, (cid, mid_m, vcid, hn) in DEFAULT_RELATIONS.items():
+                c.execute("UPDATE thanh_vien SET cha_id = ?, me_id = ?, vo_chong_id = ?, tinh_trang_hn = ? WHERE id = ?", (cid, mid_m, vcid, hn, mid))
+            conn.commit()
+    except Exception as e:
+        print(f"[SCHEMA INIT]: {e}")
+
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+    ensure_db_schema(conn)
     return conn
 
 def get_all_members(query=None, gen=None, gender=None):
@@ -65,8 +147,8 @@ def create_member(data):
     c = conn.cursor()
     mid = data.get("id") or get_next_member_id()
     c.execute("""
-        INSERT INTO thanh_vien (id, ho_ten, gioi_tinh, the_he, vai_ve, sinh, mat_duong, mat_am, huong_tho, que_quan, phan_mo, ghi_chu)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO thanh_vien (id, ho_ten, gioi_tinh, the_he, vai_ve, sinh, mat_duong, mat_am, huong_tho, que_quan, phan_mo, ghi_chu, cha_id, me_id, vo_chong_id, tinh_trang_hn)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         mid,
         data.get("ho_ten", ""),
@@ -79,7 +161,11 @@ def create_member(data):
         str(data.get("huong_tho", "")),
         data.get("que_quan", ""),
         data.get("phan_mo", ""),
-        data.get("ghi_chu", "")
+        data.get("ghi_chu", ""),
+        data.get("cha_id", ""),
+        data.get("me_id", ""),
+        data.get("vo_chong_id", ""),
+        data.get("tinh_trang_hn", "")
     ))
     conn.commit()
     conn.close()
@@ -101,7 +187,11 @@ def update_member(member_id, data):
             huong_tho = ?,
             que_quan = ?,
             phan_mo = ?,
-            ghi_chu = ?
+            ghi_chu = ?,
+            cha_id = ?,
+            me_id = ?,
+            vo_chong_id = ?,
+            tinh_trang_hn = ?
         WHERE id = ?
     """, (
         data.get("ho_ten", ""),
@@ -115,6 +205,10 @@ def update_member(member_id, data):
         data.get("que_quan", ""),
         data.get("phan_mo", ""),
         data.get("ghi_chu", ""),
+        data.get("cha_id", ""),
+        data.get("me_id", ""),
+        data.get("vo_chong_id", ""),
+        data.get("tinh_trang_hn", ""),
         member_id
     ))
     conn.commit()

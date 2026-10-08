@@ -55,6 +55,10 @@ class MemberSchema(BaseModel):
     que_quan: Optional[str] = ""
     phan_mo: Optional[str] = ""
     ghi_chu: Optional[str] = ""
+    cha_id: Optional[str] = ""
+    me_id: Optional[str] = ""
+    vo_chong_id: Optional[str] = ""
+    tinh_trang_hn: Optional[str] = ""
 
 class TelegramConfigSchema(BaseModel):
     bot_token: str
