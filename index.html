@@ -717,18 +717,45 @@
       inset: 0 !important;
       width: 100vw !important;
       height: 100vh !important;
+      height: 100dvh !important;
       z-index: 99999 !important;
       border-radius: 0 !important;
       margin: 0 !important;
-      padding: 0.8rem !important;
+      padding: 0.6rem 0.9rem !important;
       background: #0d1117 !important;
       display: flex;
       flex-direction: column;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    .canvas-3d-box.is-fullscreen h3 {
+      color: #ecc94b !important;
+    }
+    .canvas-3d-box.is-fullscreen p {
+      color: #cbd5e0 !important;
+    }
+    .canvas-3d-box.is-fullscreen .controls-3d-bar .btn,
+    .canvas-3d-box.is-fullscreen .controls-3d-bar select {
+      background: rgba(26, 32, 44, 0.92) !important;
+      color: #e2e8f0 !important;
+      border-color: #4a5568 !important;
     }
     .canvas-3d-box.is-fullscreen .canvas-3d-wrapper {
       flex: 1 !important;
       height: 100% !important;
-      border-radius: 0 !important;
+      border-radius: 8px !important;
+      border-color: #2d3748 !important;
+    }
+    .canvas-3d-box:not(.is-fullscreen) #btnExploreMoreBar {
+      display: none !important;
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+    .bounce-icon {
+      display: inline-block;
+      animation: bounceDown 1.4s infinite ease-in-out;
     }
 
     /* Thư viện Di Sản & Tư Liệu Ảnh */
@@ -960,6 +987,13 @@
             <div style="margin-top: 0.8rem; display: flex; justify-content: flex-end;">
               <button class="btn btn-primary btn-xs" id="btnCard3DDetail">Xem chi tiết hồ sơ</button>
             </div>
+          </div>
+          <!-- Nút bấm nổi bật để khám phá toàn bộ trang web khi ở toàn màn hình -->
+          <div id="btnExploreMoreBar" style="position: absolute; bottom: 14px; right: 14px; z-index: 25;">
+            <button type="button" class="btn btn-primary" onclick="exitFullscreenAndScrollDown()" style="background: linear-gradient(135deg, #2b6cb0 0%, #1a365d 100%); border: 1.5px solid #ecc94b; box-shadow: 0 4px 16px rgba(0,0,0,0.5); font-weight: 700; font-size: 0.88rem; padding: 0.6rem 1.2rem; border-radius: 30px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📜 Khám Phá Gia Phả</span>
+              <span class="bounce-icon">⬇️</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1330,10 +1364,10 @@
 
       <div class="gallery-grid">
         <!-- Ảnh 1: Mặt trước Văn bia 1881 -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/Bia mo to o bai bia01.png', 'Văn Bia Độc Bản 1881 - Mặt trước (Mộ chí quy tập tổ tiên)', 'Khắc ngày 20 tháng Giêng năm Tự Đức thứ 33 (1881). Ghi lại việc quy tập phần mộ tiên nhân dưới chân mộ cụ Thủy Tổ.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/bia_to_01.png', 'Văn Bia Độc Bản 1881 - Mặt trước (Mộ chí quy tập tổ tiên)', 'Khắc ngày 20 tháng Giêng năm Tự Đức thứ 33 (1881). Ghi lại việc quy tập phần mộ tiên nhân dưới chân mộ cụ Thủy Tổ.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">📜 Văn Bia Năm 1881</span>
-            <img src="/api/media/Bia mo to o bai bia01.png" class="gallery-thumb" alt="Mặt trước bia mộ tổ" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/bia_to_01.png" class="gallery-thumb" alt="Mặt trước bia mộ tổ" onerror="this.onerror=null; this.src='/static/images/bia_to_01.png';">
           </div>
           <div class="gallery-body">
             <div>
@@ -1345,10 +1379,10 @@
         </div>
 
         <!-- Ảnh 2: Mặt sau Văn bia 1881 -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/Bia mo to o bai bia02.png', 'Văn Bia Độc Bản 1881 - Mặt sau (Địa thế phong thủy & Lời dặn)', 'Khắc ghi địa thế phong thủy: Phần mộ cư nam thổ phụ / Khâu lăng cư bắc Thu điền và dặn dò con cháu giữ kín gia phả.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/bia_to_02.png', 'Văn Bia Độc Bản 1881 - Mặt sau (Địa thế phong thủy & Lời dặn)', 'Khắc ghi địa thế phong thủy: Phần mộ cư nam thổ phụ / Khâu lăng cư bắc Thu điền và dặn dò con cháu giữ kín gia phả.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">📜 Địa Thế Phong Thủy</span>
-            <img src="/api/media/Bia mo to o bai bia02.png" class="gallery-thumb" alt="Mặt sau bia mộ tổ" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/bia_to_02.png" class="gallery-thumb" alt="Mặt sau bia mộ tổ" onerror="this.onerror=null; this.src='/static/images/bia_to_02.png';">
           </div>
           <div class="gallery-body">
             <div>
@@ -1360,25 +1394,25 @@
         </div>
 
         <!-- Ảnh 3: Mộ Cụ Thủy Tổ -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/bia 01.jpg', 'Mộ Cụ Thủy Tổ Họ Trần Xuân tại Làng Đa Sĩ', 'Văn bia đá: Trần Xuân tính thủy tổ chi mộ. Cội nguồn khai sáng chi phái dòng họ hơn 3 thế kỷ.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/bia_mo_to.jpg', 'Mộ Cụ Thủy Tổ Họ Trần Xuân tại Làng Đa Sĩ', 'Văn bia đá: Trần Xuân tính thủy tổ chi mộ. Cội nguồn khai sáng chi phái dòng họ hơn 3 thế kỷ.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">📍 Cội Nguồn Dòng Tộc</span>
-            <img src="/api/media/bia 01.jpg" class="gallery-thumb" alt="Mộ cụ Thủy Tổ" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/bia_mo_to.jpg" class="gallery-thumb" alt="Mộ cụ Thủy Tổ" onerror="this.onerror=null; this.src='/static/images/bia_mo_to.jpg';">
           </div>
           <div class="gallery-body">
             <div>
               <div class="gallery-title">📍 Mộ Cụ Thủy Tổ Họ Trần Xuân</div>
-              <div class="gallery-desc">Văn bia đá cổ ghi danh: "Trần Xuân tính thủy tổ chi mộ" tại khu mộ tổ làng Đa Sĩ (Sài Thôn).</div>
+              <div class="gallery-desc">Văn bia đá cổ ghi danh: &quot;Trần Xuân tính thủy tổ chi mộ&quot; tại khu mộ tổ làng Đa Sĩ (Sài Thôn).</div>
             </div>
             <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
           </div>
         </div>
 
         <!-- Ảnh 4: Mộ Cụ Phúc Phang -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/bia 02.jpg', 'Bia Mộ Cụ Trần Xuân Phang & Cụ Bà Đặng Thị Trảnh', 'Cụ Cố Trần Xuân Phang (Tự Phúc Phang, 1872-1935) và Cụ Cố Bà Đặng Thị Trảnh (1891-1947).')">
+        <div class="gallery-card" onclick="openLightbox('static/images/bia_mo_phuc_phang.jpg', 'Bia Mộ Cụ Trần Xuân Phang & Cụ Bà Đặng Thị Trảnh', 'Cụ Cố Trần Xuân Phang (Tự Phúc Phang, 1872-1935) và Cụ Cố Bà Đặng Thị Trảnh (1891-1947).')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">🕯️ Tiền Nhân Đời 3</span>
-            <img src="/api/media/bia 02.jpg" class="gallery-thumb" alt="Bia mộ cụ Phang" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/bia_mo_phuc_phang.jpg" class="gallery-thumb" alt="Bia mộ cụ Phang" onerror="this.onerror=null; this.src='/static/images/bia_mo_phuc_phang.jpg';">
           </div>
           <div class="gallery-body">
             <div>
@@ -1390,25 +1424,25 @@
         </div>
 
         <!-- Ảnh 5: Mộ Bà Cô Tổ -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/bia mo ba to co tren dong cao.jpg', 'Mộ Bà Cô Tổ Trên Đồng Cao Làng Đa Sĩ', 'Mộ phần linh thiêng của Bà Cô Tổ ngự riêng trên gò đất cao làng Đa Sĩ, luôn phù trì dòng họ bình an phát tài.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/bia_mo_ba_co_to.jpg', 'Mộ Bà Cô Tổ Trên Đồng Cao Làng Đa Sĩ', 'Mộ phần linh thiêng của Bà Cô Tổ ngự riêng trên gò đất cao làng Đa Sĩ, luôn phù trì dòng họ bình an phát tài.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">🌾 Đồng Cao Linh Thiêng</span>
-            <img src="/api/media/bia mo ba to co tren dong cao.jpg" class="gallery-thumb" alt="Mộ Bà Cô Tổ" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/bia_mo_ba_co_to.jpg" class="gallery-thumb" alt="Mộ Bà Cô Tổ" onerror="this.onerror=null; this.src='/static/images/bia_mo_ba_co_to.jpg';">
           </div>
           <div class="gallery-body">
             <div>
               <div class="gallery-title">🌾 Mộ Bà Cô Tổ Trên Đồng Cao</div>
-              <div class="gallery-desc">Văn bia đá: "Trần Xuân tính tổ cô chi mộ", tọa lạc riêng biệt trên cánh đồng cao làng Đa Sĩ.</div>
+              <div class="gallery-desc">Văn bia đá: &quot;Trần Xuân tính tổ cô chi mộ&quot;, tọa lạc riêng biệt trên cánh đồng cao làng Đa Sĩ.</div>
             </div>
             <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
           </div>
         </div>
 
         <!-- Ảnh 6: Toàn cảnh lăng mộ trùng tu -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/11.jpg', 'Khu Lăng Mộ Chi 3 Cành 1 Sau Trùng Tu', 'Công trình lăng mộ gia tộc khang trang, kiên cố, đời đời phụng thờ tiên tổ.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/lang_mo_11.jpg', 'Khu Lăng Mộ Chi 3 Cành 1 Sau Trùng Tu', 'Công trình lăng mộ gia tộc khang trang, kiên cố, đời đời phụng thờ tiên tổ.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">🏛️ Công Trình Lăng Mộ</span>
-            <img src="/api/media/11.jpg" class="gallery-thumb" alt="Lăng mộ gia tộc" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/lang_mo_11.jpg" class="gallery-thumb" alt="Lăng mộ gia tộc" onerror="this.onerror=null; this.src='/static/images/lang_mo_11.jpg';">
           </div>
           <div class="gallery-body">
             <div>
@@ -1420,10 +1454,10 @@
         </div>
 
         <!-- Ảnh 7: Lễ khánh thành & Bái tổ -->
-        <div class="gallery-card" onclick="openLightbox('/api/media/12.jpg', 'Lễ Khánh Thành & Bái Tổ Tiên Nhân', 'Bà con, anh em dòng họ quây quần dâng hương tạ ơn cội nguồn tổ tiên.')">
+        <div class="gallery-card" onclick="openLightbox('static/images/lang_mo_12.jpg', 'Lễ Khánh Thành & Bái Tổ Tiên Nhân', 'Bà con, anh em dòng họ quây quần dâng hương tạ ơn cội nguồn tổ tiên.')">
           <div class="gallery-thumb-wrap">
             <span class="gallery-badge">🎉 Lễ Bái Tổ</span>
-            <img src="/api/media/12.jpg" class="gallery-thumb" alt="Lễ bái tổ" onerror="this.src='/static/images/fallback.png'">
+            <img src="static/images/lang_mo_12.jpg" class="gallery-thumb" alt="Lễ bái tổ" onerror="this.onerror=null; this.src='/static/images/lang_mo_12.jpg';">
           </div>
           <div class="gallery-body">
             <div>
@@ -1435,10 +1469,11 @@
         </div>
 
         <!-- Video: Flycam toàn cảnh lăng mộ -->
-        <div class="gallery-card" onclick="openLightboxVideo('/api/media/lang mo gia toc.mp4', 'Phim Tài Liệu Toàn Cảnh Khu Lăng Mộ Gia Tộc')">
-          <div class="gallery-thumb-wrap" style="display: flex; align-items: center; justify-content: center; background: #0d1117;">
+        <div class="gallery-card" onclick="openLightboxVideo('static/images/lang_mo_gia_toc.mp4', 'Phim Tài Liệu Toàn Cảnh Khu Lăng Mộ Gia Tộc')">
+          <div class="gallery-thumb-wrap" style="position: relative;">
             <span class="gallery-badge" style="background: #e53e3e;">🎬 Phim Video</span>
-            <div style="font-size: 3rem; color: #ecc94b;">▶️</div>
+            <img src="static/images/lang_mo_11.jpg" class="gallery-thumb" alt="Video lăng mộ" style="filter: brightness(0.7);" onerror="this.onerror=null; this.src='/static/images/lang_mo_11.jpg';">
+            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; color: #ecc94b; text-shadow: 0 4px 12px rgba(0,0,0,0.8);">▶️</div>
           </div>
           <div class="gallery-body">
             <div>
@@ -1881,6 +1916,12 @@
 
     // Tabs
     function switchTab(tabId) {
+      if (tabId !== 'tree3d') {
+        const box = document.querySelector('.canvas-3d-box');
+        if (box && box.classList.contains('is-fullscreen')) {
+          toggleFullscreen3D(false);
+        }
+      }
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       const target = document.getElementById('tab-' + tabId);
@@ -3338,15 +3379,33 @@
     }
 
     // ===== CHẾ ĐỘ TOÀN MÀN HÌNH CÂY 3D (HỖ TRỢ CẢ IOS VÀ ANDROID) =====
-    function toggleFullscreen3D() {
+    function toggleFullscreen3D(forceState) {
       const box = document.querySelector('.canvas-3d-box');
       const btn = document.getElementById('btnFullscreen3D');
       if (!box) return;
 
-      const isFs = box.classList.toggle('is-fullscreen');
-      if (btn) btn.innerHTML = isFs ? '✕ Thu nhỏ' : '⛶ Toàn màn hình';
+      let isFs;
+      if (typeof forceState === 'boolean') {
+        if (forceState) {
+          box.classList.add('is-fullscreen');
+        } else {
+          box.classList.remove('is-fullscreen');
+        }
+        isFs = forceState;
+      } else {
+        isFs = box.classList.toggle('is-fullscreen');
+      }
 
+      if (btn) btn.innerHTML = isFs ? '✕ Thu nhỏ' : '⛶ Toàn màn hình';
       setTimeout(init3DCanvas, 100);
+    }
+
+    function exitFullscreenAndScrollDown() {
+      toggleFullscreen3D(false);
+      setTimeout(() => {
+        const nav = document.querySelector('nav');
+        if (nav) nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
 
     // ===== BAY TỚI THÀNH VIÊN TRÊN CÂY 3D (FLY-TO) =====
@@ -3535,6 +3594,11 @@
     document.addEventListener('DOMContentLoaded', () => {
       initFontSize();
       handleDeepLink();
+      // Mở toàn màn hình Cây 3D ngay lập tức khi mở web
+      const hash = window.location.hash;
+      if (!hash || hash === '#tab=tree3d') {
+        setTimeout(() => toggleFullscreen3D(true), 150);
+      }
     });
 
   </script>

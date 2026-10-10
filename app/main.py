@@ -218,14 +218,47 @@ def api_export_excel():
         )
     raise HTTPException(status_code=404, detail="Không tìm thấy tệp Excel")
 
-@app.get("/api/media/{filename}")
+@app.get("/api/media/{filename:path}")
 def api_get_media(filename: str):
+    import urllib.parse
+    filename = urllib.parse.unquote(filename)
     safe_name = os.path.basename(filename)
     root_dir = os.path.dirname(os.path.dirname(__file__))
-    file_path = os.path.join(root_dir, safe_name)
-    if os.path.exists(file_path):
-        return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="Không tìm thấy tệp hình ảnh")
+    
+    # 1. Search in static/images
+    img_dir = os.path.join(root_dir, "static", "images")
+    p1 = os.path.join(img_dir, safe_name)
+    if os.path.exists(p1) and os.path.isfile(p1):
+        return FileResponse(p1)
+        
+    # 2. Search in root
+    p2 = os.path.join(root_dir, safe_name)
+    if os.path.exists(p2) and os.path.isfile(p2):
+        return FileResponse(p2)
+        
+    # 3. Search in images/
+    p3 = os.path.join(root_dir, "images", safe_name)
+    if os.path.exists(p3) and os.path.isfile(p3):
+        return FileResponse(p3)
+
+    # 4. Clean mapping
+    clean_map = {
+        "bia mo to o bai bia01.png": "bia_to_01.png",
+        "bia mo to o bai bia02.png": "bia_to_02.png",
+        "bia 01.jpg": "bia_mo_to.jpg",
+        "bia 02.jpg": "bia_mo_phuc_phang.jpg",
+        "bia mo ba to co tren dong cao.jpg": "bia_mo_ba_co_to.jpg",
+        "11.jpg": "lang_mo_11.jpg",
+        "12.jpg": "lang_mo_12.jpg",
+        "lang mo gia toc.mp4": "lang_mo_gia_toc.mp4"
+    }
+    target = clean_map.get(safe_name.lower())
+    if target:
+        p4 = os.path.join(img_dir, target)
+        if os.path.exists(p4):
+            return FileResponse(p4)
+
+    raise HTTPException(status_code=404, detail="Không tìm thấy tệp phương tiện")
 
 if __name__ == "__main__":
     import uvicorn

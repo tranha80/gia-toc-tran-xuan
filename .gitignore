@@ -2,7 +2,7 @@ __pycache__/
 *.pyc
 *.rar
 *.zip
-*.mp4
+!static/images/lang_mo_gia_toc.mp4
 Gia_pha_setup/
 scratch/
 .system_generated/
