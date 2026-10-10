@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gia Tộc Trần Xuân - Web App Quản Lý Phả Hệ</title>
+  <title>Gia Tộc Trần Xuân - Cổng Phả Hệ Điện Tử & Hệ Thống Quản Lý Dòng Tộc</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a365d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trần Xuân Tộc">
   <style>
     :root {
       --primary: #1a365d;
@@ -695,6 +700,118 @@
         font-size: 16px !important;
       }
     }
+
+    /* Chế độ cỡ chữ lớn cho người già (Elder Accessibility) */
+    body.font-large {
+      font-size: 1.15rem;
+    }
+    body.font-large .member-name { font-size: 1.35rem; }
+    body.font-large .member-info { font-size: 0.98rem; }
+    body.font-large .chinese-text { font-size: 1.45rem; }
+    body.font-large table { font-size: 1rem; }
+    body.font-large .stat-number { font-size: 2.3rem; }
+
+    /* Chế độ Toàn Màn Hình cho Cây 3D */
+    .canvas-3d-box.is-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 99999 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+      padding: 0.8rem !important;
+      background: #0d1117 !important;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-3d-box.is-fullscreen .canvas-3d-wrapper {
+      flex: 1 !important;
+      height: 100% !important;
+      border-radius: 0 !important;
+    }
+
+    /* Thư viện Di Sản & Tư Liệu Ảnh */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+    .gallery-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .gallery-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.08);
+      border-color: var(--accent-gold);
+    }
+    .gallery-thumb-wrap {
+      width: 100%;
+      height: 220px;
+      background: #1a202c;
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .gallery-card:hover .gallery-thumb {
+      transform: scale(1.04);
+    }
+    .gallery-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(26, 54, 93, 0.85);
+      backdrop-filter: blur(4px);
+      color: #fefcbf;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .gallery-body {
+      padding: 1.1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .gallery-title {
+      color: var(--primary);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .gallery-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* In ấn Phả Hệ chuẩn PDF / A4 / A3 */
+    @media print {
+      header, nav, .admin-controls, .controls-bar, .controls-3d-bar, .modal-backdrop, footer, .btn, #tab-telegram, .legend-3d, .pwa-banner {
+        display: none !important;
+      }
+      body { background: white !important; color: black !important; font-size: 11pt !important; }
+      main { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+      .tab-content { display: block !important; }
+      #tab-tree3d { display: none !important; }
+      .member-card { break-inside: avoid; border: 1px solid #718096 !important; box-shadow: none !important; }
+      .stat-card { border: 1px solid #718096 !important; box-shadow: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -706,12 +823,29 @@
         <h2>CỔNG PHẢ HỆ ĐIỆN TỬ & HỆ THỐNG QUẢN LÝ GIA TỘC</h2>
         <p>Chi 3 Cành 1 • Làng Đa Sĩ (Sài Thôn), xã Đông Vinh, TP. Thanh Hóa</p>
       </div>
-      <div class="admin-controls" id="adminBar">
-        <button class="btn btn-primary" id="btnAdminLogin" onclick="openLoginModal()">🔐 Đăng Nhập Admin</button>
-        <div id="adminLoggedGroup" style="display: none; align-items: center; gap: 0.5rem;">
-          <span style="font-size: 0.85rem; color: #fefcbf; font-weight: 700;">🛡️ CHẾ ĐỘ QUẢN TRỊ VIÊN</span>
-          <button class="btn btn-success" onclick="openMemberModal('create')">➕ Thêm Thành Viên</button>
-          <button class="btn btn-secondary" onclick="logoutAdmin()">🚪 Đăng Xuất</button>
+
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
+        <!-- Thanh Tiện Ích: Cỡ chữ người già & In ấn -->
+        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" id="btnToggleFontSize" onclick="toggleFontSize()" title="Tăng giảm cỡ chữ cho người lớn tuổi">
+            🔤 Cỡ Chữ: <strong id="lblFontSize">Chuẩn</strong>
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()" title="In gia phả hoặc xuất ra file PDF">
+            🖨️ In Gia Phả / PDF
+          </button>
+        </div>
+
+        <!-- Khung Quản Trị Viên (Admin) -->
+        <div class="admin-controls" id="adminBar">
+          <button class="btn btn-primary" id="btnAdminLogin" onclick="openLoginModal()">🔐 Đăng Nhập Admin</button>
+          <div id="adminLoggedGroup" style="display: none; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+            <span style="font-size: 0.82rem; color: #fefcbf; font-weight: 700;">🛡️ ADMIN</span>
+            <button class="btn btn-success btn-sm" onclick="openMemberModal('create')">➕ Thêm</button>
+            <button class="btn btn-primary btn-sm" onclick="exportBackupData()" title="Tải toàn bộ CSDL về máy tính/điện thoại">💾 Sao Lưu CSDL</button>
+            <button class="btn btn-secondary btn-sm" onclick="openRestoreModal()" title="Phục hồi CSDL từ bản sao lưu">📥 Phục Hồi</button>
+            <a href="/api/export/excel" class="btn btn-secondary btn-sm" download style="text-decoration:none; color: var(--text);">📊 Tải Excel</a>
+            <button class="btn btn-danger btn-sm" onclick="logoutAdmin()">🚪 Thoát</button>
+          </div>
         </div>
       </div>
     </div>
@@ -723,8 +857,9 @@
     <button class="nav-btn" onclick="switchTab('directory')">📋 Danh Sách & Tra Cứu</button>
     <button class="nav-btn" onclick="switchTab('anniversaries')">🕯️ Lịch Ngày Giỗ</button>
     <button class="nav-btn" onclick="switchTab('graves')">📍 Vị Trí Lăng Mộ</button>
-    <button class="nav-btn" id="navTelegramBtn" onclick="handleTelegramTabClick()">🤖 Cài Đặt Telegram (🔒 Chỉ Admin)</button>
+    <button class="nav-btn" onclick="switchTab('gallery')">🏛️ Di Sản & Tư Liệu Ảnh</button>
     <button class="nav-btn" onclick="switchTab('stele')">📜 Văn Bia Hán Nôm 1881</button>
+    <button class="nav-btn" id="navTelegramBtn" onclick="handleTelegramTabClick()">🤖 Cài Đặt Telegram (🔒 Chỉ Admin)</button>
   </nav>
 
   <main>
@@ -768,6 +903,12 @@
             <button class="btn btn-secondary btn-sm" onclick="zoom3D(1.2)">🔍 Phóng to (+)</button>
             <button class="btn btn-secondary btn-sm" onclick="zoom3D(0.8)">🔍 Thu nhỏ (-)</button>
             <button class="btn btn-secondary btn-sm" onclick="reset3DView()">🎯 Đặt lại góc</button>
+            <button class="btn btn-secondary btn-sm" id="btnFullscreen3D" onclick="toggleFullscreen3D()">
+              ⛶ Toàn màn hình
+            </button>
+            <select class="filter-select" id="selectFlyTo3D" onchange="flyToMember(this.value)" style="padding: 0.35rem 0.7rem; font-size: 0.85rem; max-width: 180px;">
+              <option value="">🚀 Bay tới thành viên...</option>
+            </select>
             <select class="filter-select" id="selectBranch3D" onchange="filterBranch3D(this.value)" style="padding: 0.35rem 0.7rem; font-size: 0.85rem;">
               <option value="all">Hiển thị: Toàn bộ Gia Tộc</option>
               <option value="lai">Nhánh 1: Cụ Lai (Xanh lam)</option>
@@ -1176,6 +1317,139 @@
       </div>
     </section>
 
+    <!-- TAB MỚI: THƯ VIỆN DI SẢN & TƯ LIỆU HÌNH ẢNH -->
+    <section id="tab-gallery" class="tab-content">
+      <div style="background: linear-gradient(135deg, #1a365d 0%, #2a4365 100%); color: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(26,54,93,0.15); margin-bottom: 2rem;">
+        <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <span>🏛️ THƯ VIỆN HÌNH ẢNH DI SẢN & TƯ LIỆU LỊCH SỬ DÒNG HỌ</span>
+        </h2>
+        <p style="font-size: 1rem; opacity: 0.95; line-height: 1.6; margin: 0; max-width: 950px;">
+          Kho tư liệu hình ảnh và video thực tế lưu giữ văn bia đá cổ năm Tự Đức thứ 33 (1881), các bia mộ tiên nhân, mộ Bà Cô Tổ trên đồng cao và toàn cảnh khu lăng mộ gia tộc tại làng Đa Sĩ, xã Đông Vinh, TP. Thanh Hóa. Nhấn vào từng ảnh để phóng to chi tiết.
+        </p>
+      </div>
+
+      <div class="gallery-grid">
+        <!-- Ảnh 1: Mặt trước Văn bia 1881 -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/Bia mo to o bai bia01.png', 'Văn Bia Độc Bản 1881 - Mặt trước (Mộ chí quy tập tổ tiên)', 'Khắc ngày 20 tháng Giêng năm Tự Đức thứ 33 (1881). Ghi lại việc quy tập phần mộ tiên nhân dưới chân mộ cụ Thủy Tổ.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">📜 Văn Bia Năm 1881</span>
+            <img src="/api/media/Bia mo to o bai bia01.png" class="gallery-thumb" alt="Mặt trước bia mộ tổ" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">📜 Mặt Trước Văn Bia Mộ Tổ (1881)</div>
+              <div class="gallery-desc">Bản dập Hán Nôm nguyên bản ghi lại mộ chí và sự tích quy tập tiên nhân dưới chân mộ Thủy Tổ.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 2: Mặt sau Văn bia 1881 -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/Bia mo to o bai bia02.png', 'Văn Bia Độc Bản 1881 - Mặt sau (Địa thế phong thủy & Lời dặn)', 'Khắc ghi địa thế phong thủy: Phần mộ cư nam thổ phụ / Khâu lăng cư bắc Thu điền và dặn dò con cháu giữ kín gia phả.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">📜 Địa Thế Phong Thủy</span>
+            <img src="/api/media/Bia mo to o bai bia02.png" class="gallery-thumb" alt="Mặt sau bia mộ tổ" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">📜 Mặt Sau Văn Bia Mộ Tổ (1881)</div>
+              <div class="gallery-desc">Khắc ghi địa thế gò đất phía Nam, ruộng mùa Thu phía Bắc và lời căn dặn gìn giữ gia phả trong họ.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 3: Mộ Cụ Thủy Tổ -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/bia 01.jpg', 'Mộ Cụ Thủy Tổ Họ Trần Xuân tại Làng Đa Sĩ', 'Văn bia đá: Trần Xuân tính thủy tổ chi mộ. Cội nguồn khai sáng chi phái dòng họ hơn 3 thế kỷ.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">📍 Cội Nguồn Dòng Tộc</span>
+            <img src="/api/media/bia 01.jpg" class="gallery-thumb" alt="Mộ cụ Thủy Tổ" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">📍 Mộ Cụ Thủy Tổ Họ Trần Xuân</div>
+              <div class="gallery-desc">Văn bia đá cổ ghi danh: "Trần Xuân tính thủy tổ chi mộ" tại khu mộ tổ làng Đa Sĩ (Sài Thôn).</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 4: Mộ Cụ Phúc Phang -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/bia 02.jpg', 'Bia Mộ Cụ Trần Xuân Phang & Cụ Bà Đặng Thị Trảnh', 'Cụ Cố Trần Xuân Phang (Tự Phúc Phang, 1872-1935) và Cụ Cố Bà Đặng Thị Trảnh (1891-1947).')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">🕯️ Tiền Nhân Đời 3</span>
+            <img src="/api/media/bia 02.jpg" class="gallery-thumb" alt="Bia mộ cụ Phang" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">🕯️ Mộ Cụ Phúc Phang & Cụ Bà Trảnh</div>
+              <div class="gallery-desc">Bia mộ đá cổ của cụ Cố Ông Trần Xuân Phúc Phang và cụ Cố Bà Đặng Thị Trảnh.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 5: Mộ Bà Cô Tổ -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/bia mo ba to co tren dong cao.jpg', 'Mộ Bà Cô Tổ Trên Đồng Cao Làng Đa Sĩ', 'Mộ phần linh thiêng của Bà Cô Tổ ngự riêng trên gò đất cao làng Đa Sĩ, luôn phù trì dòng họ bình an phát tài.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">🌾 Đồng Cao Linh Thiêng</span>
+            <img src="/api/media/bia mo ba to co tren dong cao.jpg" class="gallery-thumb" alt="Mộ Bà Cô Tổ" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">🌾 Mộ Bà Cô Tổ Trên Đồng Cao</div>
+              <div class="gallery-desc">Văn bia đá: "Trần Xuân tính tổ cô chi mộ", tọa lạc riêng biệt trên cánh đồng cao làng Đa Sĩ.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 6: Toàn cảnh lăng mộ trùng tu -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/11.jpg', 'Khu Lăng Mộ Chi 3 Cành 1 Sau Trùng Tu', 'Công trình lăng mộ gia tộc khang trang, kiên cố, đời đời phụng thờ tiên tổ.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">🏛️ Công Trình Lăng Mộ</span>
+            <img src="/api/media/11.jpg" class="gallery-thumb" alt="Lăng mộ gia tộc" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">🏛️ Toàn Cảnh Khu Lăng Mộ Chi 3</div>
+              <div class="gallery-desc">Khuôn viên lăng mộ gia tộc được tôn tạo tôn nghiêm, trang trọng tại quê hương Đông Vinh.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Ảnh 7: Lễ khánh thành & Bái tổ -->
+        <div class="gallery-card" onclick="openLightbox('/api/media/12.jpg', 'Lễ Khánh Thành & Bái Tổ Tiên Nhân', 'Bà con, anh em dòng họ quây quần dâng hương tạ ơn cội nguồn tổ tiên.')">
+          <div class="gallery-thumb-wrap">
+            <span class="gallery-badge">🎉 Lễ Bái Tổ</span>
+            <img src="/api/media/12.jpg" class="gallery-thumb" alt="Lễ bái tổ" onerror="this.src='/static/images/fallback.png'">
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">🎉 Nghi Lễ Bái Tổ Dòng Họ</div>
+              <div class="gallery-desc">Hình ảnh ngày hội ngộ dòng họ, anh em tề tựu chu toàn đạo hiếu và thắt chặt tình thân.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #2b6cb0; font-weight: 600; font-size: 0.82rem;">🔍 Nhấn để phóng to ➔</div>
+          </div>
+        </div>
+
+        <!-- Video: Flycam toàn cảnh lăng mộ -->
+        <div class="gallery-card" onclick="openLightboxVideo('/api/media/lang mo gia toc.mp4', 'Phim Tài Liệu Toàn Cảnh Khu Lăng Mộ Gia Tộc')">
+          <div class="gallery-thumb-wrap" style="display: flex; align-items: center; justify-content: center; background: #0d1117;">
+            <span class="gallery-badge" style="background: #e53e3e;">🎬 Phim Video</span>
+            <div style="font-size: 3rem; color: #ecc94b;">▶️</div>
+          </div>
+          <div class="gallery-body">
+            <div>
+              <div class="gallery-title">🎬 Video Toàn Cảnh Lăng Mộ</div>
+              <div class="gallery-desc">Thước phim quay thực tế toàn cảnh địa thế khu lăng mộ gia tộc họ Trần Xuân tại Đông Vinh.</div>
+            </div>
+            <div style="margin-top: 0.8rem; color: #c53030; font-weight: 700; font-size: 0.82rem;">▶️ Bấm để xem Video ➔</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- TAB 6: VĂN BIA HÁN NÔM -->
     <section id="tab-stele" class="tab-content">
@@ -1483,6 +1757,38 @@
       </form>
     </div>
   </div>
+  <!-- MODAL PHỤC HỒI DỮ LIỆU CSDL (ADMIN) -->
+  <div class="modal-backdrop" id="restoreModal" onclick="closeRestoreModal(event)">
+    <div class="modal-dialog" style="max-width: 480px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeRestoreModal()">&times;</button>
+      <h3 style="color: var(--primary); margin-bottom: 0.5rem;">📥 Phục Hồi Cơ Sở Dữ Liệu</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.2rem; line-height: 1.5;">
+        Tải lên tệp sao lưu định dạng <code>.json</code> đã tải về trước đó để khôi phục toàn bộ danh sách thành viên và ngày giỗ.
+      </p>
+      <div class="form-group">
+        <label>Chọn tệp sao lưu (.json):</label>
+        <input type="file" id="restoreFileInput" class="form-control" accept=".json">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeRestoreModal()">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="submitRestoreBackup()">Tiến hành Phục Hồi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PHÓNG TO HÌNH ẢNH / VIDEO DI SẢN (LIGHTBOX) -->
+  <div class="modal-backdrop" id="lightboxModal" onclick="closeLightbox(event)" style="background: rgba(0,0,0,0.88); z-index: 100000;">
+    <div class="modal-dialog" style="max-width: 900px; width: 95%; background: transparent; box-shadow: none; padding: 0; text-align: center;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeLightbox()" style="color: white; font-size: 2.2rem; top: -35px; right: 0;">&times;</button>
+      <div id="lightboxMediaContainer" style="border-radius: 8px; overflow: hidden; background: #000; max-height: 75vh; display: flex; align-items: center; justify-content: center;">
+        <!-- Image or Video injected here -->
+      </div>
+      <div style="background: rgba(13, 17, 23, 0.95); padding: 1rem 1.2rem; border-radius: 8px; margin-top: 0.8rem; text-align: left; border: 1px solid #2d3748;">
+        <h4 id="lightboxTitle" style="color: #ecc94b; margin: 0 0 0.3rem 0; font-size: 1.15rem;"></h4>
+        <p id="lightboxDesc" style="color: #cbd5e0; margin: 0; font-size: 0.88rem; line-height: 1.4;"></p>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL XEM CHI TIẾT -->
   <div class="modal-backdrop" id="memberModal" onclick="closeViewModal(event)">
@@ -1508,6 +1814,7 @@
       renderTree();
       renderDirectory(membersData);
       renderAnniversaries();
+      populateFlyToSelect();
       setTimeout(init3DCanvas, 80);
     }
 
@@ -1545,6 +1852,7 @@
           document.getElementById('statMembersCount').textContent = membersData.length;
           renderTree();
           renderDirectory(membersData);
+          populateFlyToSelect();
           if (document.getElementById('tab-tree3d')?.classList.contains('active')) {
             setTimeout(init3DCanvas, 50);
           }
@@ -3011,6 +3319,223 @@
 
       ctx3D.restore();
     }
+
+    // ===== TIỆN ÍCH NGƯỜI LỚN TUỔI: CỠ CHỮ LỚN =====
+    function initFontSize() {
+      const isLarge = localStorage.getItem('gia_toc_font_large') === 'true';
+      if (isLarge) {
+        document.body.classList.add('font-large');
+        const lbl = document.getElementById('lblFontSize');
+        if (lbl) lbl.textContent = 'Lớn (A+)';
+      }
+    }
+
+    function toggleFontSize() {
+      const isLarge = document.body.classList.toggle('font-large');
+      localStorage.setItem('gia_toc_font_large', isLarge);
+      const lbl = document.getElementById('lblFontSize');
+      if (lbl) lbl.textContent = isLarge ? 'Lớn (A+)' : 'Chuẩn';
+    }
+
+    // ===== CHẾ ĐỘ TOÀN MÀN HÌNH CÂY 3D (HỖ TRỢ CẢ IOS VÀ ANDROID) =====
+    function toggleFullscreen3D() {
+      const box = document.querySelector('.canvas-3d-box');
+      const btn = document.getElementById('btnFullscreen3D');
+      if (!box) return;
+
+      const isFs = box.classList.toggle('is-fullscreen');
+      if (btn) btn.innerHTML = isFs ? '✕ Thu nhỏ' : '⛶ Toàn màn hình';
+
+      setTimeout(init3DCanvas, 100);
+    }
+
+    // ===== BAY TỚI THÀNH VIÊN TRÊN CÂY 3D (FLY-TO) =====
+    function populateFlyToSelect() {
+      const sel = document.getElementById('selectFlyTo3D');
+      if (!sel) return;
+      const currentVal = sel.value;
+      sel.innerHTML = '<option value="">🚀 Bay tới thành viên...</option>';
+      const sorted = [...membersData].sort((a, b) => (a.the_he || 0) - (b.the_he || 0) || a.ho_ten.localeCompare(b.ho_ten, 'vi'));
+      sorted.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = `[Đời ${m.the_he || '?'}] ${m.ho_ten}`;
+        sel.appendChild(opt);
+      });
+      if (currentVal) sel.value = currentVal;
+    }
+
+    function flyToMember(memberId) {
+      if (!memberId) return;
+      const targetNode = nodes3D.find(n => n.id === memberId);
+      if (!targetNode) return;
+
+      // Xoay góc nhìn để tâm hướng vào nút thành viên
+      const angle = Math.atan2(targetNode.x, targetNode.z);
+      rotY3D = -angle;
+      rotX3D = -Math.atan2(targetNode.y, 400);
+      zoom3DVal = 1.35;
+      hoveredNode3D = targetNode;
+      show3DCard(targetNode);
+      autoRotate3D = false;
+      const lbl = document.getElementById('lblRotateStatus');
+      const btn = document.getElementById('btnToggleRotate3D');
+      if (lbl) lbl.textContent = 'TẮT';
+      if (btn) btn.style.background = '#fed7d7';
+    }
+
+    // ===== SAO LƯU & PHỤC HỒI CSDL (ADMIN) =====
+    function exportBackupData() {
+      const backupObj = {
+        app: "Trần Xuân Tộc - Phả Hệ Điện Tử",
+        version: "2.0",
+        export_date: new Date().toISOString(),
+        members: membersData,
+        anniversaries: anniversariesData
+      };
+      const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sao_luu_pha_he_tran_xuan_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function openRestoreModal() {
+      document.getElementById('restoreModal').classList.add('active');
+    }
+    function closeRestoreModal(e) {
+      if (!e || e.target.id === 'restoreModal' || e.target.classList.contains('modal-close')) {
+        document.getElementById('restoreModal').classList.remove('active');
+      }
+    }
+
+    async function submitRestoreBackup() {
+      const input = document.getElementById('restoreFileInput');
+      if (!input || !input.files || input.files.length === 0) {
+        alert("Vui lòng chọn tệp .json để phục hồi!");
+        return;
+      }
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (!parsed.members || !Array.isArray(parsed.members)) {
+            alert("Định dạng tệp sao lưu không hợp lệ!");
+            return;
+          }
+          if (!confirm(`Bạn có chắc muốn phục hồi ${parsed.members.length} thành viên từ bản sao lưu không?`)) {
+            return;
+          }
+
+          // Cập nhật CSDL qua API
+          try {
+            const res = await fetch('/api/restore', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify(parsed)
+            });
+            if (res.ok) {
+              const resData = await res.json();
+              alert("🎉 Phục hồi dữ liệu thành công lên máy chủ!");
+            }
+          } catch(err) {
+            console.log("Cập nhật cục bộ:", err);
+          }
+
+          membersData = parsed.members;
+          if (parsed.anniversaries && Array.isArray(parsed.anniversaries)) {
+            anniversariesData = parsed.anniversaries;
+          }
+          try { localStorage.setItem('gia_toc_tran_xuan_members', JSON.stringify(membersData)); } catch(e) {}
+
+          initDisplay();
+          populateFlyToSelect();
+          closeRestoreModal();
+          alert("🎉 Đã phục hồi dữ liệu phả hệ thành công!");
+        } catch(err) {
+          alert("Lỗi đọc tệp sao lưu: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== HỘP XEM ẢNH & PHIM TƯ LIỆU DI SẢN (LIGHTBOX) =====
+    function openLightbox(src, title, desc) {
+      const container = document.getElementById('lightboxMediaContainer');
+      const titleEl = document.getElementById('lightboxTitle');
+      const descEl = document.getElementById('lightboxDesc');
+      const modal = document.getElementById('lightboxModal');
+      if (!container || !modal) return;
+
+      container.innerHTML = `<img src="${src}" style="max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 6px;" alt="${title}">`;
+      titleEl.textContent = title || '';
+      descEl.textContent = desc || '';
+      modal.classList.add('active');
+    }
+
+    function openLightboxVideo(src, title) {
+      const container = document.getElementById('lightboxMediaContainer');
+      const titleEl = document.getElementById('lightboxTitle');
+      const descEl = document.getElementById('lightboxDesc');
+      const modal = document.getElementById('lightboxModal');
+      if (!container || !modal) return;
+
+      container.innerHTML = `
+        <video controls autoplay playsinline style="max-width: 100%; max-height: 75vh; border-radius: 6px; background: #000;">
+          <source src="${src}" type="video/mp4">
+          Trình duyệt không hỗ trợ xem video trực tiếp.
+        </video>
+      `;
+      titleEl.textContent = title || 'Phim Tư Liệu Toàn Cảnh Lăng Mộ Gia Tộc';
+      descEl.textContent = 'Thước phim tài liệu quay thực tế địa thế khu lăng mộ gia tộc Trần Xuân tại Đông Vinh, Thanh Hóa.';
+      modal.classList.add('active');
+    }
+
+    function closeLightbox(e) {
+      if (!e || e.target.id === 'lightboxModal' || e.target.classList.contains('modal-close')) {
+        const modal = document.getElementById('lightboxModal');
+        if (modal) {
+          modal.classList.remove('active');
+          const container = document.getElementById('lightboxMediaContainer');
+          if (container) container.innerHTML = '';
+        }
+      }
+    }
+
+    // ===== DEEP-LINKING (LIÊN KẾT TRỰC TIẾP TỚI THÀNH VIÊN HOẶC TAB) =====
+    function handleDeepLink() {
+      const hash = window.location.hash;
+      if (!hash) return;
+      if (hash.startsWith('#member=')) {
+        const id = hash.replace('#member=', '');
+        setTimeout(() => openViewModal(id), 250);
+      } else if (hash.startsWith('#tab=')) {
+        const tab = hash.replace('#tab=', '');
+        setTimeout(() => switchTab(tab), 100);
+      }
+    }
+
+    // ===== ĐĂNG KÝ SERVICE WORKER (PWA & OFFLINE CACHE) =====
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          console.log('PWA ServiceWorker đã sẵn sàng:', reg.scope);
+        }).catch(err => {
+          console.log('ServiceWorker:', err);
+        });
+      });
+    }
+
+    // Khởi tạo các tiện ích khi tải trang
+    document.addEventListener('DOMContentLoaded', () => {
+      initFontSize();
+      handleDeepLink();
+    });
 
   </script>
 </body>
