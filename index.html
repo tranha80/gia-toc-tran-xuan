@@ -598,6 +598,7 @@
         justify-content: center;
       }
       .controls-3d-bar select {
+
         flex: 1 1 100%;
       }
       .legend-3d {
@@ -827,17 +828,29 @@
       line-height: 1.5;
     }
 
-    /* In ấn Phả Hệ chuẩn PDF / A4 / A3 */
+    /* In ấn Phả Hệ chuẩn PDF / A4 / A3 / A0 */
     @media print {
-      header, nav, .admin-controls, .controls-bar, .controls-3d-bar, .modal-backdrop, footer, .btn, #tab-telegram, .legend-3d, .pwa-banner {
+      header, nav, .admin-controls, .controls-bar, .controls-3d-bar, .modal-backdrop, footer, .btn, #tab-telegram, .legend-3d, .pwa-banner, #upcomingEventsBanner {
         display: none !important;
       }
       body { background: white !important; color: black !important; font-size: 11pt !important; }
+      body::before {
+        content: "GIA TỘC TRẦN XUÂN (陳春族) - PHẢ HỆ ĐIỆN TỬ CHI 3 CÀNH 1 • ĐA SĨ, ĐÔNG VINH, THANH HÓA";
+        display: block;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14pt;
+        margin-bottom: 12pt;
+        padding-bottom: 6pt;
+        border-bottom: 2px solid #000;
+      }
       main { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
       .tab-content { display: block !important; }
-      #tab-tree3d { display: none !important; }
-      .member-card { break-inside: avoid; border: 1px solid #718096 !important; box-shadow: none !important; }
+      #tab-tree3d, #tab-stele, #tab-gallery, #tab-graves, #tab-anniversaries, #tab-directory { display: none !important; }
+      #tab-tree { display: block !important; }
+      .member-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #718096 !important; box-shadow: none !important; }
       .stat-card { border: 1px solid #718096 !important; box-shadow: none !important; }
+      .summary-grid { break-after: avoid; }
     }
   </style>
 </head>
@@ -854,6 +867,9 @@
       <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
         <!-- Thanh Tiện Ích: Cỡ chữ người già & In ấn -->
         <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" id="btnTogglePrivacy" onclick="togglePrivacyMode()" title="Chế độ riêng tư: Ẩn/hiện thông tin tế nhị gia đình theo lời dặn tổ tiên">
+            🔒 <strong id="lblPrivacyStatus">Riêng Tư: BẬT</strong>
+          </button>
           <button class="btn btn-secondary btn-sm" id="btnToggleFontSize" onclick="toggleFontSize()" title="Tăng giảm cỡ chữ cho người lớn tuổi">
             🔤 Cỡ Chữ: <strong id="lblFontSize">Chuẩn</strong>
           </button>
@@ -879,8 +895,8 @@
   </header>
 
   <nav>
-    <button class="nav-btn active" onclick="switchTab('tree3d')">✨ Cây Phả Hệ 3D Không Gian</button>
-    <button class="nav-btn" onclick="switchTab('tree')">🌳 Cây Phả Hệ Tương Tác</button>
+    <button class="nav-btn active" onclick="switchTab('tree')">🌳 Cây Phả Hệ Tương Tác</button>
+    <button class="nav-btn" onclick="switchTab('tree3d')">✨ Cây Phả Hệ 3D Không Gian</button>
     <button class="nav-btn" onclick="switchTab('directory')">📋 Danh Sách & Tra Cứu</button>
     <button class="nav-btn" onclick="switchTab('anniversaries')">🕯️ Lịch Ngày Giỗ</button>
     <button class="nav-btn" onclick="switchTab('graves')">📍 Vị Trí Lăng Mộ</button>
@@ -910,8 +926,24 @@
       </div>
     </div>
 
-    <!-- TAB MỚI: CÂY PHẢ HỆ 3D KHÔNG GIAN (MẶC ĐỊNH MỞ NGAY ĐẦU TIÊN) -->
-    <section id="tab-tree3d" class="tab-content active">
+    <!-- TAB: CÂY PHẢ HỆ 3D KHÔNG GIAN -->
+    <!-- KHUNG NHẮC GIỖ HỌ SẮP TỚI TRONG THÁNG (TIỆN ÍCH DÒNG HỌ) -->
+    <div id="upcomingEventsBanner" style="background: #fffaf0; border: 1.5px solid #ecc94b; border-left: 6px solid #b7791f; border-radius: 10px; padding: 1.1rem 1.4rem; margin-bottom: 1.8rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.6rem;">
+        <div style="font-weight: 700; color: #744210; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🕯️ CÁC NGÀY GIỖ TIỀN NHÂN DÒNG HỌ SẮP TỚI</span>
+          <span class="badge" style="background: #feebc8; color: #744210; font-size: 0.75rem;">Nhắc nhở con cháu</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="switchTab('anniversaries')" style="font-size: 0.8rem; padding: 0.3rem 0.7rem;">
+          Xem toàn bộ lịch giỗ ➔
+        </button>
+      </div>
+      <div id="upcomingEventsList" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; color: #2d3748;">
+        <!-- Danh sách sự kiện sắp tới render tự động bằng JS -->
+      </div>
+    </div>
+
+    <section id="tab-tree3d" class="tab-content">
       <div class="canvas-3d-box">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem;">
           <div>
@@ -1000,7 +1032,22 @@
     </section>
 
     <!-- TAB 1: CÂY PHẢ HỆ TƯƠNG TÁC -->
-    <section id="tab-tree" class="tab-content">
+    <section id="tab-tree" class="tab-content active">
+      <!-- BANNER MỜI TRẢI NGHIỆM CÂY 3D -->
+      <div style="background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; padding: 0.9rem 1.2rem; border-radius: 8px; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div>
+          <strong style="font-size: 1.05rem; color: #fefcbf; display: flex; align-items: center; gap: 0.4rem;">
+            <span>✨ KHÁM PHÁ CÂY PHẢ HỆ 3D KHÔNG GIAN</span>
+            <span class="badge" style="background: #ecc94b; color: #1a202c; font-size: 0.72rem; padding: 0.15rem 0.5rem;">360° Độc Bản</span>
+          </strong>
+          <p style="font-size: 0.85rem; margin: 0.2rem 0 0; opacity: 0.92; line-height: 1.4;">
+            Quan sát toàn bộ các thế hệ dòng họ kết nối trong vũ trụ 3D • Xoay 360 độ • Phóng to thu nhỏ trực quan.
+          </p>
+        </div>
+        <button class="btn btn-success btn-sm" onclick="switchTab('tree3d')" style="font-weight: 700; padding: 0.45rem 1.1rem; font-size: 0.88rem; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+          🚀 Trải Nghiệm Cây 3D Ngay
+        </button>
+      </div>
       <div class="controls-bar">
         <div class="search-box">
           <input type="text" id="treeSearch" placeholder="🔍 Tìm kiếm thành viên theo tên..." oninput="filterTree()">
@@ -1152,12 +1199,26 @@
             <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
               <input type="checkbox" id="cfgEnabled" checked style="width: 18px; height: 18px;">
               <label for="cfgEnabled" style="margin-bottom: 0; cursor: pointer;">Kích hoạt trình quét tự động 365 ngày (Daemon Scheduler)</label>
+
             </div>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
               <button class="btn btn-primary" onclick="saveTelegramConfig()">💾 Lưu Thiết Lập</button>
               <button class="btn btn-secondary" onclick="sendTestTelegram()">🚀 Gửi Thử Nghiệm</button>
               <button class="btn btn-success" onclick="triggerTelegramToday()">🔔 Quét Sự Kiện Ngày Mai</button>
             </div>
+          </div>
+
+          <div class="info-card" style="border-left-color: #d69e2e; background: #fffaf0;">
+            <h4 style="color: #744210;">💡 Giữ Server & Bot Telegram Luôn Thức 24/7 (Render Free)</h4>
+            <p style="font-size: 0.88rem; color: #4a5568; line-height: 1.5; margin-bottom: 0.5rem;">
+              Do Render gói miễn phí tự động ngủ sau 15 phút, bot có thể lỡ hẹn lúc 07:00 sáng. Để bot luôn thức 24/7 và gửi tin chuẩn xác:
+            </p>
+            <p style="font-size: 0.85rem; color: #2d3748; line-height: 1.5; margin-bottom: 0.5rem;">
+              👉 Dùng dịch vụ miễn phí <a href="https://cron-job.org" target="_blank" style="color: #2b6cb0; font-weight: 700;">cron-job.org</a> hoặc <a href="https://uptimerobot.com" target="_blank" style="color: #2b6cb0; font-weight: 700;">UptimeRobot.com</a> tạo ping vào URL:
+              <br><code style="background: white; border: 1px solid #ecc94b; padding: 2px 6px; border-radius: 4px; color: #c53030; font-weight: 700; word-break: break-all;">https://giatoctranxuandongvinhthanhhoa.onrender.com/api/ping</code>
+              <br>(Cài đặt tần suất: <strong>10 phút / lần</strong>)
+            </p>
+            <button class="btn btn-secondary btn-xs" onclick="fetch('/api/ping').then(r=>r.json()).then(d=>alert('✅ Máy chủ phản hồi trực tuyến: ' + JSON.stringify(d))).catch(e=>alert('Lỗi kết nối'))">⚡ Kiểm tra Ping Máy Chủ Ngay</button>
           </div>
 
           <div class="info-card" style="border-left-color: #2f855a;">
@@ -1639,6 +1700,7 @@
         </div>
 
         <!-- MÔ-ĐUN 3: QUẢN LÝ SINH - TỬ & MỘ PHẦN -->
+
         <div class="module-pane" id="modulePaneLife">
           <label style="font-weight: 700; margin-bottom: 0.4rem; display: block;">Trạng thái thành viên:</label>
           <div class="life-toggle-group">
@@ -1774,7 +1836,10 @@
         <!-- Image or Video injected here -->
       </div>
       <div style="background: rgba(13, 17, 23, 0.95); padding: 1rem 1.2rem; border-radius: 8px; margin-top: 0.8rem; text-align: left; border: 1px solid #2d3748;">
-        <h4 id="lightboxTitle" style="color: #ecc94b; margin: 0 0 0.3rem 0; font-size: 1.15rem;"></h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem;">
+          <h4 id="lightboxTitle" style="color: #ecc94b; margin: 0; font-size: 1.15rem;"></h4>
+          <a id="btnLightboxDownload" href="#" download class="btn btn-primary btn-sm" style="text-decoration: none; padding: 0.35rem 0.8rem; font-size: 0.82rem; background: #2b6cb0;">📥 Tải Bản Gốc Về Máy</a>
+        </div>
         <p id="lightboxDesc" style="color: #cbd5e0; margin: 0; font-size: 0.88rem; line-height: 1.4;"></p>
       </div>
     </div>
@@ -1804,6 +1869,7 @@
       renderTree();
       renderDirectory(membersData);
       renderAnniversaries();
+      loadUpcomingEvents();
       populateFlyToSelect();
       setTimeout(init3DCanvas, 80);
     }
@@ -1851,6 +1917,7 @@
         if (resAnn.ok) {
           anniversariesData = await resAnn.json();
           renderAnniversaries();
+      loadUpcomingEvents();
         }
         loadUpcomingEvents();
         loadTelegramConfig();
@@ -1903,15 +1970,51 @@
     }
     function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
 
+    let adminToken = sessionStorage.getItem('tx_admin_token') || "";
+    function getAdminToken() { return adminToken || sessionStorage.getItem('tx_admin_token') || ""; }
+    function setAdminToken(t) {
+      adminToken = t;
+      if (t) sessionStorage.setItem('tx_admin_token', t);
+      else sessionStorage.removeItem('tx_admin_token');
+    }
+
+    // Chế độ riêng tư kín đáo (Privacy Mode) theo lời dặn tổ tiên
+    let isPrivacyMode = localStorage.getItem('gia_toc_privacy_mode') !== 'false';
+    function togglePrivacyMode() {
+      isPrivacyMode = !isPrivacyMode;
+      localStorage.setItem('gia_toc_privacy_mode', isPrivacyMode);
+      updatePrivacyUI();
+      renderTree();
+      renderDirectory(membersData);
+    }
+    function updatePrivacyUI() {
+      const btn = document.getElementById('btnTogglePrivacy');
+      const lbl = document.getElementById('lblPrivacyStatus');
+      if (lbl) lbl.textContent = isPrivacyMode ? 'Riêng Tư: BẬT' : 'Riêng Tư: TẮT';
+      if (btn) btn.style.background = isPrivacyMode ? '#2b6cb0' : '#4a5568';
+    }
+    function formatMarriageStatus(status) {
+      if (!status) return "";
+      if (isPrivacyMode && !isAdmin) {
+        if (status.includes("ly hôn")) return "—";
+        if (status.includes("Vợ hai") || status.includes("Vợ ba")) return "Phối ngẫu";
+      }
+      return status;
+    }
+
     async function submitAdminLogin() {
       const pin = document.getElementById('adminPinInput').value;
       try {
         const res = await fetch('/api/admin/login', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAdminToken()
+          },
           body: JSON.stringify({ pin })
         });
         const result = await res.json();
+        if (result.token) setAdminToken(result.token);
         if (result.success) {
           isAdmin = true;
           document.getElementById('btnAdminLogin').style.display = 'none';
@@ -1925,7 +2028,8 @@
           alert(result.message || "Mã PIN không đúng!");
         }
       } catch (e) {
-        if (pin === "5101980") {
+        alert("Lỗi kết nối máy chủ xác thực. Vui lòng kiểm tra lại mạng!");
+        if (false) {
           isAdmin = true;
           document.getElementById('btnAdminLogin').style.display = 'none';
           document.getElementById('adminLoggedGroup').style.display = 'flex';
@@ -1942,10 +2046,12 @@
 
     function logoutAdmin() {
       isAdmin = false;
+      setAdminToken("");
       document.getElementById('btnAdminLogin').style.display = 'inline-flex';
       document.getElementById('adminLoggedGroup').style.display = 'none';
       document.getElementById('thActions').style.display = 'none';
       renderTree();
+
       renderDirectory(membersData);
       alert("Đã đăng xuất chế độ Quản trị viên.");
     }
@@ -1984,7 +2090,8 @@
       if (m.vo_chong_id) {
         const sp = getMemberById(m.vo_chong_id);
         const spName = sp ? sp.ho_ten : m.vo_chong_id;
-        addRow('Phối Ngẫu', `💍 <a href="javascript:void(0)" onclick="openViewModal('${m.vo_chong_id}')" style="color:#805ad5; font-weight:700;">${spName} (${m.vo_chong_id})</a> ${m.tinh_trang_hn ? '<span class="badge" style="background:#f3e8ff; color:#6b46c1; margin-left:0.4rem;">' + m.tinh_trang_hn + '</span>' : ''}`, true);
+        const hnDisplay = formatMarriageStatus(m.tinh_trang_hn);
+        addRow('Phối Ngẫu', `💍 <a href="javascript:void(0)" onclick="openViewModal('${m.vo_chong_id}')" style="color:#805ad5; font-weight:700;">${spName} (${m.vo_chong_id})</a> ${hnDisplay ? '<span class="badge" style="background:#f3e8ff; color:#6b46c1; margin-left:0.4rem;">' + hnDisplay + '</span>' : ''}`, true);
       }
 
       // Các con
@@ -2011,7 +2118,8 @@
       }
 
       addRow('Quê quán', m.que_quan);
-      addRow('Ghi chú / Tiểu sử', m.ghi_chu);
+      const safeNote = (isPrivacyMode && !isAdmin && m.ghi_chu && m.ghi_chu.toLowerCase().includes('ly hôn')) ? 'Thông tin lưu hành nội bộ dòng họ' : m.ghi_chu;
+      addRow('Ghi chú / Tiểu sử', safeNote);
 
       if (isAdmin) {
         html += `
@@ -2294,6 +2402,7 @@
       if (!p) return;
       openMemberModal('create');
       document.getElementById('formVoChongId').value = p.id;
+
       document.getElementById('formTheHe').value = p.the_he || 1;
       document.getElementById('formGioiTinh').value = (p.gioi_tinh === 'Nam') ? 'Nữ' : 'Nam';
       document.getElementById('formVaiVe').value = (p.gioi_tinh === 'Nam') ? 'Vợ' : 'Chồng';
@@ -2342,11 +2451,15 @@
         const method = id ? 'PUT' : 'POST';
         const res = await fetch(url, {
           method: method,
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAdminToken()
+          },
           body: JSON.stringify(payload)
         });
         if (res.ok) {
           const result = await res.json();
+        if (result.token) setAdminToken(result.token);
           if (result.success) {
             savedRemote = true;
             if (result.member && !id) {
@@ -2387,8 +2500,12 @@
     async function deleteMember(id, name) {
       if (!confirm(`Bạn có chắc chắn muốn xóa thành viên "${name}" (${id}) khỏi phả hệ không?`)) return;
       try {
-        const res = await fetch(`/api/members/${id}`, { method: 'DELETE' });
+        const res = await fetch(`/api/members/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + getAdminToken() }
+        });
         const result = await res.json();
+        if (result.token) setAdminToken(result.token);
         if (result.success) {
           alert(`Đã xóa thành công thành viên ${id}!`);
           await loadAllData();
@@ -2418,7 +2535,7 @@
           <td>${m.mat_duong || (m.mat_am ? m.mat_am : '-')}</td>
           <td>${m.huong_tho ? m.huong_tho + ' t' : '-'}</td>
           <td>${m.phan_mo || '-'}</td>
-          <td><small>${m.ghi_chu || ''}</small></td>
+          <td><small>${(isPrivacyMode && !isAdmin && m.ghi_chu && m.ghi_chu.toLowerCase().includes('ly hôn')) ? 'Nội bộ dòng họ' : (m.ghi_chu || '')}</small></td>
           ${isAdmin ? `
             <td>
               <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
@@ -2636,6 +2753,7 @@
         return `
           <div class="tree-branch" data-branch="${sec.branchKey || 'all'}">
             <div class="tree-branch-title">
+
               <span class="gen-badge" style="background: ${sec.color};">${sec.badge}</span>
               <span>${sec.title}</span>
               <span class="badge" style="background:#edf2f7; color:var(--text); font-size:0.75rem; margin-left:auto;">${sec.members.length} người</span>
@@ -2660,7 +2778,7 @@
 
                     ${m.vo_chong_id ? `
                       <div class="member-info" style="color: #805ad5; font-size:0.8rem;">
-                        💍 Phối ngẫu: ${getMemberName(m.vo_chong_id)} ${m.tinh_trang_hn ? '(' + m.tinh_trang_hn + ')' : ''}
+                        💍 Phối ngẫu: ${getMemberName(m.vo_chong_id)} ${m.tinh_trang_hn && formatMarriageStatus(m.tinh_trang_hn) ? '(' + formatMarriageStatus(m.tinh_trang_hn) + ')' : ''}
                       </div>
                     ` : ''}
 
@@ -2744,6 +2862,29 @@
       `).join('');
     }
 
+    // Hiển thị các ngày giỗ tiêu biểu sắp tới tại khung nhắc việc dòng họ
+    function loadUpcomingEvents() {
+      const container = document.getElementById('upcomingEventsList');
+      if (!container) return;
+      if (!anniversariesData || anniversariesData.length === 0) {
+        container.innerHTML = '<div style="color: #718096; font-style: italic;">Chưa có dữ liệu ngày giỗ.</div>';
+        return;
+      }
+      container.innerHTML = anniversariesData.map(a => `
+        <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 0.6rem 0.9rem; border-radius: 6px; border: 1px solid #fbd38d;">
+          <div>
+            <strong style="color: #744210; font-size: 0.95rem;">🕯️ ${a.ho_ten}</strong>
+            <span style="color: #718096; font-size: 0.85rem; margin-left: 0.4rem;">(${a.vai_ve || ''})</span>
+            ${a.ghi_chu ? `<small style="color: #a0aec0; margin-left: 0.5rem;">• ${a.ghi_chu}</small>` : ''}
+          </div>
+          <div style="text-align: right;">
+            <span class="badge" style="background: #fed7d7; color: #9b2c2c; font-weight: 700; font-size: 0.82rem;">Âm: ${a.ngay_am}</span>
+            ${a.ngay_duong ? `<small style="color: #718096; display: block; font-size: 0.75rem;">Dương: ${a.ngay_duong}</small>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
     // Telegram Bot APIs
     async function loadTelegramConfig() {
       try {
@@ -2768,7 +2909,10 @@
       try {
         const res = await fetch('/api/telegram/config', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAdminToken()
+          },
           body: JSON.stringify(payload)
         });
         const resJson = await res.json();
@@ -2780,7 +2924,10 @@
 
     async function sendTestTelegram() {
       try {
-        const res = await fetch('/api/telegram/test', { method: 'POST' });
+        const res = await fetch('/api/telegram/test', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + getAdminToken() }
+        });
         const resJson = await res.json();
         alert(resJson.message);
       } catch (e) {
@@ -2790,7 +2937,10 @@
 
     async function triggerTelegramToday() {
       try {
-        const res = await fetch('/api/telegram/trigger-today', { method: 'POST' });
+        const res = await fetch('/api/telegram/trigger-today', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + getAdminToken() }
+        });
         const resJson = await res.json();
         alert(resJson.message);
       } catch (e) {
@@ -2954,6 +3104,7 @@
     let touchStartX = 0, touchStartY = 0;
     let initialPinchDist = 0;
     let initialPinchZoom = 1.0;
+
     let isPinching = false;
     let touchMoved = false;
 
@@ -3304,6 +3455,7 @@
         // Text label
         if (n.projScale > 0.6 || isHovered || n.member.the_he <= 3) {
           ctx3D.shadowBlur = 0;
+
           ctx3D.fillStyle = isHovered ? '#ecc94b' : '#ffffff';
           ctx3D.font = `${Math.max(10, Math.round(11 * n.projScale))}px Inter, sans-serif`;
           ctx3D.textAlign = 'center';
@@ -3450,7 +3602,10 @@
           try {
             const res = await fetch('/api/restore', {
               method: 'POST',
-              headers: {'Content-Type': 'application/json'},
+              headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAdminToken()
+          },
               body: JSON.stringify(parsed)
             });
             if (res.ok) {
@@ -3489,6 +3644,12 @@
       container.innerHTML = `<img src="${src}" style="max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 6px;" alt="${title}">`;
       titleEl.textContent = title || '';
       descEl.textContent = desc || '';
+      const dlBtn = document.getElementById('btnLightboxDownload');
+      if (dlBtn) {
+        dlBtn.style.display = 'inline-block';
+        dlBtn.href = src;
+        dlBtn.setAttribute('download', (title || 'tu-lieu-gia-toc').replace(/[^a-zA-Z0-9_-]/g, '_') + '.jpg');
+      }
       modal.classList.add('active');
     }
 
@@ -3507,6 +3668,8 @@
       `;
       titleEl.textContent = title || 'Phim Tư Liệu Toàn Cảnh Lăng Mộ Gia Tộc';
       descEl.textContent = 'Thước phim tài liệu quay thực tế địa thế khu lăng mộ gia tộc Trần Xuân tại Đông Vinh, Thanh Hóa.';
+      const dlBtn = document.getElementById('btnLightboxDownload');
+      if (dlBtn) dlBtn.style.display = 'none';
       modal.classList.add('active');
     }
 
@@ -3548,10 +3711,20 @@
     // Khởi tạo các tiện ích khi tải trang
     document.addEventListener('DOMContentLoaded', () => {
       initFontSize();
+      updatePrivacyUI();
+      if (getAdminToken()) {
+        isAdmin = true;
+        const btnLogin = document.getElementById('btnAdminLogin');
+        const adminGrp = document.getElementById('adminLoggedGroup');
+        const thAct = document.getElementById('thActions');
+        if (btnLogin) btnLogin.style.display = 'none';
+        if (adminGrp) adminGrp.style.display = 'flex';
+        if (thAct) thAct.style.display = 'table-cell';
+      }
       handleDeepLink();
-      // Mở toàn màn hình Cây 3D ngay lập tức khi mở web
+      // Chỉ mở toàn màn hình Cây 3D nếu người dùng yêu cầu qua liên kết
       const hash = window.location.hash;
-      if (!hash || hash === '#tab=tree3d') {
+      if (hash === '#tab=tree3d' || hash === '#fullscreen3d') {
         setTimeout(() => toggleFullscreen3D(true), 150);
       }
     });

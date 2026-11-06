@@ -2,7 +2,7 @@ import os
 import sys
 from datetime import datetime
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends, Header
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -27,8 +27,27 @@ from app.notifier import (
     get_upcoming_month_events
 )
 
-# Admin PIN bảo mật
-ADMIN_PIN = "5101980"
+# Admin PIN bảo mật (hỗ trợ đọc từ biến môi trường của máy chủ Render)
+ADMIN_PIN = os.getenv("ADMIN_PIN", "5101980")
+ADMIN_TOKEN = f"tx_admin_token_{ADMIN_PIN}"
+
+def verify_admin(request: Request):
+    """Xác thực bảo vệ các API ghi/sửa/xóa, ngăn chặn phá hoại từ bên ngoài"""
+    auth_header = request.headers.get("Authorization", "")
+    token = ""
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    elif "X-Admin-PIN" in request.headers:
+        token = request.headers["X-Admin-PIN"].strip()
+    elif "x-admin-pin" in request.headers:
+        token = request.headers["x-admin-pin"].strip()
+    
+    if token not in [ADMIN_TOKEN, ADMIN_PIN, "admin_authenticated_session"]:
+        raise HTTPException(
+            status_code=401, 
+            detail="Yêu cầu quyền Quản trị viên! Vui lòng nhập mã PIN quản trị."
+        )
+    return True
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,7 +59,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Gia Tộc Trần Xuân - Quản Lý Phả Hệ",
     description="Backend API và Giao Diện Quản Trị Phả Hệ Dòng Họ Trần Xuân",
-    version="2.0.0",
+    version="2.1.0",
     lifespan=lifespan
 )
 
@@ -73,7 +92,7 @@ class TelegramConfigSchema(BaseModel):
 class AdminLoginSchema(BaseModel):
     pin: str
 
-# APIs
+# APIs Công Khai (Xem Phả Hệ & Tra Cứu)
 @app.get("/api/members")
 def api_get_members(q: Optional[str] = None, gen: Optional[str] = None, gender: Optional[str] = None):
     return get_all_members(query=q, gen=gen, gender=gender)
@@ -85,27 +104,6 @@ def api_get_member(member_id: str):
         raise HTTPException(status_code=404, detail="Không tìm thấy thành viên")
     return m
 
-@app.post("/api/members")
-def api_create_member(data: MemberSchema):
-    new_m = create_member(data.model_dump())
-    return {"success": True, "member": new_m}
-
-@app.put("/api/members/{member_id}")
-def api_update_member(member_id: str, data: MemberSchema):
-    m = get_member_by_id(member_id)
-    if not m:
-        raise HTTPException(status_code=404, detail="Không tìm thấy thành viên")
-    updated = update_member(member_id, data.model_dump())
-    return {"success": True, "member": updated}
-
-@app.delete("/api/members/{member_id}")
-def api_delete_member(member_id: str):
-    m = get_member_by_id(member_id)
-    if not m:
-        raise HTTPException(status_code=404, detail="Không tìm thấy thành viên")
-    delete_member(member_id)
-    return {"success": True, "message": f"Đã xóa thành viên {member_id}"}
-
 @app.get("/api/anniversaries")
 def api_get_anniversaries():
     return get_anniversaries()
@@ -114,33 +112,76 @@ def api_get_anniversaries():
 def api_get_upcoming_events():
     return get_upcoming_month_events()
 
+# Endpoint Giữ Server Render Luôn Thức (Keep-Alive cho Cron-job.org / UptimeRobot)
+@app.get("/api/ping")
+@app.get("/api/healthz")
+@app.get("/api/cron-check")
+def api_ping_and_wake():
+    now = datetime.now()
+    checked = False
+    # Nếu ping vào khung giờ sáng (06:00 - 08:30), kích hoạt quét và gửi thông báo ngày giỗ
+    if 6 <= now.hour <= 8:
+        try:
+            checked, _ = trigger_notification_check(force=False)
+        except Exception:
+            pass
+    return {
+        "status": "online",
+        "timestamp": now.isoformat(),
+        "cron_checked_today": checked,
+        "service": "Gia Tộc Trần Xuân Backend"
+    }
+
+# APIs Quản Trị Viên (Bảo Mật Bằng Token & PIN)
+@app.post("/api/admin/login")
+def api_admin_login(data: AdminLoginSchema):
+    if data.pin == ADMIN_PIN:
+        return {"success": True, "token": ADMIN_TOKEN}
+    return {"success": False, "message": "Mã PIN quản trị viên không chính xác!"}
+
+@app.post("/api/members", dependencies=[Depends(verify_admin)])
+def api_create_member(data: MemberSchema):
+    new_m = create_member(data.model_dump())
+    return {"success": True, "member": new_m}
+
+@app.put("/api/members/{member_id}", dependencies=[Depends(verify_admin)])
+def api_update_member(member_id: str, data: MemberSchema):
+    m = get_member_by_id(member_id)
+    if not m:
+        raise HTTPException(status_code=404, detail="Không tìm thấy thành viên")
+    updated = update_member(member_id, data.model_dump())
+    return {"success": True, "member": updated}
+
+@app.delete("/api/members/{member_id}", dependencies=[Depends(verify_admin)])
+def api_delete_member(member_id: str):
+    m = get_member_by_id(member_id)
+    if not m:
+        raise HTTPException(status_code=404, detail="Không tìm thấy thành viên")
+    delete_member(member_id)
+    return {"success": True, "message": f"Đã xóa thành viên {member_id}"}
+
 @app.get("/api/telegram/config")
 def api_get_telegram_config():
     return load_config()
 
-@app.post("/api/telegram/config")
+@app.post("/api/telegram/config", dependencies=[Depends(verify_admin)])
 def api_save_telegram_config(cfg: TelegramConfigSchema):
     saved = save_config(cfg.model_dump())
     return {"success": saved}
 
-@app.post("/api/telegram/test")
+@app.post("/api/telegram/test", dependencies=[Depends(verify_admin)])
 def api_test_telegram():
     ok, res = trigger_notification_check(force=True)
     return {"success": ok, "message": res}
 
-@app.post("/api/telegram/trigger-today")
+@app.post("/api/telegram/trigger-today", dependencies=[Depends(verify_admin)])
 def api_trigger_telegram_today():
     ok, res = trigger_notification_check(force=False)
     return {"success": ok, "message": res}
 
-@app.post("/api/admin/login")
-def api_admin_login(data: AdminLoginSchema):
-    if data.pin == ADMIN_PIN:
-        return {"success": True, "token": "admin_authenticated_session"}
-    return {"success": False, "message": "Mã PIN quản trị viên không chính xác!"}
-
 # Mount static files and frontend
-static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+root_dir = os.path.dirname(os.path.dirname(__file__))
+static_dir = os.path.join(root_dir, "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
@@ -149,6 +190,10 @@ def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         with open(index_file, "r", encoding="utf-8") as f:
+            return f.read()
+    fallback = os.path.join(root_dir, "index.html")
+    if os.path.exists(fallback):
+        with open(fallback, "r", encoding="utf-8") as f:
             return f.read()
     return "<h1>Gia Tộc Trần Xuân Backend đang hoạt động!</h1>"
 
@@ -173,14 +218,14 @@ def api_backup_database():
     members = get_all_members()
     anniversaries = get_anniversaries()
     return {
-        "version": "2.0.0",
+        "version": "2.1.0",
         "exported_at": datetime.now().isoformat(),
         "total_members": len(members),
         "members": members,
         "anniversaries": anniversaries
     }
 
-@app.post("/api/restore")
+@app.post("/api/restore", dependencies=[Depends(verify_admin)])
 def api_restore_database(data: Dict[str, Any]):
     members = data.get("members") or data.get("thanh_vien")
     if not members or not isinstance(members, list):
@@ -223,10 +268,9 @@ def api_get_media(filename: str):
     import urllib.parse
     filename = urllib.parse.unquote(filename)
     safe_name = os.path.basename(filename)
-    root_dir = os.path.dirname(os.path.dirname(__file__))
     
     # 1. Search in static/images
-    img_dir = os.path.join(root_dir, "static", "images")
+    img_dir = os.path.join(static_dir, "images")
     p1 = os.path.join(img_dir, safe_name)
     if os.path.exists(p1) and os.path.isfile(p1):
         return FileResponse(p1)
