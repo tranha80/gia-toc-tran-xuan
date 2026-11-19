@@ -106,6 +106,14 @@ def _load_members_list():
             pass
     return []
 
+def _is_ex_spouse_woman(m):
+    if (m.get("gioi_tinh") or "") != "Nữ":
+        return False
+    hn = (m.get("tinh_trang_hn") or "").lower()
+    vai = (m.get("vai_ve") or "").lower()
+    note = (m.get("ghi_chu") or "").lower()
+    return "ly hôn" in hn or "ly hôn" in vai or "dâu cũ" in vai or "đã ly hôn" in note
+
 def get_events_for_date(target_date, members):
     d_duong, m_duong, y_duong = target_date.day, target_date.month, target_date.year
     d_am, m_am, y_am, can_chi_am = get_lunar_date(target_date)
@@ -114,6 +122,8 @@ def get_events_for_date(target_date, members):
     birthday_events = []
 
     for m in members:
+        if _is_ex_spouse_woman(m):
+            continue
         is_deceased = bool(m.get("mat_duong") or m.get("mat_am") or "Đã Mất" in m.get("ghi_chu", "") or "chi mộ" in m.get("phan_mo", ""))
 
         if is_deceased:
