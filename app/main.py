@@ -188,31 +188,37 @@ static_dir = os.path.join(root_dir, "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+NO_CACHE_HEADERS = {
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0"
+}
+
 @app.get("/", response_class=HTMLResponse)
 def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         with open(index_file, "r", encoding="utf-8") as f:
-            return f.read()
+            return HTMLResponse(content=f.read(), headers=NO_CACHE_HEADERS)
     fallback = os.path.join(root_dir, "index.html")
     if os.path.exists(fallback):
         with open(fallback, "r", encoding="utf-8") as f:
-            return f.read()
-    return "<h1>Gia Tộc Trần Xuân Backend đang hoạt động!</h1>"
+            return HTMLResponse(content=f.read(), headers=NO_CACHE_HEADERS)
+    return HTMLResponse(content="<h1>Gia Tộc Trần Xuân Backend đang hoạt động!</h1>", headers=NO_CACHE_HEADERS)
 
 # PWA & Offline Support
 @app.get("/manifest.json")
 def serve_manifest():
     mf = os.path.join(static_dir, "manifest.json")
     if os.path.exists(mf):
-        return FileResponse(mf, media_type="application/manifest+json")
+        return FileResponse(mf, media_type="application/manifest+json", headers=NO_CACHE_HEADERS)
     raise HTTPException(status_code=404, detail="Manifest not found")
 
 @app.get("/sw.js")
 def serve_service_worker():
     sw = os.path.join(static_dir, "sw.js")
     if os.path.exists(sw):
-        return FileResponse(sw, media_type="application/javascript")
+        return FileResponse(sw, media_type="application/javascript", headers=NO_CACHE_HEADERS)
     raise HTTPException(status_code=404, detail="Service worker not found")
 
 # Backup & Restore APIs

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gia-toc-tran-xuan-v6';
+const CACHE_NAME = 'gia-toc-tran-xuan-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

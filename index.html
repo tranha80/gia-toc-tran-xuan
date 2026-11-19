@@ -3724,8 +3724,9 @@
     // ===== ĐĂNG KÝ SERVICE WORKER (PWA & OFFLINE CACHE) =====
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(reg => {
-          console.log('PWA ServiceWorker đã sẵn sàng:', reg.scope);
+        navigator.serviceWorker.register('/sw.js?v=7', { updateViaCache: 'none' }).then(reg => {
+          reg.update();
+          console.log('PWA ServiceWorker v7 đã sẵn sàng:', reg.scope);
         }).catch(err => {
           console.log('ServiceWorker:', err);
         });
