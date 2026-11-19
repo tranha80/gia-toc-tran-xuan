@@ -42,7 +42,7 @@ def load_config():
         "bot_token": os.getenv("TELEGRAM_BOT_TOKEN", ""),
         "chat_id": os.getenv("TELEGRAM_CHAT_ID", ""),
         "remind_days_before": 1,
-        "notify_time": "07:00",
+        "notify_time": "06:00",
         "enabled": True,
         "last_notified_date": "",
         "last_checked_date": ""
@@ -74,7 +74,8 @@ def save_config(cfg):
 def send_telegram_message(bot_token, chat_id, message_html):
     if not bot_token or not chat_id:
         return False, "Chưa điền Bot Token hoặc Chat ID."
-    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    api_base = os.getenv("TELEGRAM_API_BASE", "https://api.telegram.org").rstrip("/")
+    url = f"{api_base}/bot{bot_token}/sendMessage"
     payload = {
         "chat_id": chat_id,
         "text": message_html,
@@ -82,12 +83,17 @@ def send_telegram_message(bot_token, chat_id, message_html):
         "disable_web_page_preview": True
     }
     data = json.dumps(payload).encode('utf-8')
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return True, "Gửi thành công!"
-    except Exception as e:
-        return False, str(e)
+    last_err = ""
+    for attempt in range(3):
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                return True, "Gửi thành công!"
+        except Exception as e:
+            last_err = str(e)
+            if attempt < 2:
+                time.sleep(2)
+    return False, last_err
 
 def _load_members_list():
     try:
@@ -210,47 +216,50 @@ def format_telegram_message(ev_data, days_before=1):
     lines.append("🏛️ <i>Tra cứu phả hệ online tại: https://giatoctranxuandongvinhthanhhoa.onrender.com/</i>")
     return "\n".join(lines)
 
+_notify_lock = threading.Lock()
+
 def trigger_notification_check(target_date=None, force=False, manual=False):
-    cfg = load_config()
-    days_before = cfg.get("remind_days_before", 1)
+    with _notify_lock:
+        cfg = load_config()
+        days_before = cfg.get("remind_days_before", 1)
 
-    now = get_vn_now() if target_date is None else target_date
-    today_str = now.strftime("%Y-%m-%d")
-    tomorrow = now + timedelta(days=days_before)
+        now = get_vn_now() if target_date is None else target_date
+        today_str = now.strftime("%Y-%m-%d")
+        tomorrow = now + timedelta(days=days_before)
 
-    # Chống spam khi /api/ping gọi định kỳ mỗi 10 phút trong buổi sáng
-    if not force and not manual:
-        if cfg.get("last_notified_date") == today_str or cfg.get("last_checked_date") == today_str:
-            return False, "Hôm nay đã kiểm tra thông báo tự động rồi."
+        # Chống spam khi web tự động F5 lúc 06:00 sáng hoặc /api/ping gọi định kỳ
+        if not force and not manual:
+            if cfg.get("last_notified_date") == today_str or cfg.get("last_checked_date") == today_str:
+                return False, "Hôm nay đã kiểm tra thông báo tự động rồi."
 
-    members = _load_members_list()
-    if not members:
-        return False, "Không tìm thấy CSDL."
+        members = _load_members_list()
+        if not members:
+            return False, "Không tìm thấy CSDL."
 
-    ev_data = get_events_for_date(tomorrow, members)
-    msg = format_telegram_message(ev_data, days_before)
+        ev_data = get_events_for_date(tomorrow, members)
+        msg = format_telegram_message(ev_data, days_before)
 
-    if not msg:
-        if force:
-            msg = (
-                f"🌿 <b>GIA TỘC TRẦN XUÂN - TEST HỆ THỐNG</b> 🌿\n\n"
-                f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có ngày giỗ hoặc sinh nhật nào.\n"
-                f"Kết nối Telegram hoạt động tốt!\n"
-                f"🏛️ https://giatoctranxuandongvinhthanhhoa.onrender.com/"
-            )
-        else:
+        if not msg:
+            if force:
+                msg = (
+                    f"🌿 <b>GIA TỘC TRẦN XUÂN - TEST HỆ THỐNG</b> 🌿\n\n"
+                    f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có ngày giỗ hoặc sinh nhật nào.\n"
+                    f"Kết nối Telegram hoạt động tốt!\n"
+                    f"🏛️ https://giatoctranxuandongvinhthanhhoa.onrender.com/"
+                )
+            else:
+                cfg["last_checked_date"] = today_str
+                save_config(cfg)
+                return True, f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có sự kiện giỗ hoặc sinh nhật."
+
+        bot_token = cfg.get("bot_token")
+        chat_id = cfg.get("chat_id")
+        ok, res = send_telegram_message(bot_token, chat_id, msg)
+        if ok:
+            cfg["last_notified_date"] = today_str
             cfg["last_checked_date"] = today_str
             save_config(cfg)
-            return True, f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có sự kiện giỗ hoặc sinh nhật."
-
-    bot_token = cfg.get("bot_token")
-    chat_id = cfg.get("chat_id")
-    ok, res = send_telegram_message(bot_token, chat_id, msg)
-    if ok:
-        cfg["last_notified_date"] = today_str
-        cfg["last_checked_date"] = today_str
-        save_config(cfg)
-    return ok, res
+        return ok, res
 
 # ==============================================================================
 # 4. BACKGROUND SCHEDULER DAEMON (CHẠY THEO MÚI GIỜ VIỆT NAM UTC+7)
@@ -260,18 +269,18 @@ _scheduler_running = False
 
 def _scheduler_loop():
     global _scheduler_running
-    print("[TELEGRAM SCHEDULER] Tiến trình quét ngầm thông báo (UTC+7) đã khởi động!")
+    print("[TELEGRAM SCHEDULER] Tiến trình quét ngầm thông báo 06:00 sáng (UTC+7) đã khởi động!")
     while _scheduler_running:
         try:
             cfg = load_config()
             if cfg.get("enabled", True):
-                notify_time_str = cfg.get("notify_time", "07:00")
+                notify_time_str = cfg.get("notify_time", "06:00")
                 now = get_vn_now()
                 current_hm = now.strftime("%H:%M")
                 today_str = now.strftime("%Y-%m-%d")
 
-                if current_hm == notify_time_str and cfg.get("last_notified_date") != today_str and cfg.get("last_checked_date") != today_str:
-                    print(f"[TELEGRAM SCHEDULER] Đến giờ gửi tự động ({current_hm} VN), đang kiểm tra sự kiện...")
+                if notify_time_str <= current_hm <= "10:00" and cfg.get("last_notified_date") != today_str and cfg.get("last_checked_date") != today_str:
+                    print(f"[TELEGRAM SCHEDULER] Khung giờ báo sáng ({current_hm} VN), đang kiểm tra sự kiện ngày giỗ & sinh nhật...")
                     ok, res = trigger_notification_check(force=False, manual=False)
                     print(f"[TELEGRAM SCHEDULER] Kết quả gửi: {ok} - {res}")
         except Exception as e:

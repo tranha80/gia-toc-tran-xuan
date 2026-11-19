@@ -1220,20 +1220,20 @@
               🔒 <strong>Khu vực bảo mật:</strong> Dành riêng cho Quản trị viên (Admin) thiết lập thời gian gửi và kết nối bot gia tộc.
             </p>
           </div>
-          <span style="background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
-            ⚙️ SETUP THỜI GIAN: HÀNG NĂM 365 NGÀY
+          <span id="autoF5CountdownBadge" style="background: #f0fff4; color: #22543d; border: 1px solid #9ae6b4; padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+            🔄 TỰ ĐỘNG F5 & BÁO GIỖ/SINH NHẬT: 06:00 SÁNG
           </span>
         </div>
 
         <!-- PHẦN 1: BẢNG LỊCH TRÌNH SETUP HÀNG NĂM -->
         <div style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem;">
           <h4 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            📅 Lịch Trình Thiết Lập Sẵn Hàng Năm (Tự Động 100%)
+            📅 Cơ Chế Tự Động F5 Lúc 06:00 Sáng & Báo Giỗ / Sinh Nhật Hàng Năm (Tự Động 100%)
           </h4>
           <p style="font-size: 0.92rem; color: #4a5568; line-height: 1.6; margin-bottom: 0.8rem;">
-            • <strong>Tần suất quét:</strong> Tự động quét ngầm hàng ngày vào lúc <strong>07:00 sáng</strong>.<br>
+            • <strong>Tự động F5 lúc 06:00 sáng:</strong> Đúng <strong>06:00 sáng (Giờ Việt Nam UTC+7)</strong> hàng ngày, trang web tự động đánh thức máy chủ, kích hoạt quét sự kiện rồi tự động làm mới (F5) để cập nhật bộ đếm ngược ngày giỗ và sinh nhật sang ngày mới.<br>
             • <strong>Thời điểm báo trước:</strong> <strong>Trước 1 ngày</strong> để gia đình kịp chuẩn bị hương hoa, đồ lễ hoặc gửi lời chúc mừng.<br>
-            • <strong>Lịch Âm & Lịch Dương:</strong> Tự động chuyển đổi thiên văn chuẩn xác theo từng năm mà không cần chỉnh sửa thủ công.
+            • <strong>Chống nghẽn mạng (Auto-Retry):</strong> Nếu mạng chập chờn lúc 06:00 sáng, hệ thống tự động thử gửi lại cho đến khi tin nhắn về nhóm Telegram thành công.
           </p>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
             <div style="background: white; border-left: 4px solid #c53030; padding: 0.8rem 1rem; border-radius: 6px;">
@@ -1265,8 +1265,8 @@
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Giờ phát thông báo hàng ngày:</label>
-                <input type="time" id="cfgNotifyTime" class="form-control" value="07:00">
+                <label>Giờ phát thông báo & Tự động F5:</label>
+                <input type="time" id="cfgNotifyTime" class="form-control" value="06:00">
               </div>
               <div class="form-group">
                 <label>Thời gian nhắc trước (ngày):</label>
@@ -3141,7 +3141,7 @@
         const cfg = await res.json();
         document.getElementById('cfgBotToken').value = cfg.bot_token || "";
         document.getElementById('cfgChatId').value = cfg.chat_id || "";
-        document.getElementById('cfgNotifyTime').value = cfg.notify_time || "07:00";
+        document.getElementById('cfgNotifyTime').value = cfg.notify_time || "06:00";
         document.getElementById('cfgDaysBefore').value = cfg.remind_days_before || 1;
         document.getElementById('cfgEnabled').checked = cfg.enabled !== false;
       } catch (e) {}
@@ -3970,12 +3970,68 @@
       }
     }
 
+    // ===== CƠ CHẾ WEB TỰ ĐỘNG F5 VÀO LÚC 06:00 SÁNG ĐỂ BÁO NGÀY GIỖ & SINH NHẬT =====
+    function getVietnamTime() {
+      const now = new Date();
+      const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+      return new Date(utcMs + (7 * 3600000));
+    }
+
+    async function triggerMorningAutoF5(vnDateStr) {
+      try {
+        localStorage.setItem('gia_toc_last_auto_f5_date', vnDateStr);
+        await fetch('/api/ping?trigger=morning_f5', { cache: 'no-store' });
+      } catch (e) {
+        console.warn('Auto-F5 ping:', e);
+      }
+      window.location.reload();
+    }
+
+    function startAutoF5At6AM() {
+      const checkMorningF5 = () => {
+        const vnNow = getVietnamTime();
+        const yyyy = vnNow.getFullYear();
+        const mm = String(vnNow.getMonth() + 1).padStart(2, '0');
+        const dd = String(vnNow.getDate()).padStart(2, '0');
+        const vnDateStr = `${yyyy}-${mm}-${dd}`;
+        const h = vnNow.getHours();
+        const m = vnNow.getMinutes();
+
+        // Cập nhật đồng hồ đếm ngược tới 06:00 sáng
+        const badge = document.getElementById('autoF5CountdownBadge');
+        if (badge) {
+          let next6AM = new Date(vnNow.getFullYear(), vnNow.getMonth(), vnNow.getDate(), 6, 0, 0);
+          if (vnNow >= next6AM) {
+            next6AM = new Date(vnNow.getFullYear(), vnNow.getMonth(), vnNow.getDate() + 1, 6, 0, 0);
+          }
+          const diffMins = Math.max(1, Math.round((next6AM - vnNow) / 60000));
+          const hrsLeft = Math.floor(diffMins / 60);
+          const minsLeft = diffMins % 60;
+          badge.textContent = `🔄 Tự động F5 lúc 06:00 sáng (Còn ${hrsLeft}h ${minsLeft}p)`;
+        }
+
+        // Đúng khung 06:00 - 06:05 sáng giờ Việt Nam, nếu hôm nay chưa F5 thì tự động kích hoạt báo Giỗ/Sinh Nhật & F5 trang web
+        const lastF5Date = localStorage.getItem('gia_toc_last_auto_f5_date');
+        if (h === 6 && m >= 0 && m <= 5 && lastF5Date !== vnDateStr) {
+          triggerMorningAutoF5(vnDateStr);
+        }
+      };
+
+      checkMorningF5();
+      // Kiểm tra đồng hồ mỗi 20 giây
+      setInterval(checkMorningF5, 20000);
+      // Định kỳ mỗi 8 phút gửi nhịp tim giữ máy chủ luôn thức khi tab đang mở
+      setInterval(() => {
+        fetch('/api/ping', { cache: 'no-store' }).catch(() => {});
+      }, 8 * 60 * 1000);
+    }
+
     // ===== ĐĂNG KÝ SERVICE WORKER (PWA & OFFLINE CACHE) =====
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js?v=8', { updateViaCache: 'none' }).then(reg => {
+        navigator.serviceWorker.register('/sw.js?v=9', { updateViaCache: 'none' }).then(reg => {
           reg.update();
-          console.log('PWA ServiceWorker v8 đã sẵn sàng:', reg.scope);
+          console.log('PWA ServiceWorker v9 đã sẵn sàng:', reg.scope);
         }).catch(err => {
           console.log('ServiceWorker:', err);
         });
@@ -3986,6 +4042,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initFontSize();
       updatePrivacyUI();
+      startAutoF5At6AM();
       if (getAdminToken()) {
         isAdmin = true;
         const btnLogin = document.getElementById('btnAdminLogin');

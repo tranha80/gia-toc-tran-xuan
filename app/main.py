@@ -88,7 +88,7 @@ class TelegramConfigSchema(BaseModel):
     bot_token: str
     chat_id: str
     remind_days_before: Optional[int] = 1
-    notify_time: Optional[str] = "07:00"
+    notify_time: Optional[str] = "06:00"
     enabled: Optional[bool] = True
 
 class AdminLoginSchema(BaseModel):
@@ -114,24 +114,27 @@ def api_get_anniversaries():
 def api_get_upcoming_events():
     return get_upcoming_month_events()
 
-# Endpoint Giữ Server Render Luôn Thức (Keep-Alive cho Cron-job.org / UptimeRobot)
+# Endpoint Giữ Server Luôn Thức & Nhận Tín Hiệu Tự Động F5 Lúc 06:00 Sáng
 @app.get("/api/ping")
 @app.get("/api/healthz")
 @app.get("/api/cron-check")
-def api_ping_and_wake():
+def api_ping_and_wake(trigger: Optional[str] = None):
     now = get_vn_now()
     checked = False
-    # Nếu ping vào khung giờ sáng giờ Việt Nam (06:00 - 08:59), kích hoạt quét 1 lần/ngày
-    if 6 <= now.hour <= 8:
+    msg = ""
+    # Nếu web tự động F5 lúc 06:00 sáng hoặc ping vào khung giờ sáng (06:00 - 09:59 VN), kích hoạt quét 1 lần/ngày
+    if trigger == "morning_f5" or (6 <= now.hour <= 9):
         try:
-            checked, _ = trigger_notification_check(force=False, manual=False)
-        except Exception:
-            pass
+            checked, msg = trigger_notification_check(force=False, manual=False)
+        except Exception as e:
+            msg = str(e)
     return {
         "status": "online",
         "timestamp": now.isoformat(),
         "timezone": "Asia/Ho_Chi_Minh (UTC+7)",
+        "auto_f5_schedule": "06:00",
         "cron_checked_today": checked,
+        "message": msg,
         "service": "Gia Tộc Trần Xuân Backend"
     }
 
