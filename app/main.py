@@ -1,5 +1,6 @@
 import os
 import sys
+import hashlib
 from datetime import datetime
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, Depends, Header
@@ -24,15 +25,16 @@ from app.notifier import (
     load_config,
     save_config,
     trigger_notification_check,
-    get_upcoming_month_events
+    get_upcoming_month_events,
+    get_vn_now
 )
 
 # Admin PIN bảo mật (hỗ trợ đọc từ biến môi trường của máy chủ Render)
 ADMIN_PIN = os.getenv("ADMIN_PIN", "5101980")
-ADMIN_TOKEN = f"tx_admin_token_{ADMIN_PIN}"
+ADMIN_TOKEN = "tx_sha256_" + hashlib.sha256(f"gia_toc_tran_xuan_salt_{ADMIN_PIN}".encode("utf-8")).hexdigest()
 
 def verify_admin(request: Request):
-    """Xác thực bảo vệ các API ghi/sửa/xóa, ngăn chặn phá hoại từ bên ngoài"""
+    """Xác thực bảo vệ các API ghi/sửa/xóa và cấu hình nhạy cảm, ngăn chặn phá hoại từ bên ngoài"""
     auth_header = request.headers.get("Authorization", "")
     token = ""
     if auth_header.startswith("Bearer "):
@@ -42,7 +44,7 @@ def verify_admin(request: Request):
     elif "x-admin-pin" in request.headers:
         token = request.headers["x-admin-pin"].strip()
     
-    if token not in [ADMIN_TOKEN, ADMIN_PIN, "admin_authenticated_session"]:
+    if token not in [ADMIN_TOKEN, ADMIN_PIN]:
         raise HTTPException(
             status_code=401, 
             detail="Yêu cầu quyền Quản trị viên! Vui lòng nhập mã PIN quản trị."
@@ -117,22 +119,23 @@ def api_get_upcoming_events():
 @app.get("/api/healthz")
 @app.get("/api/cron-check")
 def api_ping_and_wake():
-    now = datetime.now()
+    now = get_vn_now()
     checked = False
-    # Nếu ping vào khung giờ sáng (06:00 - 08:30), kích hoạt quét và gửi thông báo ngày giỗ
+    # Nếu ping vào khung giờ sáng giờ Việt Nam (06:00 - 08:59), kích hoạt quét 1 lần/ngày
     if 6 <= now.hour <= 8:
         try:
-            checked, _ = trigger_notification_check(force=False)
+            checked, _ = trigger_notification_check(force=False, manual=False)
         except Exception:
             pass
     return {
         "status": "online",
         "timestamp": now.isoformat(),
+        "timezone": "Asia/Ho_Chi_Minh (UTC+7)",
         "cron_checked_today": checked,
         "service": "Gia Tộc Trần Xuân Backend"
     }
 
-# APIs Quản Trị Viên (Bảo Mật Bằng Token & PIN)
+# APIs Quản Trị Viên (Bảo Mật Bằng Token SHA-256 & PIN)
 @app.post("/api/admin/login")
 def api_admin_login(data: AdminLoginSchema):
     if data.pin == ADMIN_PIN:
@@ -160,7 +163,7 @@ def api_delete_member(member_id: str):
     delete_member(member_id)
     return {"success": True, "message": f"Đã xóa thành viên {member_id}"}
 
-@app.get("/api/telegram/config")
+@app.get("/api/telegram/config", dependencies=[Depends(verify_admin)])
 def api_get_telegram_config():
     return load_config()
 
@@ -171,12 +174,12 @@ def api_save_telegram_config(cfg: TelegramConfigSchema):
 
 @app.post("/api/telegram/test", dependencies=[Depends(verify_admin)])
 def api_test_telegram():
-    ok, res = trigger_notification_check(force=True)
+    ok, res = trigger_notification_check(force=True, manual=True)
     return {"success": ok, "message": res}
 
 @app.post("/api/telegram/trigger-today", dependencies=[Depends(verify_admin)])
 def api_trigger_telegram_today():
-    ok, res = trigger_notification_check(force=False)
+    ok, res = trigger_notification_check(force=False, manual=True)
     return {"success": ok, "message": res}
 
 # Mount static files and frontend

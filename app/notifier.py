@@ -3,9 +3,16 @@ import sys
 import json
 import time
 import threading
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import re
 import urllib.request
 import urllib.parse
+
+VN_TZ = timezone(timedelta(hours=7))
+
+def get_vn_now():
+    """Lấy thời gian hiện tại chuẩn theo múi giờ Việt Nam (UTC+7) bất kể máy chủ đặt ở đâu"""
+    return datetime.now(VN_TZ).replace(tzinfo=None)
 
 try:
     from lunardate import LunarDate
@@ -32,26 +39,34 @@ def get_lunar_date(dt):
 
 def load_config():
     default_config = {
-        "bot_token": "",
-        "chat_id": "",
+        "bot_token": os.getenv("TELEGRAM_BOT_TOKEN", ""),
+        "chat_id": os.getenv("TELEGRAM_CHAT_ID", ""),
         "remind_days_before": 1,
         "notify_time": "07:00",
         "enabled": True,
-        "last_notified_date": ""
+        "last_notified_date": "",
+        "last_checked_date": ""
     }
     if not os.path.exists(CONFIG_FILE):
         return default_config
     try:
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
             cfg = json.load(f)
-            return {**default_config, **cfg}
+            merged = {**default_config, **cfg}
+            if not merged.get("bot_token") and default_config["bot_token"]:
+                merged["bot_token"] = default_config["bot_token"]
+            if not merged.get("chat_id") and default_config["chat_id"]:
+                merged["chat_id"] = default_config["chat_id"]
+            return merged
     except Exception:
         return default_config
 
 def save_config(cfg):
     try:
+        existing = load_config()
+        merged = {**existing, **cfg}
         with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump(cfg, f, ensure_ascii=False, indent=2)
+            json.dump(merged, f, ensure_ascii=False, indent=2)
         return True
     except Exception:
         return False
@@ -74,6 +89,23 @@ def send_telegram_message(bot_token, chat_id, message_html):
     except Exception as e:
         return False, str(e)
 
+def _load_members_list():
+    try:
+        from app.database import get_all_members
+        members = get_all_members()
+        if members:
+            return members
+    except Exception:
+        pass
+    if os.path.exists(DATABASE_FILE):
+        try:
+            with open(DATABASE_FILE, 'r', encoding='utf-8') as f:
+                clan_data = json.load(f)
+            return clan_data.get("thanh_vien", [])
+        except Exception:
+            pass
+    return []
+
 def get_events_for_date(target_date, members):
     d_duong, m_duong, y_duong = target_date.day, target_date.month, target_date.year
     d_am, m_am, y_am, can_chi_am = get_lunar_date(target_date)
@@ -88,11 +120,11 @@ def get_events_for_date(target_date, members):
             mat_am_str = m.get("mat_am", "")
             match_am = False
             if mat_am_str:
-                parts = mat_am_str.split()[0].split('/')
-                if len(parts) >= 2:
+                nums = re.findall(r'\d+', mat_am_str)
+                if len(nums) >= 2:
                     try:
-                        p_day = int(parts[0])
-                        p_mon = int(parts[1])
+                        p_day = int(nums[0])
+                        p_mon = int(nums[1])
                         if p_day == d_am and p_mon == m_am:
                             match_am = True
                     except ValueError:
@@ -165,61 +197,72 @@ def format_telegram_message(ev_data, days_before=1):
         lines.append("")
 
     lines.append("────────────────────────")
-    lines.append("🏛️ <i>Tra cứu phả hệ online tại: https://donghotranxuan.akb.vn/</i>")
+    lines.append("🏛️ <i>Tra cứu phả hệ online tại: https://giatoctranxuandongvinhthanhhoa.onrender.com/</i>")
     return "\n".join(lines)
 
-def trigger_notification_check(target_date=None, force=False):
+def trigger_notification_check(target_date=None, force=False, manual=False):
     cfg = load_config()
     days_before = cfg.get("remind_days_before", 1)
 
-    now = datetime.now() if target_date is None else target_date
+    now = get_vn_now() if target_date is None else target_date
+    today_str = now.strftime("%Y-%m-%d")
     tomorrow = now + timedelta(days=days_before)
 
-    if not os.path.exists(DATABASE_FILE):
+    # Chống spam khi /api/ping gọi định kỳ mỗi 10 phút trong buổi sáng
+    if not force and not manual:
+        if cfg.get("last_notified_date") == today_str or cfg.get("last_checked_date") == today_str:
+            return False, "Hôm nay đã kiểm tra thông báo tự động rồi."
+
+    members = _load_members_list()
+    if not members:
         return False, "Không tìm thấy CSDL."
 
-    with open(DATABASE_FILE, 'r', encoding='utf-8') as f:
-        clan_data = json.load(f)
-
-    members = clan_data.get("thanh_vien", [])
     ev_data = get_events_for_date(tomorrow, members)
     msg = format_telegram_message(ev_data, days_before)
 
     if not msg:
         if force:
-            msg = f"🌿 <b>GIA TỘC TRẦN XUÂN - TEST HỆ THỐNG</b> 🌿\n\nNgày mai ({tomorrow.strftime('%d/%m/%Y')}) không có ngày giỗ hoặc sinh nhật nào.\nKết nối Telegram hoạt động tốt!"
+            msg = (
+                f"🌿 <b>GIA TỘC TRẦN XUÂN - TEST HỆ THỐNG</b> 🌿\n\n"
+                f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có ngày giỗ hoặc sinh nhật nào.\n"
+                f"Kết nối Telegram hoạt động tốt!\n"
+                f"🏛️ https://giatoctranxuandongvinhthanhhoa.onrender.com/"
+            )
         else:
-            return True, "Không có sự kiện ngày mai."
+            cfg["last_checked_date"] = today_str
+            save_config(cfg)
+            return True, f"Ngày mai ({tomorrow.strftime('%d/%m/%Y')}) không có sự kiện giỗ hoặc sinh nhật."
 
     bot_token = cfg.get("bot_token")
     chat_id = cfg.get("chat_id")
     ok, res = send_telegram_message(bot_token, chat_id, msg)
     if ok:
-        cfg["last_notified_date"] = now.strftime("%Y-%m-%d")
+        cfg["last_notified_date"] = today_str
+        cfg["last_checked_date"] = today_str
         save_config(cfg)
     return ok, res
 
 # ==============================================================================
-# 4. BACKGROUND SCHEDULER DAEMON (TỰ ĐỘNG CHẠY NGẦM KHÔNG CẦN CHẠY TAY)
+# 4. BACKGROUND SCHEDULER DAEMON (CHẠY THEO MÚI GIỜ VIỆT NAM UTC+7)
 # ==============================================================================
 _scheduler_thread = None
 _scheduler_running = False
 
 def _scheduler_loop():
     global _scheduler_running
-    print("[TELEGRAM SCHEDULER] Tiến trình quét ngầm thông báo đã khởi động!")
+    print("[TELEGRAM SCHEDULER] Tiến trình quét ngầm thông báo (UTC+7) đã khởi động!")
     while _scheduler_running:
         try:
             cfg = load_config()
             if cfg.get("enabled", True):
                 notify_time_str = cfg.get("notify_time", "07:00")
-                now = datetime.now()
+                now = get_vn_now()
                 current_hm = now.strftime("%H:%M")
                 today_str = now.strftime("%Y-%m-%d")
 
-                if current_hm == notify_time_str and cfg.get("last_notified_date") != today_str:
-                    print(f"[TELEGRAM SCHEDULER] Đến giờ gửi tự động ({current_hm}), đang kiểm tra sự kiện...")
-                    ok, res = trigger_notification_check()
+                if current_hm == notify_time_str and cfg.get("last_notified_date") != today_str and cfg.get("last_checked_date") != today_str:
+                    print(f"[TELEGRAM SCHEDULER] Đến giờ gửi tự động ({current_hm} VN), đang kiểm tra sự kiện...")
+                    ok, res = trigger_notification_check(force=False, manual=False)
                     print(f"[TELEGRAM SCHEDULER] Kết quả gửi: {ok} - {res}")
         except Exception as e:
             print(f"[TELEGRAM SCHEDULER LỖI]: {e}")
@@ -233,16 +276,14 @@ def start_scheduler():
         _scheduler_thread.start()
 
 def get_upcoming_month_events():
-    """Lấy danh sách các sự kiện giỗ & sinh nhật trong 30 ngày tới"""
-    if not os.path.exists(DATABASE_FILE):
+    """Lấy danh sách các sự kiện giỗ & sinh nhật trong 30 ngày tới (theo giờ Việt Nam UTC+7)"""
+    members = _load_members_list()
+    if not members:
         return []
-    with open(DATABASE_FILE, 'r', encoding='utf-8') as f:
-        clan_data = json.load(f)
-    members = clan_data.get("thanh_vien", [])
 
     results = []
-    base_date = datetime.now()
-    for offset in range(1, 31):
+    base_date = get_vn_now()
+    for offset in range(0, 31):
         target = base_date + timedelta(days=offset)
         evs = get_events_for_date(target, members)
         for de in evs["death_events"]:

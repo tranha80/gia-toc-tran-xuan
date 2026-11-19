@@ -231,11 +231,44 @@ def delete_member(member_id):
     return True
 
 def get_anniversaries():
+    import re
     conn = get_db()
     c = conn.cursor()
     c.execute("SELECT * FROM ngay_gio ORDER BY id ASC")
     rows = [dict(r) for r in c.fetchall()]
+
+    # Đồng bộ tự động các thành viên đã mất có ngày giỗ Âm lịch từ bảng thanh_vien
+    c.execute("SELECT * FROM thanh_vien WHERE mat_am IS NOT NULL AND TRIM(mat_am) != '' ORDER BY the_he ASC, id ASC")
+    deceased_members = [dict(r) for r in c.fetchall()]
     conn.close()
+
+    existing_names = {r.get("ho_ten", "").strip().lower() for r in rows}
+    if "trần xuân phúc phang" in existing_names:
+        existing_names.add("trần xuân phang")
+
+    next_id = max([int(r.get("id", 0) or 0) for r in rows], default=0) + 1
+    for m in deceased_members:
+        m_name = (m.get("ho_ten") or "").strip()
+        if not m_name or m_name.lower() in existing_names:
+            continue
+        mat_am_raw = (m.get("mat_am") or "").strip()
+        nums = re.findall(r'\d+', mat_am_raw)
+        ngay_am_fmt = f"{int(nums[0]):02d} tháng {int(nums[1]):02d}" if len(nums) >= 2 else mat_am_raw
+        nam_am_match = re.search(r'\(([^)]+)\)', mat_am_raw)
+        nam_am_fmt = nam_am_match.group(1) if nam_am_match else ""
+        rows.append({
+            "id": next_id,
+            "ho_ten": m_name,
+            "vai_ve": m.get("vai_ve") or f"Đời {m.get('the_he', '')}",
+            "ngay_am": ngay_am_fmt,
+            "ngay_duong": m.get("mat_duong") or "",
+            "nam_am": nam_am_fmt,
+            "huong_tho": m.get("huong_tho") or "",
+            "ghi_chu": m.get("ghi_chu") or ""
+        })
+        existing_names.add(m_name.lower())
+        next_id += 1
+
     return rows
 
 def sync_to_json_and_excel():

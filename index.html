@@ -1223,7 +1223,7 @@
 
           <div class="info-card" style="border-left-color: #2f855a;">
             <h4>📋 Sự Kiện Trong 30 Ngày Tới</h4>
-            <div id="upcomingEventsList" style="max-height: 280px; overflow-y: auto; font-size: 0.9rem;">
+            <div id="telegramUpcomingEventsList" style="max-height: 280px; overflow-y: auto; font-size: 0.9rem;">
               <p style="color: var(--text-muted);">Đang tải dữ liệu sự kiện...</p>
             </div>
           </div>
@@ -1863,25 +1863,56 @@
     let anniversariesData = [...INITIAL_ANNIVERSARIES];
     let isAdmin = false;
 
+    // Đồng bộ tự động các thành viên đã mất có ngày giỗ Âm lịch sang danh sách Lịch Ngày Giỗ
+    function syncAnniversariesFromMembers() {
+      const existingNames = new Set(anniversariesData.map(a => (a.ho_ten || '').trim().toLowerCase()));
+      if (existingNames.has('trần xuân phúc phang')) existingNames.add('trần xuân phang');
+      let nextId = anniversariesData.reduce((max, a) => Math.max(max, parseInt(a.id || a.stt || 0) || 0), 0) + 1;
+
+      membersData.forEach(m => {
+        const matAm = (m.mat_am || '').trim();
+        const hoTen = (m.ho_ten || '').trim();
+        if (!matAm || !hoTen) return;
+        if (existingNames.has(hoTen.toLowerCase())) return;
+        const nums = matAm.match(/\d+/g);
+        const ngayAmFmt = (nums && nums.length >= 2)
+          ? `${String(nums[0]).padStart(2, '0')} tháng ${String(nums[1]).padStart(2, '0')}`
+          : matAm;
+        const namAmMatch = matAm.match(/\(([^)]+)\)/);
+        anniversariesData.push({
+          id: nextId++,
+          ho_ten: hoTen,
+          vai_ve: m.vai_ve || `Đời ${m.the_he || ''}`,
+          ngay_am: ngayAmFmt,
+          ngay_duong: m.mat_duong || '',
+          nam_am: namAmMatch ? namAmMatch[1] : '',
+          huong_tho: m.huong_tho || '',
+          ghi_chu: m.ghi_chu || ''
+        });
+        existingNames.add(hoTen.toLowerCase());
+      });
+    }
+
     // Khởi tạo hiển thị dữ liệu ngay lập tức
     function initDisplay() {
+      syncAnniversariesFromMembers();
       document.getElementById('statMembersCount').textContent = membersData.length;
       renderTree();
       renderDirectory(membersData);
       renderAnniversaries();
-      loadUpcomingEvents();
+      renderBannerAnniversaries();
       populateFlyToSelect();
       setTimeout(init3DCanvas, 80);
     }
 
     // Tự động đồng bộ với Backend API nếu có máy chủ
     async function loadAllData() {
-      // 1. Phục hồi dữ liệu từ localStorage nếu có bản ghi mới hơn
+      // 1. Phục hồi dữ liệu từ localStorage khi khởi động
       try {
         const cached = localStorage.getItem('gia_toc_tran_xuan_members');
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length >= membersData.length) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             membersData = parsed;
           }
         }
@@ -1889,25 +1920,23 @@
 
       initDisplay();
 
-      // 2. Đồng bộ với máy chủ Backend
+      // 2. Đồng bộ chuẩn xác với máy chủ Backend (Server là nguồn chân lý, chỉ giữ bản ghi tạo khi offline có cờ _unsynced)
       try {
         const resMem = await fetch('/api/members');
         if (resMem.ok) {
           const remoteMem = await resMem.json();
           if (Array.isArray(remoteMem) && remoteMem.length > 0) {
-            if (remoteMem.length >= membersData.length) {
-              membersData = remoteMem;
-            } else {
-              // Hợp nhất các thành viên mới tạo cục bộ chưa kịp lên máy chủ
-              const remoteIds = new Set(remoteMem.map(x => x.id));
-              const localExtras = membersData.filter(x => !remoteIds.has(x.id));
-              membersData = [...remoteMem, ...localExtras];
-            }
+            const remoteIds = new Set(remoteMem.map(x => x.id));
+            const unsyncedLocals = membersData.filter(x => x._unsynced === true && !remoteIds.has(x.id));
+            membersData = [...remoteMem, ...unsyncedLocals];
             try { localStorage.setItem('gia_toc_tran_xuan_members', JSON.stringify(membersData)); } catch(e) {}
           }
+          syncAnniversariesFromMembers();
           document.getElementById('statMembersCount').textContent = membersData.length;
           renderTree();
           renderDirectory(membersData);
+          renderAnniversaries();
+          renderBannerAnniversaries();
           populateFlyToSelect();
           if (document.getElementById('tab-tree3d')?.classList.contains('active')) {
             setTimeout(init3DCanvas, 50);
@@ -1916,11 +1945,14 @@
         const resAnn = await fetch('/api/anniversaries');
         if (resAnn.ok) {
           anniversariesData = await resAnn.json();
+          syncAnniversariesFromMembers();
           renderAnniversaries();
-      loadUpcomingEvents();
+          renderBannerAnniversaries();
         }
         loadUpcomingEvents();
-        loadTelegramConfig();
+        if (isAdmin && getAdminToken()) {
+          loadTelegramConfig();
+        }
       } catch (e) {
         console.log("Đang chạy chế độ dữ liệu cục bộ an toàn:", e);
       }
@@ -1933,6 +1965,8 @@
         openLoginModal();
         return;
       }
+      loadTelegramConfig();
+      loadUpcomingEvents();
       switchTab('telegram');
     }
 
@@ -1978,7 +2012,7 @@
       else sessionStorage.removeItem('tx_admin_token');
     }
 
-    // Chế độ riêng tư kín đáo (Privacy Mode) theo lời dặn tổ tiên
+    // Chế độ riêng tư kín đáo (Privacy Mode) theo lời dặn tổ tiên trên văn bia 1881
     let isPrivacyMode = localStorage.getItem('gia_toc_privacy_mode') !== 'false';
     function togglePrivacyMode() {
       isPrivacyMode = !isPrivacyMode;
@@ -1996,10 +2030,40 @@
     function formatMarriageStatus(status) {
       if (!status) return "";
       if (isPrivacyMode && !isAdmin) {
-        if (status.includes("ly hôn")) return "—";
-        if (status.includes("Vợ hai") || status.includes("Vợ ba")) return "Phối ngẫu";
+        if (status.toLowerCase().includes("ly hôn")) return "";
+        if (status.includes("Vợ hai") || status.includes("Vợ ba") || status.includes("Vợ cả") || status.includes("Vợ đầu")) return "Phối ngẫu";
       }
       return status;
+    }
+    function formatVaiVe(vai) {
+      if (!vai) return "";
+      if (isPrivacyMode && !isAdmin) {
+        if (vai.includes("Chị Dâu cũ")) return "Dâu";
+        if (vai.toLowerCase().includes("ly hôn") || /Vợ\s*[12]|Vợ\s*đầu/i.test(vai)) {
+          return vai
+            .replace(/\s*\([^)]*(?:ly\s*hôn|Vợ\s*\d)[^)]*\)/gi, "")
+            .replace(/Vợ\s*[12]\s*/gi, "Phối ngẫu ")
+            .replace(/Vợ\s*đầu\s*/gi, "Phối ngẫu ")
+            .trim() || "Thành viên";
+        }
+      }
+      return vai;
+    }
+    function formatNote(note) {
+      if (!note) return "";
+      if (isPrivacyMode && !isAdmin) {
+        let cleaned = note
+          .replace(/Lấy\s*\d+\s*đời\s*vợ:[^.]*\./gi, "")
+          .replace(/Vợ\s*1\s*(?:là|:)[^.]*\./gi, "")
+          .replace(/Vợ\s*(?:đầu|hai)\s*của[^.]*ly\s*hôn[^.]*\./gi, "")
+          .replace(/Vợ\s*(?:đầu|thứ\s*hai|hai)\s*của/gi, "Phối ngẫu của")
+          .replace(/\s*\([^)]*ly\s*hôn[^)]*\)/gi, "")
+          .replace(/[,;]\s*đã\s*ly\s*hôn/gi, "")
+          .replace(/đã\s*ly\s*hôn\.?/gi, "")
+          .trim();
+        return cleaned;
+      }
+      return note;
     }
 
     async function submitAdminLogin() {
@@ -2024,23 +2088,12 @@
           alert("🎉 Đăng nhập Quản trị viên thành công! Bạn có thể chỉnh sửa, thêm, xóa dữ liệu.");
           renderTree();
           renderDirectory(membersData);
+          loadTelegramConfig();
         } else {
           alert(result.message || "Mã PIN không đúng!");
         }
       } catch (e) {
         alert("Lỗi kết nối máy chủ xác thực. Vui lòng kiểm tra lại mạng!");
-        if (false) {
-          isAdmin = true;
-          document.getElementById('btnAdminLogin').style.display = 'none';
-          document.getElementById('adminLoggedGroup').style.display = 'flex';
-          document.getElementById('thActions').style.display = 'table-cell';
-          closeLoginModal();
-          alert("🎉 Đăng nhập Quản trị viên thành công!");
-          renderTree();
-          renderDirectory(membersData);
-        } else {
-          alert("Mã PIN quản trị viên không chính xác hoặc lỗi kết nối máy chủ!");
-        }
       }
     }
 
@@ -2051,7 +2104,6 @@
       document.getElementById('adminLoggedGroup').style.display = 'none';
       document.getElementById('thActions').style.display = 'none';
       renderTree();
-
       renderDirectory(membersData);
       alert("Đã đăng xuất chế độ Quản trị viên.");
     }
@@ -2068,8 +2120,9 @@
     function openViewModal(id) {
       const m = getMemberById(id);
       if (!m) return;
+      const vaiDisplay = formatVaiVe(m.vai_ve);
       document.getElementById('modalName').textContent = m.ho_ten;
-      document.getElementById('modalVai').textContent = (m.vai_ve || 'Thành viên') + (m.the_he ? ' (Đời ' + m.the_he + ')' : '');
+      document.getElementById('modalVai').textContent = (vaiDisplay || 'Thành viên') + (m.the_he ? ' (Đời ' + m.the_he + ')' : '');
 
       let html = '';
       const addRow = (lbl, val, isHtml = false) => {
@@ -2078,7 +2131,7 @@
       addRow('Mã định danh', `<strong>${m.id}</strong>`, true);
       addRow('Giới tính', `<span class="badge ${m.gioi_tinh === 'Nam' ? 'badge-nam' : 'badge-nu'}">${m.gioi_tinh}</span>`, true);
       addRow('Thế hệ', `Đời thứ ${m.the_he}`);
-      addRow('Vai vế', m.vai_ve);
+      addRow('Vai vế', vaiDisplay);
 
       // Quan hệ gia đình
       if (m.cha_id || m.me_id) {
@@ -2097,7 +2150,7 @@
       // Các con
       const children = membersData.filter(x => x.cha_id === m.id || x.me_id === m.id);
       if (children.length > 0) {
-        const cList = children.map(c => `<a href="javascript:void(0)" onclick="openViewModal('${c.id}')" style="display:inline-block; margin:0.2rem 0.3rem 0.2rem 0; padding:0.2rem 0.5rem; background:#ebf8ff; color:#2b6cb0; border-radius:4px; font-size:0.85rem; font-weight:600;">👶 ${c.ho_ten} (${c.vai_ve || 'Đời ' + c.the_he})</a>`).join('');
+        const cList = children.map(c => `<a href="javascript:void(0)" onclick="openViewModal('${c.id}')" style="display:inline-block; margin:0.2rem 0.3rem 0.2rem 0; padding:0.2rem 0.5rem; background:#ebf8ff; color:#2b6cb0; border-radius:4px; font-size:0.85rem; font-weight:600;">👶 ${c.ho_ten} (${formatVaiVe(c.vai_ve) || 'Đời ' + c.the_he})</a>`).join('');
         addRow('Con cái', cList, true);
       }
 
@@ -2118,7 +2171,7 @@
       }
 
       addRow('Quê quán', m.que_quan);
-      const safeNote = (isPrivacyMode && !isAdmin && m.ghi_chu && m.ghi_chu.toLowerCase().includes('ly hôn')) ? 'Thông tin lưu hành nội bộ dòng họ' : m.ghi_chu;
+      const safeNote = formatNote(m.ghi_chu);
       addRow('Ghi chú / Tiểu sử', safeNote);
 
       if (isAdmin) {
@@ -2472,15 +2525,16 @@
       }
 
       // Cập nhật mảng dữ liệu tức thì
+      const recordFlags = { _unsynced: !savedRemote };
       if (id) {
         const idx = membersData.findIndex(x => x.id === id);
-        if (idx !== -1) membersData[idx] = { ...membersData[idx], ...payload };
+        if (idx !== -1) membersData[idx] = { ...membersData[idx], ...payload, ...recordFlags };
       } else {
         const newId = payload.id || `TX-${String(membersData.reduce((max, m) => {
           const n = parseInt(String(m.id).replace('TX-', ''));
           return (!isNaN(n) && n > max) ? n : max;
         }, 0) + 1).padStart(3, '0')}`;
-        membersData.push({ id: newId, ...payload });
+        membersData.push({ id: newId, ...payload, ...recordFlags });
       }
 
       // Lưu vĩnh viễn vào localStorage để không bao giờ bị mất dữ liệu
@@ -2498,7 +2552,8 @@
     }
 
     async function deleteMember(id, name) {
-      if (!confirm(`Bạn có chắc chắn muốn xóa thành viên "${name}" (${id}) khỏi phả hệ không?`)) return;
+      const targetName = name || getMemberName(id) || id;
+      if (!confirm(`Bạn có chắc chắn muốn xóa thành viên "${targetName}" (${id}) khỏi phả hệ không?`)) return;
       try {
         const res = await fetch(`/api/members/${id}`, {
           method: 'DELETE',
@@ -2507,12 +2562,17 @@
         const result = await res.json();
         if (result.token) setAdminToken(result.token);
         if (result.success) {
+          membersData = membersData.filter(x => x.id !== id);
+          try { localStorage.setItem('gia_toc_tran_xuan_members', JSON.stringify(membersData)); } catch(e) {}
           alert(`Đã xóa thành công thành viên ${id}!`);
           await loadAllData();
           return;
+        } else {
+          alert(result.detail || result.message || "Không thể xóa thành viên!");
         }
       } catch (e) {
         membersData = membersData.filter(x => x.id !== id);
+        try { localStorage.setItem('gia_toc_tran_xuan_members', JSON.stringify(membersData)); } catch(err) {}
         alert(`Đã xóa thành viên ${id} khỏi bộ nhớ!`);
         initDisplay();
       }
@@ -2521,7 +2581,10 @@
     // Render Directory
     function renderDirectory(list) {
       const tbody = document.getElementById('directoryTableBody');
-      tbody.innerHTML = list.map(m => `
+      tbody.innerHTML = list.map(m => {
+        const vaiDisplay = formatVaiVe(m.vai_ve);
+        const noteDisplay = formatNote(m.ghi_chu);
+        return `
         <tr>
           <td><strong>${m.id}</strong></td>
           <td style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="openViewModal('${m.id}')">
@@ -2530,24 +2593,24 @@
           </td>
           <td><span class="badge ${m.gioi_tinh === 'Nam' ? 'badge-nam' : 'badge-nu'}">${m.gioi_tinh}</span></td>
           <td>Đời ${m.the_he}</td>
-          <td>${m.vai_ve || '-'}</td>
+          <td>${vaiDisplay || '-'}</td>
           <td>${m.sinh || '-'}</td>
           <td>${m.mat_duong || (m.mat_am ? m.mat_am : '-')}</td>
           <td>${m.huong_tho ? m.huong_tho + ' t' : '-'}</td>
           <td>${m.phan_mo || '-'}</td>
-          <td><small>${(isPrivacyMode && !isAdmin && m.ghi_chu && m.ghi_chu.toLowerCase().includes('ly hôn')) ? 'Nội bộ dòng họ' : (m.ghi_chu || '')}</small></td>
+          <td><small>${noteDisplay || ''}</small></td>
           ${isAdmin ? `
             <td>
               <div style="display:flex; gap:0.25rem; flex-wrap:wrap;">
                 <button class="btn btn-primary btn-xs" onclick="openAddChildModal('${m.id}')" title="Thêm con cho người này">👶+Con</button>
                 <button class="btn btn-secondary btn-xs" onclick="openAddSpouseModal('${m.id}')" title="Thêm phối ngẫu">💍+Phối ngẫu</button>
                 <button class="btn btn-secondary btn-xs" onclick="openMemberModal('edit', '${m.id}')">✏️Sửa</button>
-                <button class="btn btn-danger btn-xs" onclick="deleteMember('${m.id}', '${m.ho_ten}')">🗑️</button>
+                <button class="btn btn-danger btn-xs" onclick="deleteMember('${m.id}')">🗑️</button>
               </div>
             </td>
           ` : ''}
         </tr>
-      `).join('');
+      `}).join('');
     }
 
     function filterDirectory() {
@@ -2623,58 +2686,6 @@
     function renderTree(filteredList = membersData) {
       const container = document.getElementById('treeView');
 
-      // Helper tra cứu nhánh tự động chuẩn xác theo huyết thống
-      function getMemberBranch(m) {
-        if (!m) return 'other';
-        const mid = m.id || '';
-        const cid = m.cha_id || '';
-        const meid = m.me_id || '';
-
-        // Nhánh 4: Ông Trần Xuân Tám (TX-026) & Bà Nguyễn Thị Hải Hương (TX-027) -> Con: Trang (TX-043), Hoàng (TX-044)
-        if (mid === 'TX-026' || mid === 'TX-027' || mid === 'TX-043' || mid === 'TX-044' || cid === 'TX-026' || meid === 'TX-027') {
-          return 'tam';
-        }
-
-        // Nhánh 3: Ông Trần Xuân Phúc (TX-020) & Bà Lê Thị Hiệp (TX-021) -> Con: Huyền (TX-040), Đức (TX-041), Hồng (TX-042), Ngân (TX-054), Hân (TX-055)
-        if (mid === 'TX-020' || mid === 'TX-021' || mid === 'TX-040' || mid === 'TX-041' || mid === 'TX-042' || mid === 'TX-054' || mid === 'TX-055' || cid === 'TX-020' || cid === 'TX-041' || meid === 'TX-021' || meid === 'TX-042') {
-          return 'phuc';
-        }
-
-        // Nhánh 2: Ông Trần Xuân Hạnh (TX-017) & Bà Nguyễn Thị Tiếp (TX-018)
-        if (['TX-017','TX-018','TX-033','TX-034','TX-035','TX-036','TX-037','TX-038','TX-039','TX-050','TX-051','TX-052','TX-053'].includes(mid) || cid === 'TX-017' || cid === 'TX-033' || cid === 'TX-036' || meid === 'TX-018') {
-          return 'hanh';
-        }
-
-        // Nhánh 1: Ông Trần Xuân Lai (TX-015) & Bà Nguyễn Thị Khích (TX-016)
-        if (['TX-015','TX-016','TX-028','TX-029','TX-030','TX-031','TX-032','TX-045','TX-046','TX-047','TX-048','TX-049'].includes(mid) || cid === 'TX-015' || cid === 'TX-029' || cid === 'TX-031' || meid === 'TX-016') {
-          return 'lai';
-        }
-
-        // Đệ quy tra cha hoặc mẹ
-        if (m.cha_id) {
-          const dad = getMemberById(m.cha_id);
-          if (dad) {
-            const b = getMemberBranch(dad);
-            if (b !== 'other') return b;
-          }
-        }
-        if (m.me_id) {
-          const mom = getMemberById(m.me_id);
-          if (mom) {
-            const b = getMemberBranch(mom);
-            if (b !== 'other') return b;
-          }
-        }
-
-        const str = [mid, m.ho_ten || '', cid, meid, m.ghi_chu || '', m.vai_ve || ''].join(' ').toLowerCase();
-        if (str.includes('tám') || str.includes('đài trang') || str.includes('hải hương')) return 'tam';
-        if (str.includes('phúc') || str.includes('đức') || str.includes('bảo ngân') || str.includes('ngọc hân')) return 'phuc';
-        if (str.includes('hạnh') || str.includes('hải') || str.includes('hà') || str.includes('lan anh')) return 'hanh';
-        if (str.includes('lai') || str.includes('huấn') || str.includes('tùng') || str.includes('thủy')) return 'lai';
-
-        return 'other';
-      }
-
       const gen1 = filteredList.filter(m => m.the_he === 1);
       const gen2 = filteredList.filter(m => m.the_he === 2);
       const gen3 = filteredList.filter(m => m.the_he === 3);
@@ -2704,7 +2715,9 @@
           members: gen3
         },
         {
-          title: "Thế Hệ 4: Đời Cụ Trần Xuân Tương (Vợ 1: Trần Thị Lụa • Vợ 2: Vũ Thị Ngữ)",
+          title: (isPrivacyMode && !isAdmin)
+            ? "Thế Hệ 4: Đời Cụ Trần Xuân Tương & Cụ Bà Vũ Thị Ngữ"
+            : "Thế Hệ 4: Đời Cụ Trần Xuân Tương (Vợ 1: Trần Thị Lụa • Vợ 2: Vũ Thị Ngữ)",
           badge: "Thế Hệ 4", color: "var(--gen4)",
           members: gen4
         },
@@ -2753,13 +2766,16 @@
         return `
           <div class="tree-branch" data-branch="${sec.branchKey || 'all'}">
             <div class="tree-branch-title">
-
               <span class="gen-badge" style="background: ${sec.color};">${sec.badge}</span>
               <span>${sec.title}</span>
               <span class="badge" style="background:#edf2f7; color:var(--text); font-size:0.75rem; margin-left:auto;">${sec.members.length} người</span>
             </div>
             <div class="member-grid">
-              ${sec.members.map(m => `
+              ${sec.members.map(m => {
+                const vaiDisplay = formatVaiVe(m.vai_ve);
+                const noteDisplay = formatNote(m.ghi_chu);
+                const hnDisplay = formatMarriageStatus(m.tinh_trang_hn);
+                return `
                 <div class="member-card ${m.gioi_tinh === 'Nam' ? 'nam' : 'nu'}">
                   <div onclick="openViewModal('${m.id}')">
                     <div class="member-header">
@@ -2767,7 +2783,7 @@
                         <span class="member-name">${m.ho_ten}</span>
                         <small style="color:var(--text-muted); margin-left:0.3rem;">(${m.id})</small>
                       </div>
-                      <div class="member-vai">${m.vai_ve || ('Đời ' + m.the_he)}</div>
+                      <div class="member-vai">${vaiDisplay || ('Đời ' + m.the_he)}</div>
                     </div>
 
                     ${(m.cha_id || m.me_id) ? `
@@ -2778,7 +2794,7 @@
 
                     ${m.vo_chong_id ? `
                       <div class="member-info" style="color: #805ad5; font-size:0.8rem;">
-                        💍 Phối ngẫu: ${getMemberName(m.vo_chong_id)} ${m.tinh_trang_hn && formatMarriageStatus(m.tinh_trang_hn) ? '(' + formatMarriageStatus(m.tinh_trang_hn) + ')' : ''}
+                        💍 Phối ngẫu: ${getMemberName(m.vo_chong_id)} ${hnDisplay ? '(' + hnDisplay + ')' : ''}
                       </div>
                     ` : ''}
 
@@ -2799,7 +2815,7 @@
                       </div>
                     ` : ''}
                     ${m.phan_mo ? `<div class="member-info">🏛️ Mộ: ${m.phan_mo}</div>` : ''}
-                    ${m.ghi_chu ? `<div class="member-note">${m.ghi_chu}</div>` : ''}
+                    ${noteDisplay ? `<div class="member-note">${noteDisplay}</div>` : ''}
                   </div>
 
                   ${isAdmin ? `
@@ -2813,13 +2829,13 @@
                       <button class="btn btn-secondary btn-xs" onclick="event.stopPropagation(); openMemberModal('edit', '${m.id}')">
                         ✏️ Sửa
                       </button>
-                      <button class="btn btn-danger btn-xs" onclick="event.stopPropagation(); deleteMember('${m.id}', '${m.ho_ten}')">
+                      <button class="btn btn-danger btn-xs" onclick="event.stopPropagation(); deleteMember('${m.id}')">
                         🗑️
                       </button>
                     </div>
                   ` : ''}
                 </div>
-              `).join('')}
+              `}).join('')}
             </div>
           </div>
         `;
@@ -2862,8 +2878,8 @@
       `).join('');
     }
 
-    // Hiển thị các ngày giỗ tiêu biểu sắp tới tại khung nhắc việc dòng họ
-    function loadUpcomingEvents() {
+    // Hiển thị các ngày giỗ tiêu biểu tại khung nhắc việc dòng họ đầu trang
+    function renderBannerAnniversaries() {
       const container = document.getElementById('upcomingEventsList');
       if (!container) return;
       if (!anniversariesData || anniversariesData.length === 0) {
@@ -2874,8 +2890,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 0.6rem 0.9rem; border-radius: 6px; border: 1px solid #fbd38d;">
           <div>
             <strong style="color: #744210; font-size: 0.95rem;">🕯️ ${a.ho_ten}</strong>
-            <span style="color: #718096; font-size: 0.85rem; margin-left: 0.4rem;">(${a.vai_ve || ''})</span>
-            ${a.ghi_chu ? `<small style="color: #a0aec0; margin-left: 0.5rem;">• ${a.ghi_chu}</small>` : ''}
+            <span style="color: #718096; font-size: 0.85rem; margin-left: 0.4rem;">(${formatVaiVe(a.vai_ve) || ''})</span>
+            ${a.ghi_chu ? `<small style="color: #a0aec0; margin-left: 0.5rem;">• ${formatNote(a.ghi_chu)}</small>` : ''}
           </div>
           <div style="text-align: right;">
             <span class="badge" style="background: #fed7d7; color: #9b2c2c; font-weight: 700; font-size: 0.82rem;">Âm: ${a.ngay_am}</span>
@@ -2885,10 +2901,15 @@
       `).join('');
     }
 
-    // Telegram Bot APIs
+    // Telegram Bot APIs (Bảo mật chỉ dành cho Admin)
     async function loadTelegramConfig() {
+      const token = getAdminToken();
+      if (!token) return;
       try {
-        const res = await fetch('/api/telegram/config');
+        const res = await fetch('/api/telegram/config', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) return;
         const cfg = await res.json();
         document.getElementById('cfgBotToken').value = cfg.bot_token || "";
         document.getElementById('cfgChatId').value = cfg.chat_id || "";
@@ -2951,26 +2972,29 @@
     async function loadUpcomingEvents() {
       try {
         const res = await fetch('/api/upcoming-events');
+        if (!res.ok) return;
         const events = await res.json();
-        const container = document.getElementById('upcomingEventsList');
-        if (!events.length) {
-          container.innerHTML = "<p style='color: var(--text-muted); padding: 0.5rem;'>Không có ngày giỗ hay sinh nhật nào trong 30 ngày tới.</p>";
-          return;
+        const tgContainer = document.getElementById('telegramUpcomingEventsList');
+        if (tgContainer) {
+          if (!events.length) {
+            tgContainer.innerHTML = "<p style='color: var(--text-muted); padding: 0.5rem;'>Không có ngày giỗ hay sinh nhật nào trong 30 ngày tới.</p>";
+          } else {
+            tgContainer.innerHTML = events.map(e => `
+              <div style="padding: 0.6rem 0; border-bottom: 1px dashed var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="color: ${e.type === 'death' ? '#c53030' : '#2b6cb0'};">
+                    ${e.type === 'death' ? '🕯️ Ngày Giỗ' : '🎉 Sinh Nhật'}: ${e.ho_ten} (${formatVaiVe(e.vai_ve)})
+                  </strong>
+                  <span class="badge" style="background: #edf2f7; color: var(--text);">${e.days_left === 0 ? 'Hôm nay' : 'Còn ' + e.days_left + ' ngày'}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  📅 Dương: ${e.solar_date} | Âm: ${e.lunar_date}<br>
+                  ${e.chi_tiet}
+                </div>
+              </div>
+            `).join('');
+          }
         }
-        container.innerHTML = events.map(e => `
-          <div style="padding: 0.6rem 0; border-bottom: 1px dashed var(--border);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color: ${e.type === 'death' ? '#c53030' : '#2b6cb0'};">
-                ${e.type === 'death' ? '🕯️ Ngày Giỗ' : '🎉 Sinh Nhật'}: ${e.ho_ten} (${e.vai_ve})
-              </strong>
-              <span class="badge" style="background: #edf2f7; color: var(--text);">Còn ${e.days_left} ngày</span>
-            </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
-              📅 Dương: ${e.solar_date} | Âm: ${e.lunar_date}<br>
-              ${e.chi_tiet}
-            </div>
-          </div>
-        `).join('');
       } catch (e) {}
     }
 
@@ -3296,7 +3320,7 @@
 
       document.getElementById('card3DName').textContent = m.ho_ten;
       document.getElementById('card3DGen').textContent = `Thế Hệ ${m.the_he}`;
-      document.getElementById('card3DVai').textContent = m.vai_ve || 'Thành viên dòng họ';
+      document.getElementById('card3DVai').textContent = formatVaiVe(m.vai_ve) || 'Thành viên dòng họ';
 
       const kids = membersData.filter(k => k.cha_id === m.id || k.me_id === m.id);
       let infoHtml = '';
